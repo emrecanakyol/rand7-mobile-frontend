@@ -1,0 +1,979 @@
+// // Plan verilerinin Google Play Consoleden çekilmiş jsonu
+{
+    "0": {
+        "description": "Premium plan with ad-free usage and extended limits for reminders and \ngroups.",
+        "name": "Premium Subscriptions",
+        "platform": "android",
+        "productId": "com.remindernotifications.premium",
+        "productType": "subs",
+        "subscriptionOfferDetails": [
+            {
+                "basePlanId": "premium-1monthly",
+                "offerId": null,
+                "offerTags": [
+                    "monthly"
+                ],
+                "offerToken": "/8T9+fJN88+wcS",
+                "pricingPhases": {
+                    "pricingPhaseList": [
+                        {
+                            "billingCycleCount": 0,
+                            "billingPeriod": "P1M",
+                            "formattedPrice": "TRY 119.90",
+                            "priceAmountMicros": "119900000",
+                            "priceCurrencyCode": "TRY",
+                            "recurrenceMode": 1
+                        }
+                    ]
+                }
+            }
+        ],
+        "title": "Premium Subscriptions (Reminder Notifications)"
+    }
+}
+// satın alma başarılı sonraki gelen veriler
+{
+    "developerPayloadAndroid": "",
+    "packageNameAndroid": "com.remindernotifications",
+    "purchaseStateAndroid": 1,
+    "obfuscatedProfileIdAndroid": "",
+    "autoRenewingAndroid": true,
+    "isAcknowledgedAndroid": false,
+    "signatureAndroid": "v8e8bfqygvP85JjKgeZYLV0pihL8IHktNIxBOhpW4zWzPCH/K5v4VpHnFyhNdRVNIZLt/0Z8gCWgAAc8yHGF+XxKYrBXhhKlAGNv67CX4jMVA63i1iDc4hgqghTSPNIHKecya0BhhIGxBKHX6K/CDA3abzqMkuB09xyBscLRaRdf3ZxhGmgzxm+wHkbIrwEX/33WXtBYuR5qbrstHVphPsT8n8LkVZWefb51qkzb7y8lCwpyBO7/FiYPcOAn1EIr1pmfoXIkzT/9l76sb74rvfZq8NOKatkaeT6jCjalUtymp5aAVYwovKdn5fZ471hLAutuAmB4iMdLEaAvQ4JBrg==",
+    "dataAndroid": {
+        "orderId": "GPA.3341-7724-1607-83773",
+        "packageName": "com.remindernotifications",
+        "productId": "com.remindernotifications.premium",
+        "purchaseTime": 1751657920856,
+        "purchaseState": 0,
+        "purchaseToken": "ccililjbgomammbhbgdkoeah.AO-J1Oylf5faLZ49v5iETqS8sDOm44ykEYclw4htDstLjf0m64cfx2sfVQJ7POwsS9g9eiy8hyPXLBh1ykklhNpFO9wDK8vN2ITkTZkeNZLYWxlPXjd6urI",
+        "quantity": 1,
+        "autoRenewing": true,
+        "acknowledged": false
+    },
+    "obfuscatedAccountIdAndroid": "",
+    "productId": "com.remindernotifications.premium",
+    "productIds": [
+        "com.remindernotifications.premium"
+    ],
+    "purchaseToken": "ccililjbgomammbhbgdkoeah.AO-J1Oylf5faLZ49v5iETqS8sDOm44ykEYclw4htDstLjf0m64cfx2sfVQJ7POwsS9g9eiy8hyPXLBh1ykklhNpFO9wDK8vN2ITkTZkeNZLYWxlPXjd6urI",
+    "transactionDate": 1751657920856,
+    "transactionId": "GPA.3341-7724-1607-83773",
+    "transactionReceipt": {
+        "orderId": "GPA.3341-7724-1607-83773",
+        "packageName": "com.remindernotifications",
+        "productId": "com.remindernotifications.premium",
+        "purchaseTime": 1751657920856,
+        "purchaseState": 0,
+        "purchaseToken": "ccililjbgomammbhbgdkoeah.AO-J1Oylf5faLZ49v5iETqS8sDOm44ykEYclw4htDstLjf0m64cfx2sfVQJ7POwsS9g9eiy8hyPXLBh1ykklhNpFO9wDK8vN2ITkTZkeNZLYWxlPXjd6urI",
+        "quantity": 1,
+        "autoRenewing": true,
+        "acknowledged": false
+    }
+}
+// Ödeme tamamen başarılı olduktan sonra Android Google APi doğrulama verileri
+{
+    "startTimeMillis": "1752090577854",
+    "expiryTimeMillis": "1752090877854", // Aboneliğin geçerli olduğu son tarihtir. Bu tarihe kadar kullanıcı premium'dur.
+    "autoRenewing": true, // false ise kullanıcı aboneliği iptal etmiştir ama süresi dolana kadar geçerlidir.
+    "priceCurrencyCode": "TRY",
+    "priceAmountMicros": "1000000",
+    "countryCode": "TR",
+    "developerPayload": "",
+    "paymentState": 1, // Aboneliğin ödeme durumu. Olası değerler: 0. Ödeme beklemede 1. Ödeme alındı 2. Ücretsiz deneme 3. Beklemede olan ertelenen yükseltme/düşürme. Ayrıca iptal edilen veya süresi dolan abonelikler için mevcut değildir.
+    "orderId": "GPA.3300-5598-5478-26194",
+    "purchaseType": 0, // Aboneliğin satın alma türü. Bu alan yalnızca satın alma işlemi standart uygulama içi faturalandırma akışı kullanılarak yapılmadıysa ayarlanır. Olası değerler: 0. Test (ör. lisans test hesabından satın alınmış) 1. Promosyon (ör. promosyon kodu kullanılarak satın alınan)
+    "acknowledgementState": 0, // Abonelik ürününün onay durumu. Olası değerler: 0. Henüz kabul edilmedi 1. Kabul edildi
+    "kind": "androidpublisher#subscriptionPurchase"
+}
+//IOS subscriptions product ürünleri
+{
+    "countryCode": "TUR",
+    "currency": "TRY",
+    "description": "Daha fazla içeriğe erişmek için gereklidir.",
+    "discounts": [],
+    "introductoryPrice": "",
+    "introductoryPriceAsAmountIOS": "",
+    "introductoryPriceNumberOfPeriodsIOS": "",
+    "introductoryPricePaymentModeIOS": "",
+    "introductoryPriceSubscriptionPeriodIOS": "",
+    "localizedPrice": "₺119,90",
+    "platform": "ios",
+    "price": "119.9",
+    "productId": "premium1monthly",
+    "subscriptionPeriodNumberIOS": "1",
+    "subscriptionPeriodUnitIOS": "MONTH",
+    "title": "1 Aylık Premium",
+    "type": "subs"
+}
+//Android subscriptions product ürünleri
+{
+    "description": "Ad-free usage allows you to create more groups and reminders.",
+    "name": "Premium Subscriptions",
+    "platform": "android",
+    "productId": "com.remindernotifications.premium",
+    "productType": "subs",
+    "subscriptionOfferDetails": [
+        {
+            "basePlanId": "premium-1monthly",
+            "offerId": null,
+            "offerTags": [
+                "monthly"
+            ],
+            "offerToken": "Aezw0sl7I9lCqKs7nFqWIXjGOwnBD43eZriicdYcyTXXcJg13gAiwAUCNIUbniZbVMEFV08sE8H5I7L97sBrvv/8T9+fJN88+wcS",
+            "pricingPhases": {
+                "pricingPhaseList": [
+                    {
+                        "billingCycleCount": 0,
+                        "billingPeriod": "P1M",
+                        "formattedPrice": "TRY 119.90",
+                        "priceAmountMicros": "119900000",
+                        "priceCurrencyCode": "TRY",
+                        "recurrenceMode": 1
+                    }
+                ]
+            }
+        }
+    ],
+    "title": "Premium Subscriptions (Reminder Notifications)"
+}
+// await groupRef.set({
+//     userId,
+//     groupId,
+//     createdAt: firestore.FieldValue.serverTimestamp(),
+//     // createdAt: roundedToQuarterHour(new Date()),
+//     notificationName,
+//     status: isActive ? true : false,
+//     notificationStatus: isActive ? true : false,
+//     // selectedDate: new Date(selectedDate.setSeconds(0, 0)),
+//     selectedDate: selectedDate.getTime(),
+//     dayBefore: selectedDay,
+//     repeat: repeatOption,
+//     ...(photoUrl ? { photo: photoUrl } : {}),
+// });
+
+import React,
+{ useEffect, useRef, useState
+} from 'react';
+import { ScrollView, View, Platform, StyleSheet, TouchableOpacity, View, Dimensions, ActivityIndicator, Linking
+} from 'react-native';
+import { initConnection, getSubscriptions, requestSubscription, purchaseErrorListener, purchaseUpdatedListener, finishTransaction, flushFailedPurchasesCachedAsPendingAndroid, ProductPurchase, validateReceiptIos
+} from 'react-native-iap';
+import { ToastError, ToastSuccess
+} from '../../../utils/toast';
+import CText from '../../../components/CText/CText';
+import CButton from '../../../components/CButton';
+import { responsive
+} from '../../../utils/responsive';
+import { useTheme
+} from '../../../utils/colors';
+import { useNavigation
+} from '@react-navigation/native';
+import Entypo from 'react-native-vector-icons/Entypo';
+import CImage from '../../../components/CImage';
+import images from '../../../assets/image/images';
+import { useTranslation
+} from 'react-i18next';
+import auth from "@react-native-firebase/auth";
+import { sendAdminNotification
+} from '../../../utils/constants/Notifications';
+import CLoading from '../../../components/CLoading';
+import { useDispatch
+} from 'react-redux';
+import { AppDispatch
+} from '../../../store/store';
+import { fetchPremiumDataList
+} from '../../../store/services/premiumDataService';
+
+interface PricingPhase {
+    billingCycleCount: number;
+    billingPeriod: string;
+    formattedPrice: string;
+    priceAmountMicros: string;
+    priceCurrencyCode: string;
+    recurrenceMode: number;
+}
+
+interface PricingPhases {
+    pricingPhaseList: PricingPhase[];
+}
+
+interface SubscriptionOfferDetail {
+    basePlanId: string;
+    offerId: string | null;
+    offerTags: string[];
+    offerToken: string;
+    pricingPhases: PricingPhases;
+}
+
+interface Product {
+    description: string;
+    name: string;
+    platform: string;
+    productId: any;
+    productType: string;
+    subscriptionOfferDetails: SubscriptionOfferDetail[];
+    title: string;
+}
+// Google Play console ve Apple Developerdan gelen bilgiler haricinde kendimizin özel düzenleyeceği plan bilgileridir. Çeviri de uygulanabilir.
+const GOOGLE_SUBSCRIPTION_SUBSCRIPTION_ID = ['com.remindernotifications.premium'
+];
+const APPLE_SUBSCRIPTION_PRODUCT_ID = ['com.remindernotifications.premium.1month'
+];
+
+const Subscriptions = () => {
+    const { colors
+    } = useTheme();
+    const { width, height
+    } = Dimensions.get('window');
+    const dispatch = useDispatch<AppDispatch>();
+    const isTablet = Math.min(width, height) >= 600;
+    const styles = getStyles(colors, isTablet);
+    const navigation: any = useNavigation();
+    const { t
+    } = useTranslation();
+    const [product, setProduct
+    ] = useState<Product | null>(null);
+    const [selectedPlan, setSelectedPlan
+    ] = useState<string>("");
+    const [loading, setLoading
+    ] = useState(false);
+    const handledPurchaseTokens = useRef<Set<string>>(new Set());
+
+    // localPlanInfo'yu fonksiyon içinde, çeviri ile oluştur
+    const localPlanInfo = [
+        {
+            id: 'premium-trial-membership-1monthly',
+            title: "Deneme 1 Ay",
+            label: "Deneme Üyeliği",
+            save: "%10 Tasarruf",
+            oldPrice: '1',
+            trial: [
+                "Reklamsız Kullanım",
+                "Daha fazla Grup ekle",
+                "Daha fazla Hatırlatıcı ekle"
+            ],
+            isActive: true,
+        },
+        {
+            id: 'premium-trial-membership-3monthly',
+            title: "Deneme 3 Ay",
+            label: "Deneme Üyeliği",
+            save: "%30 Tasarruf",
+            oldPrice: '3',
+            trial: [
+                "Reklamsız Kullanım",
+                "Daha fazla Grup ekle",
+                "Daha fazla Hatırlatıcı ekle"
+            ],
+            isActive: true,
+        },
+        {
+            id: 'premium-1monthly',
+            title: t('subscriptions_plan_title_premium-1monthly'),
+            label: '',
+            save: t('subscriptions_plan_save_premium-1monthly'),
+            oldPrice: '149,
+            00',
+            trial: [
+                "Reklamsız Kullanım",
+                "Daha fazla Grup ekle",
+                "Daha fazla Hatırlatıcı ekle"
+            ],
+            isActive: true,
+        },
+        {
+            id: 'premium-quarterly',
+            title: t('subscriptions_plan_title_premium-quarterly'),
+            label: t('subscriptions_plan_label_premium-quarterly'),
+            save: t('subscriptions_plan_save_premium-quarterly'),
+            oldPrice: '399,
+            00',
+            trial: [
+                "Reklamsız Kullanım",
+                "Daha fazla Grup ekle",
+                "Daha fazla Hatırlatıcı ekle"
+            ],
+            isActive: true,
+        },
+        {
+            id: 'premium-12monthly',
+            title: t('subscriptions_plan_title_premium-12monthly'),
+            label: '',
+            save: t('subscriptions_plan_save_premium-12monthly'),
+            oldPrice: '1499,
+            00',
+            trial: [
+                "Reklamsız Kullanım",
+                "Daha fazla Grup ekle",
+                "Daha fazla Hatırlatıcı ekle"
+            ],
+            isActive: true,
+        },
+    ];
+
+    const setupIAP = async () => {
+        try {
+            await initConnection();
+            console.log('IAP bağlantısı kuruldu');
+
+            const products: any = await getSubscriptions({
+                skus: Platform.OS == "android" ? GOOGLE_SUBSCRIPTION_SUBSCRIPTION_ID : APPLE_SUBSCRIPTION_PRODUCT_ID
+            });
+
+            if (products.length > 0) {
+                setProduct(products[
+                    0
+                ]);
+            }
+
+            if (Platform.OS === 'android') {
+                //Android cihazlarda geçmişte başarısız olup sistemde bekleyen ve uygulama tarafından işlenmemiş pending (bekleyen) satın alma işlemlerini temizlemek için kullanılır.
+                await flushFailedPurchasesCachedAsPendingAndroid();
+            }
+        } catch (error) {
+            console.log('IAP setup hatası:', error);
+            ToastError(t('error'), t('subscriptions_iap_load_error'));
+        }
+    };
+
+    useEffect(() => {
+        setupIAP();
+
+        const purchaseErrorSub = purchaseErrorListener(error => {
+            console.log('Satın alma hatası:', error);
+        });
+
+        const purchaseUpdateSub = purchaseUpdatedListener(async (purchase: ProductPurchase) => {
+            if (!purchase.purchaseToken) {
+                // console.log("purchaseToken yok, işlenemez.");
+                return;
+            }
+
+            if (handledPurchaseTokens.current.has(purchase.purchaseToken)) {
+                // console.log("Bu satın alma zaten işlendi:", purchase.purchaseToken);
+                return;
+            }
+
+            handledPurchaseTokens.current.add(purchase.purchaseToken);
+            // console.log("Yeni satın alma:", purchase.purchaseToken);
+
+
+            setLoading(true);
+            // console.log('1 Satın alma başarılı:', purchase);
+
+            try {
+                // Kullanıcı bilgisi al
+                const user = auth().currentUser;
+                const userId = user?.uid;
+
+                // Satın alma işlemi başarılı ise transactionReceipt olması şartı
+                if (!purchase?.transactionReceipt) {
+                    throw new Error("Geçersiz işlem: transactionReceipt yok.");
+                }
+
+                let result: any = null;
+
+                // ✅ Android Receipt Doğrulama (backend üzerinden)
+                if (Platform.OS === 'android') {
+                    const response = await fetch('https: //verifygoogleapireceipt-66vu444soa-ew.a.run.app', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                    },
+                        body: JSON.stringify({
+                            purchaseToken: purchase.purchaseToken,
+                            productId: purchase.productId,
+                            packageName: 'com.remindernotifications', // ← burayı kendi packageName'inle değiştir
+                    }),
+                });
+
+                    result = await response.json();
+                    // console.log("2 Android Google API doğrulama sonucu:", result);
+
+                    if (!result || result.paymentState !== 1) {
+                        throw new Error("Android receipt doğrulama başarısız.");
+                }
+            }
+            // ✅ iOS Receipt Doğrulama
+                if (Platform.OS === 'ios') {
+                    const receiptBody = {
+                        'receipt-data': purchase.transactionReceipt,
+                        password: '017ca3bd39c8499592bfd8ee0c9aa3a6', // App Store Connect > App informations > App-Specific Shared Secret
+                };
+
+                    result = await validateReceiptIos({ receiptBody, isTest: __DEV__
+                }); // Sandbox için __DEV__
+                    // console.log("2 iOS doğrulama sonucu:", result);
+
+                    if (result?.status !== 0) {
+                        throw new Error("iOS receipt doğrulama başarısız.");
+                }
+            }
+            // Satın alma ve doğrulama işlemlerini yaptıktan sonra Firestore'a kaydetmek için firebase functions gönderiyoruz.
+                const response = await fetch('https: //savefirestorepurchaseandresult-66vu444soa-ew.a.run.app', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+            },
+                    body: JSON.stringify({
+                        purchase: purchase, // purchase objesi
+                        result: result, // doğrulama sonucu (Google/Apple API yanıtı)
+                        userId: userId, // kullanıcı ID'si
+            }),
+        });
+
+                // Satın alma işlemini tamamla
+                await finishTransaction({ purchase, isConsumable: false
+        });
+                await sendAdminNotification("🎉 Yeni Abonelik !",
+        "1 yeni abone geldi.");
+                ToastSuccess(t('success'), t('subscriptions_premium_activated'));
+                await dispatch(fetchPremiumDataList()); // Premium localde uygulamada aktifleşmesi için premium bilgilerini tekrar çek
+                setTimeout(() => {
+                    navigation.goBack();
+        },
+        1500);
+    } catch (error: any) {
+                console.log("Doğrulama/kayıt hatası:", error);
+                ToastError(t('error'), t('subscriptions_validation_error'));
+    } finally {
+                setLoading(false);
+    }
+});
+
+        return () => {
+            purchaseErrorSub.remove();
+            purchaseUpdateSub.remove();
+};
+},
+[]);
+
+    const handlePurchase = async () => {
+        const user = auth().currentUser;
+        if (!user) {
+            ToastError(t('error'), t('subscriptions_login_required'));
+            return;
+}
+
+        if (!product) {
+            ToastError(t('error'), t('subscriptions_not_found'));
+            return;
+}
+//Hangi planı seçtiyse, o planın ID'sini al
+        const selectedOffer = product.subscriptionOfferDetails.find(plan => plan.basePlanId === selectedPlan);
+
+        if (!selectedOffer) {
+            ToastError(t('error'), t('subscriptions_no_plan_selected'));
+            return;
+}
+
+        try {
+    // Android için satın almayı başlat
+            if (Platform.OS === 'android') {
+                await requestSubscription({
+                    sku: product.productId,
+                    subscriptionOffers: [
+                {
+                            sku: product.productId,
+                            offerToken: selectedOffer.offerToken,
+                },
+            ],
+        });
+                // iOS için satın almayı başlat
+    } else if (Platform.OS === 'ios') {
+                await requestSubscription(product.productId);
+    }
+} catch (error: any) {
+            console.log('Satın alma hatası detay:', error);
+}
+};
+
+    const handleClose = () => {
+        navigation.goBack();
+};
+
+    const openPrivacyPolicy = () => {
+        Linking.openURL("https://emrecanakyol.github.io/app-privacy-policy/");
+};
+
+    const openTermsOfUse = () => {
+        Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
+};
+
+
+    return (
+        <View style={styles.container
+}>
+            {loading ? (
+                <CLoading visible={loading
+} />
+            ) : (
+                <ScrollView contentContainerStyle={styles.inContainer
+}>
+                    { /* Header */}
+                    <View style={styles.logoContainer
+}>
+
+                        <View style={styles.logoInContainer
+}>
+                            <CImage
+                                imgSource={images.logoBlack
+}
+                                width={isTablet ? responsive(30) : responsive(40)
+}
+                                height={isTablet ? responsive(30) : responsive(40)
+}
+                                borderRadius={responsive(10)
+}
+                                imageBorderRadius={responsive(10)
+}
+                                disablePress={
+    true
+}
+                            />
+                            <View>
+                                <CText style={styles.logoTitle
+}>Reminder</CText>
+                                <CText style={styles.logoTitle
+}>Notifications</CText>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity style={styles.closeButton
+} onPress={handleClose
+}>
+                            <Entypo name="cross" size={isTablet ? 30 : 20
+} color={colors.WHITE_COLOR
+} />
+                        </TouchableOpacity>
+                    </View>
+
+                    { /* Title */}
+                    <CText style={styles.title
+}>{t('subscriptions_choose_plan')
+}</CText>
+                    <CText style={styles.subtitle
+}>{t('subscriptions_enjoy_unlimited')
+}</CText>
+                    <CText style={styles.desc
+}>{t('subscriptions_premium_desc')
+}</CText>
+
+                    { /* Product */}
+                    <View style={styles.plansWrapper
+}>
+                        { /* {product && localPlanInfo.map((plan) => {
+                            const offer = product.subscriptionOfferDetails.find(o => o.basePlanId === plan.id);
+                            if (!offer) return null;
+                            const pricing = offer.pricingPhases.pricingPhaseList[0];
+                            const isSelected = selectedPlan === plan.id; */}
+                        {product && localPlanInfo
+                            .filter(plan => plan.isActive)
+                            .map((plan) => {
+                                const offer = product.subscriptionOfferDetails.find(o => o.basePlanId === plan.id);
+                                if (!offer) return null;
+                                const pricing = offer.pricingPhases.pricingPhaseList[
+            0
+        ];
+                                const isSelected = selectedPlan === plan.id;
+
+                                return (
+                                    <TouchableOpacity
+                                        key={plan.id
+        }
+                                        style={
+            [styles.planCard, isSelected && styles.planCardSelected
+            ]
+        }
+                                        activeOpacity={
+            0.9
+        }
+                                        onPress={() => setSelectedPlan(plan.id)
+        }
+                                    >
+                                        <View style={styles.planHeader
+        }>
+                                            <CText style={styles.planTitle
+        }>{plan.title
+        }</CText>
+                                            {plan.label ? (
+                                                <View style={styles.planLabel
+            }>
+                                                    <CText style={styles.planLabelText
+            }>{plan.label
+            }</CText>
+                                                </View>
+                                            ) : null
+        }
+                                            {isSelected && (
+                                                <View style={styles.checkCircle
+            }>
+                                                    <Entypo name="check" size={isTablet ? 28 : 14
+            } color="#fff" />
+                                                </View>
+                                            )
+        }
+                                        </View>
+
+                                        <View style={styles.planDetails
+        }>
+                                            <View>
+                                                <CText style={styles.planSave
+        }>{plan.save
+        }</CText>
+                                                {plan.trial.map((text, i) => (
+                                                    <CText style={styles.planTrial
+            } key={i
+            }>{text
+            }</CText>
+                                                ))
+        }
+                                            </View>
+                                            <View style={
+            { alignItems: 'flex-end'
+            }
+        }>
+                                                <CText style={styles.planOldPrice
+        }>{plan.oldPrice
+        }</CText>
+                                                <CText style={styles.planPrice
+        }>{pricing.formattedPrice
+        }</CText>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+    })
+}
+                    </View>
+
+
+
+                    { /* Info */}
+                    {Platform.OS === "android" ? (
+                        <CText style={styles.infoText
+    }>
+                            {t('google_play_info_text')
+    }
+                        </CText>
+                    ) : (
+                        <CText style={styles.infoText
+    }>
+                            {t('apple_store_info_text')
+    }
+                        </CText>
+                    )
+}
+
+
+
+                    <CButton
+                        title={t('continue')
+}
+                        onPress={handlePurchase
+}
+                        backgroundColor={colors.ORANGE_COLOR
+}
+                        borderRadius={responsive(30)
+}
+                        textColor='#fff'
+                    />
+
+                    <View style={styles.infoText2Container
+}>
+                        <TouchableOpacity onPress={openPrivacyPolicy
+}>
+                            <CText style={styles.infoText2
+}>
+                                {t('privacy_policy_button')
+}
+                            </CText>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={openTermsOfUse
+}>
+                            <CText style={styles.infoText2
+}>
+                                {t('terms_of_use_button')
+}
+                            </CText>
+                        </TouchableOpacity>
+                    </View>
+
+
+                </ScrollView>
+            )
+}
+        </View>
+    )
+}
+
+const getStyles = (colors: any, isTablet: boolean) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: colors.BACKGROUND_COLOR,
+},
+        inContainer: {
+            padding: isTablet ? responsive(20) : responsive(20),
+            marginTop: responsive(10),
+},
+        logoInContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: responsive(10),
+},
+        logoContainer: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: responsive(18),
+},
+        logoTitle: {
+            fontWeight: "600",
+            color: colors.BLACK_COLOR,
+},
+        closeButton: {
+            backgroundColor: colors.BLACK_COLOR,
+            borderRadius: responsive(50),
+            padding: responsive(2),
+},
+        title: {
+            fontSize: isTablet ? 32 : 22,
+            fontWeight: '700',
+            color: colors.BLACK_COLOR,
+            marginTop: isTablet ? 0 : responsive(14),
+},
+        subtitle: {
+            fontSize: isTablet ? 24 : 14,
+            fontWeight: '600',
+            color: colors.BLACK_COLOR,
+            marginVertical: responsive(8),
+},
+        desc: {
+            fontSize: isTablet ? 22 : 14,
+            color: colors.GRAY_COLOR,
+},
+        plansWrapper: {
+            marginTop: isTablet ? responsive(12) : responsive(20),
+            marginBottom: isTablet ? responsive(2) : responsive(5),
+},
+        planCard: {
+            backgroundColor: '#2D1B0F',
+            borderRadius: responsive(14),
+            padding: responsive(16),
+            marginBottom: responsive(12),
+            borderWidth: responsive(2),
+            borderColor: 'transparent',
+            minHeight: isTablet ? responsive(90) : responsive(125),
+            height: "auto"
+},
+        planCardSelected: {
+            borderColor: colors.ORANGE_COLOR,
+// shadowColor:  colors.ORANGE_COLOR,
+// shadowOpacity: 0.2,
+// shadowRadius: 8,
+// elevation: 4,
+},
+        planHeader: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: responsive(8),
+// marginBottom: responsive(8),
+},
+        planTitle: {
+            color: '#fff',
+            fontWeight: '700',
+            fontSize: isTablet ? 26 : 16,
+},
+        planLabel: {
+            borderRadius: responsive(8),
+            paddingHorizontal: responsive(8),
+            paddingVertical: responsive(2),
+            backgroundColor: colors.ORANGE_COLOR,
+},
+        planLabelText: {
+            color: '#fff',
+            fontWeight: '700',
+            fontSize: isTablet ? 22 : 12,
+},
+        checkCircle: {
+            marginLeft: 'auto',
+            backgroundColor: colors.ORANGE_COLOR,
+            borderRadius: responsive(28),
+            width: isTablet ? responsive(18) : responsive(20),
+            height: isTablet ? responsive(18) : responsive(20),
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: responsive(4),
+},
+        planDetails: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+},
+        planSave: {
+            color: colors.ORANGE_COLOR2,
+            fontWeight: '600',
+            fontSize: isTablet ? 23 : 13,
+},
+        planTrial: {
+            color: '#fff',
+            fontSize: isTablet ? 22 : 12,
+            marginTop: responsive(4),
+},
+        planOldPrice: {
+            color: '#fff',
+            fontSize: isTablet ? 22 : 12,
+            textDecorationLine: 'line-through',
+            textAlign: 'right',
+},
+        planPrice: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: isTablet ? 30 : 20,
+            textAlign: 'right',
+},
+        infoText: {
+            color: colors.GRAY_COLOR,
+            fontSize: isTablet ? 22 : 14,
+},
+        infoText2Container: {
+            flexDirection: "row",
+            marginBottom: responsive(100),
+            gap: responsive(10),
+            justifyContent: "center",
+},
+        infoText2: {
+            color: colors.GRAY_COLOR,
+            fontSize: isTablet ? 22 : 14,
+            fontWeight: "bold",
+}
+})
+
+export default Subscriptions;
+
+
+
+
+///////////////////////////////////////////////////////////////////
+//dilleri tek butonla kaydet
+import React from 'react';
+import { View, Button, Alert, ScrollView
+} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+
+const SaveEnPlansButton = () => {
+
+    const trPlans = [
+{
+            id: 'premium-trial-membership-1monthly',
+            title: "Deneme 1 Ay",
+            label: "Deneme Üyeliği",
+            save: "%10 Tasarruf",
+            oldPrice: '1',
+            trial: [
+        "Reklamsız Kullanım",
+        "Daha fazla Grup ekle",
+        "Daha fazla Hatırlatıcı ekle"
+    ],
+            isActive: true,
+},
+{
+            id: 'premium-trial-membership-3monthly',
+            title: "Deneme 3 Ay",
+            label: "Deneme Üyeliği",
+            save: "%30 Tasarruf",
+            oldPrice: '3',
+            trial: [
+        "Reklamsız Kullanım",
+        "Daha fazla Grup ekle",
+        "Daha fazla Hatırlatıcı ekle"
+    ],
+            isActive: true,
+},
+{
+            id: 'premium-1monthly',
+            title: "Premium 1 Ay",
+            label: "",
+            save: "%20 Tasarruf",
+            oldPrice: '149,
+    00',
+            trial: [
+        "Reklamsız Kullanım",
+        "Daha fazla Grup ekle",
+        "Daha fazla Hatırlatıcı ekle"
+    ],
+            isActive: true,
+},
+{
+            id: 'premium-quarterly',
+            title: "Premium 3 Ay",
+            label: "En Çok Tercih Edilen",
+            save: "%30 Tasarruf",
+            oldPrice: '399,
+    00',
+            trial: [
+        "Reklamsız Kullanım",
+        "Daha fazla Grup ekle",
+        "Daha fazla Hatırlatıcı ekle"
+    ],
+            isActive: true,
+},
+{
+            id: 'premium-12monthly',
+            title: "Premium 12 Ay",
+            label: "",
+            save: "%50 Tasarruf",
+            oldPrice: '1499,
+    00',
+            trial: [
+        "Reklamsız Kullanım",
+        "Daha fazla Grup ekle",
+        "Daha fazla Hatırlatıcı ekle"
+    ],
+            isActive: true,
+},
+];
+
+
+
+
+    const saveEnPlans = async () => {
+        try {
+            const savePromises = trPlans.map(async (plan) => {
+                await firestore()
+                    .collection('i18n')
+                    .doc('tr')
+                    .set({
+            [plan.id
+            ]: plan
+        },
+        { merge: true
+        });
+    });
+
+            await Promise.all(savePromises);
+
+            Alert.alert('Success', 'All EN plans have been saved to Firestore!');
+} catch (error) {
+            console.error('Firestore save error:', error);
+            Alert.alert('Error', 'There was a problem saving the plans.');
+}
+};
+
+    return (
+        <ScrollView contentContainerStyle={
+{ padding: 20
+}
+}>
+            <Button
+                title="Save EN Plan Translations"
+                onPress={saveEnPlans
+}
+            />
+        </ScrollView>
+    );
+};
+
+export default SaveEnPlansButton;

@@ -12,7 +12,12 @@
           "package_name": "com.rand7"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "675062613189-teu1gjf3ckltf7mp3es7dg3q3jug9vcl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAWJMoKUpSat7HOKzZa74G30GEuVqVpeOM"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "675062613189-teu1gjf3ckltf7mp3es7dg3q3jug9vcl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "675062613189-vrt7brjf3vvqcof9rdpldt80vvqljeni.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rand7"
+              }
+            }
+          ]
         }
       }
     }
