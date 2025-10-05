@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "675062613189",
+    "project_id": "rand7-1b5c2",
+    "storage_bucket": "rand7-1b5c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675062613189:android:ba1a3c5fdded49d5765cac",
+        "android_client_info": {
+          "package_name": "com.rand7"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWJMoKUpSat7HOKzZa74G30GEuVqVpeOM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
