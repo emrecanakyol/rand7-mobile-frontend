@@ -1,23 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, Image, Button, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { ToastError, ToastSuccess } from '../../../utils/toast';
 import { responsive } from '../../../utils/responsive';
 import { useTheme } from '../../../utils/colors';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { ADD_PROFILE, GROUP_DETAIL, SUBSCRIPTONS } from '../../../navigators/Stack';
-import HomeHeader from './components/HomeHeader';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import { ADD_PROFILE } from '../../../navigators/Stack';
 import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
-import CText from '../../../components/CText/CText';
-import CTextInput from '../../../components/CTextInput';
-import storage from '@react-native-firebase/storage';
-import CImage from '../../../components/CImage';
 import { useTranslation } from 'react-i18next';
-import UserVisitsCounter from '../../../components/AdminPanelComponents/UserVisitCounter';
-import CLoading from '../../../components/CLoading';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
 import { fetchPremiumDataList } from '../../../store/services/premiumDataService';
@@ -80,9 +70,7 @@ const Groups = () => {
 
     return (
         <View style={styles.container}>
-            <HomeHeader
-                title={t('groups')}
-                userData={userData} />
+
         </View>
     );
 };
