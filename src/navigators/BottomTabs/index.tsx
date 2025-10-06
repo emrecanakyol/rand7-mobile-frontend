@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -9,6 +9,7 @@ import RandomMatch from '../../screens/App/RandomMatch';
 import Settings from '../../screens/App/Settings';
 import { responsive } from '../../utils/responsive';
 import Story from '../../screens/App/Story';
+import { useTheme } from '../../utils/colors';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,6 +21,11 @@ export const SETTINGS = "Settings";
 export const STORY = "Story";
 
 export default function BottomTabs() {
+    const { colors } = useTheme();
+    const { width, height } = Dimensions.get('window');
+    const isTablet = Math.min(width, height) >= 600;
+    const styles = getStyles(colors, isTablet);
+
     return (
         <Tab.Navigator
             initialRouteName={RANDOM_MATCH}
@@ -38,7 +44,7 @@ export default function BottomTabs() {
                             <Ionicons
                                 name={focused ? 'home' : 'home-outline'}
                                 size={24}
-                                color={focused ? '#fff' : '#9C83A7'}
+                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
                             />
                         </View>
                     ),
@@ -53,7 +59,7 @@ export default function BottomTabs() {
                             <Ionicons
                                 name={focused ? 'compass' : 'compass-outline'}
                                 size={24}
-                                color={focused ? '#fff' : '#9C83A7'}
+                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
                             />
                         </View>
                     ),
@@ -68,7 +74,7 @@ export default function BottomTabs() {
                             <Ionicons
                                 name={focused ? 'add' : 'add-outline'}
                                 size={24}
-                                color={focused ? '#fff' : '#9C83A7'}
+                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
                             />
                         </View>
                     ),
@@ -83,7 +89,7 @@ export default function BottomTabs() {
                             <Ionicons
                                 name={focused ? 'chatbubble' : 'chatbubble-outline'}
                                 size={24}
-                                color={focused ? '#fff' : '#9C83A7'}
+                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
                             />
                         </View>
                     ),
@@ -98,7 +104,7 @@ export default function BottomTabs() {
                             <Ionicons
                                 name={focused ? 'person-circle' : 'person-circle-outline'}
                                 size={27}
-                                color={focused ? '#fff' : '#9C83A7'}
+                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
                             />
                         </View>
                     ),
@@ -108,7 +114,7 @@ export default function BottomTabs() {
     );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     tabBar: {
         position: 'absolute',
         bottom: responsive(30),
@@ -135,7 +141,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     activeIcon: {
-        backgroundColor: '#D39BDA',
+        backgroundColor: colors.GREEN_COLOR,
     },
     addButton: {
         width: 50,

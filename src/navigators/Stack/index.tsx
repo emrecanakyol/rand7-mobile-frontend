@@ -52,8 +52,8 @@ export default function StackNavigator() {
                     screenOptions={{
                         headerShown: false,
                     }}>
-                    <Stack.Screen name={BOOTOMTABS} component={BottomTabs} />
                     <Stack.Screen name={DRAWER} component={Drawer} />
+                    <Stack.Screen name={BOOTOMTABS} component={BottomTabs} />
                     <Stack.Screen name={HOME} component={Home} />
                     <Stack.Screen name={GROUP_DETAIL} component={GroupDetail} />
                     <Stack.Screen name={ADD_PROFILE} component={AddProfile} />

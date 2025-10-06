@@ -9,7 +9,7 @@ import CImage from '../../../../../components/CImage';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/store';
-import Icon from 'react-native-vector-icons/AntDesign';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 interface HeaderProps {
 
@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ }) => {
 
                 <TouchableOpacity
                     style={styles.notificationButton}>
-                    <Icon
+                    <AntDesign
                         name="filter"
                         size={isTablet ? responsive(24) : responsive(24)}
                     />
@@ -72,7 +72,7 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderWidth: 0.5,
-        borderColor: colors.BORDER_COLOR,
+        borderColor: colors.GREEN_COLOR,
         borderRadius: responsive(100),
         width: isTablet ? responsive(45) : responsive(45),
         height: isTablet ? responsive(45) : responsive(45),

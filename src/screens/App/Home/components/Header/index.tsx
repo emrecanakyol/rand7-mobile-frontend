@@ -11,6 +11,7 @@ import { SUBSCRIPTONS } from '../../../../../navigators/Stack';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/store';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 interface HeaderProps {
     userData: any;
@@ -25,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
     const navigation: any = useNavigation();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const premiumData: any = useSelector((state: RootState) => state.premiumData.premiumDataList);
+    const [activeTab, setActiveTab] = useState<'friends' | 'partners'>('partners');
 
     const openDrawer = () => {
         navigation.openDrawer();
@@ -49,14 +51,23 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                 </TouchableOpacity>
 
 
-                <TouchableOpacity
-                    style={styles.notificationButton}>
-                    <Ionicons
-                        name="notifications-outline"
-                        size={isTablet ? responsive(24) : responsive(24)}
-                    />
-                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                        style={styles.notificationButton}>
+                        <Ionicons
+                            name="notifications-outline"
+                            size={isTablet ? responsive(24) : responsive(24)}
+                        />
+                    </TouchableOpacity>
 
+                    <TouchableOpacity
+                        style={styles.notificationButton}>
+                        <Ionicons
+                            name="options-outline"
+                            size={isTablet ? responsive(24) : responsive(24)}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
@@ -75,12 +86,17 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         backgroundColor: "transparent",
         alignItems: "center",
         justifyContent: "center",
-        borderWidth: 0.5,
-        borderColor: colors.BORDER_COLOR,
+        borderWidth: 0.7,
+        borderColor: colors.GREEN_COLOR,
         borderRadius: responsive(100),
         width: isTablet ? responsive(45) : responsive(45),
         height: isTablet ? responsive(45) : responsive(45),
     },
+    buttonContainer: {
+        flexDirection: "row",
+        gap: responsive(12),
+    },
+
 });
 
 export default Header;
