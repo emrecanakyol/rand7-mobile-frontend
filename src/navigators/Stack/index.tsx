@@ -18,9 +18,11 @@ import AddHelp from '../../screens/App/Help/components/AddHelp';
 import Subscriptions from '../../screens/App/Subscriptions';
 import DeleteAccount from '../../screens/App/DeleteAccount';
 import AddSubscriptions from '../../screens/App/Subscriptions/components/AddSubscriptions';
+import BottomTabs from '../BottomTabs';
 
 const Stack = createStackNavigator();
 
+export const BOOTOMTABS = "BottomTabs";
 export const DRAWER = "Drawer";
 export const ONEBOARDINGONE = "OnBoardingOne";
 export const ONEBOARDINGTWO = "OnBoardingTwo";
@@ -46,10 +48,11 @@ export default function StackNavigator() {
         <NavigationContainer>
             {user ? (
                 <Stack.Navigator
-                    initialRouteName={DRAWER}
+                    initialRouteName={BOOTOMTABS}
                     screenOptions={{
                         headerShown: false,
                     }}>
+                    <Stack.Screen name={BOOTOMTABS} component={BottomTabs} />
                     <Stack.Screen name={DRAWER} component={Drawer} />
                     <Stack.Screen name={HOME} component={Home} />
                     <Stack.Screen name={GROUP_DETAIL} component={GroupDetail} />
