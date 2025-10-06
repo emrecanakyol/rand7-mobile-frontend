@@ -11,7 +11,7 @@ import ResetPassword from '../../screens/Auth/ResetPassword';
 import PhoneLogin from '../../screens/Auth/Login/PhoneLogin';
 import Drawer from '../Drawer';
 import PhoneVerification from '../../screens/Auth/PhoneVerification';
-import Groups from '../../screens/App/Groups';
+import Home from '../../screens/App/Home';
 import AddProfile from '../../screens/Auth/AddProfile';
 import EditProfile from '../../screens/App/EditProfile';
 import AddHelp from '../../screens/App/Help/components/AddHelp';
@@ -30,7 +30,7 @@ export const PHONE_LOGIN = "Phone Login";
 export const REGISTER = "Register";
 export const RESET_PASSWORD = "Reset Password";
 export const PHONE_VERIFICATION = "Phone Verification";
-export const GROUPS = "Groups";
+export const HOME = "Home";
 export const GROUP_DETAIL = "Group Detail";
 export const ADD_PROFILE = "Add Profile";
 export const EDIT_PROFILE = "Edit Profile";
@@ -51,7 +51,7 @@ export default function StackNavigator() {
                         headerShown: false,
                     }}>
                     <Stack.Screen name={DRAWER} component={Drawer} />
-                    <Stack.Screen name={GROUPS} component={Groups} />
+                    <Stack.Screen name={HOME} component={Home} />
                     <Stack.Screen name={GROUP_DETAIL} component={GroupDetail} />
                     <Stack.Screen name={ADD_PROFILE} component={AddProfile} />
                     <Stack.Screen name={EDIT_PROFILE} component={EditProfile} />

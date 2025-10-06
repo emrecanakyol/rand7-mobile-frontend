@@ -5,7 +5,6 @@ import { useTheme } from '../../../../../utils/colors';
 import images from '../../../../../assets/image/images';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import CText from '../../../../../components/CText/CText';
-import AddGroupsModal from '../AddGroupsModal';
 import CImage from '../../../../../components/CImage';
 import { useTranslation } from 'react-i18next';
 import { SUBSCRIPTONS } from '../../../../../navigators/Stack';
@@ -13,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/store';
 
 interface GroupsHeaderProps {
-    fetchGroups: () => void;
+    fetchGroups?: () => void;
     title?: string;
     swipeListRef?: any;
     groupsData?: any;
@@ -77,11 +76,6 @@ const GroupsHeader: React.FC<GroupsHeaderProps> = ({ fetchGroups, title, swipeLi
 
             <CText style={styles.title}>{title}</CText>
 
-            <AddGroupsModal
-                isVisible={isModalVisible}
-                onClose={handleNewGroup}
-                onGroupCreated={fetchGroups}
-            />
         </View>
     );
 };
