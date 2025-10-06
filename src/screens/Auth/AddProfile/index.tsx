@@ -18,6 +18,13 @@ import i18n from "../../../utils/i18n";
 import { useTranslation } from "react-i18next";
 
 const AddProfile = ({ navigation }: any) => {
+  // Bugünden 18 yıl öncesini hesapla
+  const today = new Date();
+  const eighteenYearsAgo = new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate()
+  );
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { width, height } = Dimensions.get('window');
@@ -52,6 +59,39 @@ const AddProfile = ({ navigation }: any) => {
 
   };
 
+  // annon- + 16 karakter random id üretip Firestore’da kontrol eder
+  const generateUniqueAnonId = async (userId: string) => {
+    const userRef = firestore().collection('users').doc(userId);
+    const userSnap: any = await userRef.get();
+
+    // Eğer kullanıcıda daha önce atanmış id varsa onu döndür
+    if (userSnap.exists && userSnap.data()?.annonId) {
+      return userSnap.data()?.annonId;
+    }
+
+    // Yoksa yeni benzersiz id üret
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    while (true) {
+      let randomPart = '';
+      for (let i = 0; i < 16; i++) {
+        randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const candidate = `annon-${randomPart}`;
+
+      // Firestore’da başka kullanıcıda var mı kontrol et
+      const query = await firestore()
+        .collection('users')
+        .where('annonId', '==', candidate)
+        .limit(1)
+        .get();
+
+      if (query.empty) {
+        return candidate; // benzersiz bulundu
+      }
+    }
+  };
+
+
   const saveOnPress = async () => {
     setLoading(true);
     const userId = auth().currentUser?.uid;
@@ -59,11 +99,14 @@ const AddProfile = ({ navigation }: any) => {
     if (userId) {
       const uploadedPhotoUrls = await uploadPhotos();
       try {
+        const annonId = await generateUniqueAnonId(userId); // annonId üretiyoruz
+
         await firestore()
           .collection('users')
           .doc(userId)
           .set(
             {
+              annonId,
               firstName: firstName,
               lastName: lastName,
               photos: uploadedPhotoUrls,
@@ -144,13 +187,13 @@ const AddProfile = ({ navigation }: any) => {
             <DatePicker
               modal
               open={isDatePickerOpen}
-              date={birthDate || new Date()}
+              date={birthDate || eighteenYearsAgo}
               locale={i18n.language === 'tr' ? 'tr-TR' : 'en-US'}
               mode="date"
               title={t("select_date")}
               confirmText={t("ok")}
               cancelText={t("cancel")}
-              maximumDate={new Date()}
+              maximumDate={eighteenYearsAgo}
               onConfirm={(date) => {
                 setIsDatePickerOpen(false);
                 setBirthDate(date);
