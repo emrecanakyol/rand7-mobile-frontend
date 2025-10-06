@@ -56,6 +56,7 @@
     "react-native-toast-message": "^2.3.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-version-check": "^3.5.0",
+    "react-native-vision-camera": "^4.7.2",
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0"
   },

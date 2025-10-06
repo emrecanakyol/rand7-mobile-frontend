@@ -1,59 +1,155 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from '../../screens/App/Home';
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Settings from '../../screens/App/Settings';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import Home from '../../screens/App/Home';
 import Chat from '../../screens/App/Chat';
+import RandomMatch from '../../screens/App/RandomMatch';
+import Settings from '../../screens/App/Settings';
+import { responsive } from '../../utils/responsive';
+import Story from '../../screens/App/Story';
 
 const Tab = createBottomTabNavigator();
 
 export const HOME = "Home";
+export const RANDOM_MATCH = "RandomMatch";
+export const ADD = "Add";
 export const CHAT = "Chat";
 export const SETTINGS = "Settings";
+export const STORY = "Story";
 
 export default function BottomTabs() {
     return (
         <Tab.Navigator
-            backBehavior="history"
-            initialRouteName="Home"
-            screenOptions={({ route }) => ({
+            initialRouteName={RANDOM_MATCH}
+            screenOptions={{
                 headerShown: false,
-                // header: Header,
-                tabBarShowLabel: true,
-                //unmountOnBlur: true,
-                tabBarStyle: {
-                    position: 'absolute',
-                    backgroundColor: '#fcfcfc',
-                    height: 80,
-                    paddingTop: 15,
-                    paddingBottom: 15,
-                },
-                tabBarIcon: ({ focused, color }) => {
-                    let iconName = '';
-
-                    if (route.name === 'Home') {
-                        iconName = focused ? 'home' : 'home-outline';
-                    }
-                    else if (route.name === 'Favori') {
-                        iconName = focused ? 'chat' : 'chat-outline';
-                    }
-                    // else if (route.name === 'Mesajlar') {
-                    //     iconName = focused
-                    //         ? 'chatbubble-ellipses'
-                    //         : 'chatbubble-ellipses-outline';
-                    // } else if (route.name === 'Arama') {
-                    //     iconName = focused ? 'search' : 'search-outline';
-                    // } else if (route.name === 'Hesap') {
-                    //     iconName = focused ? 'person-circle' : 'person-circle-outline';
-                    // }
-                    return <Ionicons name={iconName} size={32} color={color} />;
-                },
-                tabBarActiveTintColor: '#015DA3',
-                tabBarInactiveTintColor: '#3e7399',
-                tabBarLabelPosition: 'below-icon',
-            })}>
-            <Tab.Screen name={CHAT} component={Chat} />
-            <Tab.Screen name={HOME} component={Home} />
-            <Tab.Screen name={SETTINGS} component={Settings} />
+                tabBarShowLabel: false,
+                tabBarStyle: styles.tabBar,
+            }}
+        >
+            <Tab.Screen
+                name={HOME}
+                component={Home}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
+                            <Ionicons
+                                name={focused ? 'home' : 'home-outline'}
+                                size={24}
+                                color={focused ? '#fff' : '#9C83A7'}
+                            />
+                        </View>
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name={RANDOM_MATCH}
+                component={RandomMatch}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
+                            <Ionicons
+                                name={focused ? 'compass' : 'compass-outline'}
+                                size={24}
+                                color={focused ? '#fff' : '#9C83A7'}
+                            />
+                        </View>
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name={STORY}
+                component={Story}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
+                            <Ionicons
+                                name={focused ? 'add' : 'add-outline'}
+                                size={24}
+                                color={focused ? '#fff' : '#9C83A7'}
+                            />
+                        </View>
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name={CHAT}
+                component={Chat}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
+                            <Ionicons
+                                name={focused ? 'chatbubble' : 'chatbubble-outline'}
+                                size={24}
+                                color={focused ? '#fff' : '#9C83A7'}
+                            />
+                        </View>
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name={SETTINGS}
+                component={Settings}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
+                            <Ionicons
+                                name={focused ? 'person-circle' : 'person-circle-outline'}
+                                size={27}
+                                color={focused ? '#fff' : '#9C83A7'}
+                            />
+                        </View>
+                    ),
+                }}
+            />
         </Tab.Navigator>
     );
 }
+
+const styles = StyleSheet.create({
+    tabBar: {
+        position: 'absolute',
+        bottom: responsive(30),
+        left: 0,
+        right: 0,
+        marginHorizontal: 25,
+        backgroundColor: '#fff',
+        borderRadius: 50,
+        height: 70,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 5 },
+        shadowRadius: 8,
+        elevation: 8,
+    },
+    iconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    activeIcon: {
+        backgroundColor: '#D39BDA',
+    },
+    addButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: -10,
+        shadowColor: '#000',
+        shadowOpacity: 0.15,
+        shadowOffset: { width: 0, height: 3 },
+        shadowRadius: 6,
+        elevation: 6,
+    },
+});
+

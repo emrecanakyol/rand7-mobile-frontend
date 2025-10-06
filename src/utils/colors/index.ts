@@ -5,7 +5,7 @@ export const useTheme = () => {
     const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
     const colors = {
-        BACKGROUND_COLOR: isDarkMode ? "#0B0E11" : '#FFF',
+        BACKGROUND_COLOR: isDarkMode ? "#0B0E11" : '#F7F7F0',
         TEXT_MAIN_COLOR: isDarkMode ? '#FFF' : '#414141',
         TEXT_DESCRIPTION_COLOR: isDarkMode ? '#B0B0B0' : '#525252',
         STROKE_COLOR: isDarkMode ? '#333' : '#E8E8E8',
