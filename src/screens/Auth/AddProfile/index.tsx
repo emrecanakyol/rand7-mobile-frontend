@@ -15,6 +15,8 @@ import i18n from "../../../utils/i18n";
 import { useTranslation } from "react-i18next";
 import { Image } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import CPhotosAdd from "../../../components/CPhotosAdd";
+import images from "../../../assets/image/images";
 
 const AddProfile = ({ navigation }: any) => {
   // Bugünden 18 yıl öncesini hesapla
@@ -138,10 +140,13 @@ const AddProfile = ({ navigation }: any) => {
   };
 
   const checkAllFieldsFilled = () => {
+    // const hasPhoto = photos.some((p) => p && p.trim() !== ''); // en az 1 dolu fotoğraf var mı?
+
     if (
       firstName.trim() !== '' &&
       lastName.trim() !== '' &&
-      birthDate !== null
+      birthDate !== null &&
+      photos.length > 0
     ) {
       setIsButtonDisabled(false);
     } else {
@@ -151,7 +156,7 @@ const AddProfile = ({ navigation }: any) => {
 
   useEffect(() => {
     checkAllFieldsFilled();
-  }, [firstName, lastName, birthDate]);
+  }, [firstName, lastName, birthDate, photos]);
 
   return (
     <View style={styles.container}>
@@ -159,41 +164,33 @@ const AddProfile = ({ navigation }: any) => {
         <View style={styles.inContainer}>
 
           <View style={styles.photoGrid}>
-            {/* Sol taraf: büyük fotoğraf */}
+
             <View style={styles.leftColumn}>
-              <TouchableOpacity
-                style={[styles.photoBox, styles.mainPhotoBox]}
-                onPress={() => pickImage(0)}
-                activeOpacity={0.8}
-              >
-                {photos[0] ? (
-                  <Image source={{ uri: photos[0] }} style={styles.photoImage} />
-                ) : (
-                  <View style={styles.addIconContainer}>
-                    <Icon name="plus" size={22} color={colors.BLACK_COLOR} />
-                    <CText style={styles.addText}>{t("add")}</CText>
-                  </View>
-                )}
-              </TouchableOpacity>
+              {/* Sol taraf: büyük fotoğraf */}
+              <View style={styles.addIconContainer}>
+                <CPhotosAdd
+                  key={0}
+                  index={0}
+                  photos={photos}
+                  setPhotos={setPhotos}
+                  width={isTablet ? responsive(250) : responsive(250)}
+                  height={isTablet ? responsive(250) : responsive(250)}
+                />
+              </View>
 
               {/* Altında yatay 2 küçük kutu */}
               <View style={styles.bottomRow}>
                 {[3, 4].map((index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.photoBox}
-                    onPress={() => pickImage(index)}
-                    activeOpacity={0.8}
-                  >
-                    {photos[index] ? (
-                      <Image source={{ uri: photos[index] }} style={styles.photoImage} />
-                    ) : (
-                      <View style={styles.addIconContainer}>
-                        <Icon name="plus" size={18} color={colors.BLACK_COLOR} />
-                        <CText style={styles.addText}>{t("add")}</CText>
-                      </View>
-                    )}
-                  </TouchableOpacity>
+                  <View key={index} style={styles.addIconContainer}>
+                    <CPhotosAdd
+                      key={index}
+                      index={index}
+                      photos={photos}
+                      setPhotos={setPhotos}
+                      width={isTablet ? responsive(100) : responsive(120)}
+                      height={isTablet ? responsive(100) : responsive(120)}
+                    />
+                  </View>
                 ))}
               </View>
             </View>
@@ -201,21 +198,16 @@ const AddProfile = ({ navigation }: any) => {
             {/* Sağ taraf: 3 küçük kutu dikey */}
             <View style={styles.rightColumn}>
               {[1, 2, 5].map((index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.photoBox}
-                  onPress={() => pickImage(index)}
-                  activeOpacity={0.8}
-                >
-                  {photos[index] ? (
-                    <Image source={{ uri: photos[index] }} style={styles.photoImage} />
-                  ) : (
-                    <View style={styles.addIconContainer}>
-                      <Icon name="plus" size={18} color={colors.BLACK_COLOR} />
-                      <CText style={styles.addText}>{t("add")}</CText>
-                    </View>
-                  )}
-                </TouchableOpacity>
+                <View key={index} style={styles.addIconContainer}>
+                  <CPhotosAdd
+                    key={index}
+                    index={index}
+                    photos={photos}
+                    setPhotos={setPhotos}
+                    width={isTablet ? responsive(100) : responsive(120)}
+                    height={isTablet ? responsive(100) : responsive(120)}
+                  />
+                </View>
               ))}
             </View>
           </View>
@@ -305,30 +297,12 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
   },
   rightColumn: {
     justifyContent: "space-between",
+    marginLeft: responsive(10),
   },
   bottomRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: responsive(10),
-    marginRight: responsive(10)
-  },
-  photoBox: {
-    width: isTablet ? responsive(100) : responsive(120),
-    height: isTablet ? responsive(100) : responsive(120),
-    backgroundColor: colors.LIGHT_GRAY,
-    borderRadius: responsive(14),
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  mainPhotoBox: {
-    width: isTablet ? responsive(270) : responsive(250),
-    height: isTablet ? responsive(220) : responsive(250),
-  },
-  photoImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
   },
   mainPhotoImage: {
     borderRadius: 16,
@@ -337,11 +311,6 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  addText: {
-    marginTop: 4,
-    color: colors.PRIMARY_COLOR,
-    fontWeight: "500",
-  },
   label: {
     fontWeight: '600',
     color: colors.TEXT_MAIN_COLOR,
@@ -349,9 +318,9 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     marginTop: responsive(10),
   },
   dateDisplayContainer: {
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: colors.GRAY_COLOR,
-    borderRadius: responsive(8),
+    borderRadius: responsive(14),
     padding: responsive(10),
     paddingVertical: responsive(13),
   },

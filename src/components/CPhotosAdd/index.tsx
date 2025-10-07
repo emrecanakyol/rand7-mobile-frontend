@@ -14,25 +14,31 @@ import ImagePicker from "react-native-image-crop-picker";
 import { responsive } from "../../utils/responsive";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useTranslation } from "react-i18next";
+import CText from "../CText/CText";
+import Icon from "react-native-vector-icons/Feather";
 
 interface CPhotosAddProps {
-  imgSource: any;
+  index: number;
+  imgSource?: any;
   photos: string[];
   setPhotos: (photos: string[]) => void;
   width?: number;
   height?: number;
+  borderWidth?: number;
   borderRadius?: number;
   imageBorderRadius?: number;
 }
 
 const CPhotosAdd: React.FC<CPhotosAddProps> = ({
+  index,
   imgSource,
   photos,
   setPhotos,
+  borderWidth,
   width = 100,
   height = 100,
-  borderRadius = 100,
-  imageBorderRadius = 100,
+  borderRadius = 14,
+  imageBorderRadius = 14,
 }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -44,10 +50,10 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    if (photos?.length > 0) {
-      setSelectedPhoto(photos[photos.length - 1]);
+    if (photos[index]) {
+      setSelectedPhoto(photos[index]);
     }
-  }, [photos]);
+  }, [photos, index]);
 
   const selectImages = async () => {
     try {
@@ -64,6 +70,8 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
 
       if (response) {
         const uri = response.path;
+        const updated = [...photos];
+        updated[index] = uri;
         setPhotos([...photos, uri]);
       }
     } catch (error) {
@@ -86,6 +94,8 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
 
       if (response) {
         const uri = response.path;
+        const updated = [...photos];
+        updated[index] = uri;
         setPhotos([...photos, uri]);
       }
     } catch (error) {
@@ -115,47 +125,48 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
             width,
             height,
             borderRadius,
-            borderColor: colors.BLACK_COLOR,
+            borderWidth,
+            borderColor: colors.GRAY_COLOR,
           },
         ]}
       >
         {selectedPhoto ? (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setModalVisible(true)}
-            style={{ width: "100%", height: "100%" }}
-          >
-            <Image
-              source={{ uri: selectedPhoto }}
+          <>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setModalVisible(true)}
+              style={{ width: "100%", height: "100%" }}
+            >
+              <Image
+                source={{ uri: selectedPhoto }}
+                style={[
+                  styles.image,
+                  {
+                    borderRadius: imageBorderRadius,
+                  },
+                ]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                styles.image,
-                {
-                  borderRadius: imageBorderRadius,
-                },
+                styles.cameraButton,
+                { backgroundColor: colors.BLACK_COLOR },
               ]}
-            />
-          </TouchableOpacity>
+              activeOpacity={0.7}
+              onPress={showAlert}
+            >
+              <MaterialIcons name="camera-alt" size={isTablet ? 24 : 20} color={colors.WHITE_COLOR} />
+            </TouchableOpacity>
+          </>
         ) : (
-          <Image
-            source={imgSource}
-            style={[
-              styles.image,
-              {
-                borderRadius: imageBorderRadius,
-              },
-            ]}
-          />
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={showAlert}
+          >
+            <Icon name="plus" size={20} color={colors.GRAY_COLOR} />
+            <CText style={styles.addText}>{t("add")}</CText>
+          </TouchableOpacity>
         )}
-        <TouchableOpacity
-          style={[
-            styles.cameraButton,
-            { backgroundColor: colors.BLACK_COLOR },
-          ]}
-          activeOpacity={0.7}
-          onPress={showAlert}
-        >
-          <MaterialIcons name="camera-alt" size={isTablet ? 30 : 20} color={colors.WHITE_COLOR} />
-        </TouchableOpacity>
       </View>
 
       <Modal
@@ -184,16 +195,20 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
 const getStyles = (colors: any) =>
   StyleSheet.create({
     container: {
-      paddingVertical: 20,
       justifyContent: "center",
       alignItems: "center",
     },
     imageWrapper: {
-      backgroundColor: "transparent",
+      backgroundColor: colors.LIGHT_GRAY,
       borderWidth: 4,
       alignItems: "center",
       justifyContent: "center",
       position: "relative",
+    },
+    addText: {
+      marginTop: 4,
+      color: colors.GRAY_COLOR,
+      fontWeight: "500",
     },
     image: {
       width: "100%",
@@ -202,9 +217,9 @@ const getStyles = (colors: any) =>
     },
     cameraButton: {
       position: "absolute",
-      bottom: 0,
-      right: 0,
-      padding: 8,
+      bottom: 5,
+      right: 5,
+      padding: 5,
       borderRadius: 20,
     },
     modalImage: {

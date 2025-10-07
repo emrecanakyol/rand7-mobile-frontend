@@ -131,10 +131,10 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderColor: colors.GRAY_COLOR,
         backgroundColor: colors.BACKGROUND_COLOR,
-        borderRadius: responsive(7),
+        borderRadius: responsive(14),
         paddingRight: responsive(3),
     },
     input: {

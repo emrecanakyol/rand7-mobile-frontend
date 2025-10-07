@@ -70,7 +70,13 @@ const DateFormatter: React.FC<DateFormatterProps> = ({
             color: color ? color : colors.TEXT_MAIN_COLOR,
             fontWeight: "500",
         }, textStyle]}>
-            {timestamp ? formatDate(timestamp, locale, intlOptions) : t("select_date")}
+            {timestamp
+                ? formatDate(timestamp, locale, intlOptions)
+                : <Text
+                    style={{
+                        color: colors.GRAY_COLOR
+                    }}>{t("select_date")}</Text>
+            }
         </Text>
     );
 };
