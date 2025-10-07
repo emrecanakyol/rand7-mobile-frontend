@@ -33,6 +33,7 @@ const AddProfile = ({ navigation }: any) => {
   const styles = getStyles(colors, isTablet);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [about, setAbout] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -124,6 +125,7 @@ const AddProfile = ({ navigation }: any) => {
               annonId,
               firstName: firstName,
               lastName: lastName,
+              about: about,
               photos: uploadedPhotoUrls,
               birthDate: birthDate ? firestore.Timestamp.fromDate(birthDate) : null,
             },
@@ -267,11 +269,10 @@ const AddProfile = ({ navigation }: any) => {
 
           <CTextInput
             label={t("about")}
-            value={lastName}
-            onChangeText={setLastName}
+            value={about}
+            onChangeText={setAbout}
             placeholder={t("enter_your_about")}
             maxLength={500}
-            required
             multiline
           />
 
@@ -334,7 +335,6 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     padding: responsive(10),
     paddingVertical: responsive(13),
     backgroundColor: colors.EXTRA_LIGHT_GRAY,
-
   },
   btnContainer: {
     marginTop: responsive(20),
