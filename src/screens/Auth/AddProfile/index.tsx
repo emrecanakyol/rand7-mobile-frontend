@@ -216,7 +216,7 @@ const AddProfile = ({ navigation }: any) => {
             label={t("name")}
             value={firstName}
             onChangeText={setFirstName}
-            placeholder="Enter your first name"
+            placeholder={t("enter_your_first_name")}
             maxLength={50}
             required
           />
@@ -224,7 +224,7 @@ const AddProfile = ({ navigation }: any) => {
             label={t("surname")}
             value={lastName}
             onChangeText={setLastName}
-            placeholder="Enter your last name"
+            placeholder={t("enter_your_last_name")}
             maxLength={50}
             required
           />
@@ -264,6 +264,16 @@ const AddProfile = ({ navigation }: any) => {
               }}
             />
           </View>
+
+          <CTextInput
+            label={t("about")}
+            value={lastName}
+            onChangeText={setLastName}
+            placeholder={t("enter_your_about")}
+            maxLength={500}
+            required
+            multiline
+          />
 
           <CButton
             title={t("save")}
@@ -323,6 +333,8 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     borderRadius: responsive(14),
     padding: responsive(10),
     paddingVertical: responsive(13),
+    backgroundColor: colors.EXTRA_LIGHT_GRAY,
+
   },
   btnContainer: {
     marginTop: responsive(20),

@@ -9,7 +9,7 @@ interface CTextInputProps {
     label?: string;
     value: string;
     onChangeText: (text: string) => void;
-    placeholder: string;
+    placeholder?: string;
     secureTextEntry?: boolean;
     errorMessage?: string;
     style?: object;
@@ -133,7 +133,7 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         alignItems: 'flex-start',
         borderWidth: 0.5,
         borderColor: colors.GRAY_COLOR,
-        backgroundColor: colors.BACKGROUND_COLOR,
+        backgroundColor: colors.EXTRA_LIGHT_GRAY,
         borderRadius: responsive(14),
         paddingRight: responsive(3),
     },

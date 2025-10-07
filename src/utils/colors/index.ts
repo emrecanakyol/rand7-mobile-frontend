@@ -17,6 +17,7 @@ export const useTheme = () => {
         GRAY_COLOR: "#B0B0B0",
         DARK_GRAY: "#808080",
         LIGHT_GRAY: "#F2F2F7",
+        EXTRA_LIGHT_GRAY: "#F9FAFB",
         YELLOW_COLOR: "#F5C326",
         BLUE_COLOR: "#0e82ff",
         ORANGE_COLOR: "#FF9103",
