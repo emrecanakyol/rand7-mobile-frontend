@@ -19,6 +19,7 @@
     "forgot_password": "Забыли пароль?",
     "dont_have_account": "Нет аккаунта?",
     "sign_up": "Зарегистрироваться",
+    "add": "Добавить",
     "login_with_phone": "Войти по телефону",
     "login_failed_title": "Ошибка входа",
     "login_failed_message": "Неверный email или пароль.",

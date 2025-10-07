@@ -19,6 +19,7 @@
     "forgot_password": "هل نسيت كلمة المرور؟",
     "dont_have_account": "ليس لديك حساب؟",
     "sign_up": "إنشاء حساب",
+    "add": "إضافة",
     "login_with_phone": "تسجيل الدخول برقم الهاتف",
     "login_failed_title": "فشل تسجيل الدخول!",
     "login_failed_message": "يرجى التحقق من البريد الإلكتروني وكلمة المرور.",

@@ -3,12 +3,9 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import { DRAWER } from "../../../navigators/Stack";
-import CPhotosAdd from "../../../components/CPhotosAdd";
 import CTextInput from "../../../components/CTextInput";
 import CButton from "../../../components/CButton";
-import images from "../../../assets/image/images";
 import { Dimensions, View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
-import CustomBackButton from "../../../components/CBackButton";
 import { responsive } from "../../../utils/responsive";
 import { useTheme } from "../../../utils/colors";
 import CText from "../../../components/CText/CText";
@@ -16,6 +13,8 @@ import DatePicker from "react-native-date-picker";
 import DateFormatter from "../../../components/DateFormatter"
 import i18n from "../../../utils/i18n";
 import { useTranslation } from "react-i18next";
+import { Image } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 
 const AddProfile = ({ navigation }: any) => {
   // Bugünden 18 yıl öncesini hesapla
@@ -37,6 +36,21 @@ const AddProfile = ({ navigation }: any) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+  const pickImage = async (index: number) => {
+    const { launchImageLibrary } = await import("react-native-image-picker");
+    const result = await launchImageLibrary({
+      mediaType: "photo",
+      selectionLimit: 1,
+    });
+
+    if (!result.didCancel && result.assets && result.assets.length > 0) {
+      const uri = result.assets[0].uri!;
+      const updated = [...photos];
+      updated[index] = uri;
+      setPhotos(updated);
+    }
+  };
 
   const uploadPhotos = async () => {
     const userId = auth().currentUser?.uid;
@@ -91,7 +105,6 @@ const AddProfile = ({ navigation }: any) => {
     }
   };
 
-
   const saveOnPress = async () => {
     setLoading(true);
     const userId = auth().currentUser?.uid;
@@ -145,12 +158,68 @@ const AddProfile = ({ navigation }: any) => {
       <ScrollView>
         <View style={styles.inContainer}>
 
-          <CustomBackButton />
-          <CPhotosAdd
-            imgSource={images.defaultProfilePhoto}
-            photos={photos}
-            setPhotos={setPhotos}
-          />
+          <View style={styles.photoGrid}>
+            {/* Sol taraf: büyük fotoğraf */}
+            <View style={styles.leftColumn}>
+              <TouchableOpacity
+                style={[styles.photoBox, styles.mainPhotoBox]}
+                onPress={() => pickImage(0)}
+                activeOpacity={0.8}
+              >
+                {photos[0] ? (
+                  <Image source={{ uri: photos[0] }} style={styles.photoImage} />
+                ) : (
+                  <View style={styles.addIconContainer}>
+                    <Icon name="plus" size={22} color={colors.BLACK_COLOR} />
+                    <CText style={styles.addText}>{t("add")}</CText>
+                  </View>
+                )}
+              </TouchableOpacity>
+
+              {/* Altında yatay 2 küçük kutu */}
+              <View style={styles.bottomRow}>
+                {[3, 4].map((index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.photoBox}
+                    onPress={() => pickImage(index)}
+                    activeOpacity={0.8}
+                  >
+                    {photos[index] ? (
+                      <Image source={{ uri: photos[index] }} style={styles.photoImage} />
+                    ) : (
+                      <View style={styles.addIconContainer}>
+                        <Icon name="plus" size={18} color={colors.BLACK_COLOR} />
+                        <CText style={styles.addText}>{t("add")}</CText>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Sağ taraf: 3 küçük kutu dikey */}
+            <View style={styles.rightColumn}>
+              {[1, 2, 5].map((index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.photoBox}
+                  onPress={() => pickImage(index)}
+                  activeOpacity={0.8}
+                >
+                  {photos[index] ? (
+                    <Image source={{ uri: photos[index] }} style={styles.photoImage} />
+                  ) : (
+                    <View style={styles.addIconContainer}>
+                      <Icon name="plus" size={18} color={colors.BLACK_COLOR} />
+                      <CText style={styles.addText}>{t("add")}</CText>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
           <CTextInput
             label={t("name")}
             value={firstName}
@@ -225,6 +294,53 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
   inContainer: {
     padding: responsive(24),
     paddingTop: responsive(10),
+  },
+  photoGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: responsive(25),
+  },
+  leftColumn: {
+    flex: 1,
+  },
+  rightColumn: {
+    justifyContent: "space-between",
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: responsive(10),
+    marginRight: responsive(10)
+  },
+  photoBox: {
+    width: isTablet ? responsive(100) : responsive(120),
+    height: isTablet ? responsive(100) : responsive(120),
+    backgroundColor: colors.LIGHT_GRAY,
+    borderRadius: responsive(14),
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  mainPhotoBox: {
+    width: isTablet ? responsive(270) : responsive(250),
+    height: isTablet ? responsive(220) : responsive(250),
+  },
+  photoImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  mainPhotoImage: {
+    borderRadius: 16,
+  },
+  addIconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addText: {
+    marginTop: 4,
+    color: colors.PRIMARY_COLOR,
+    fontWeight: "500",
   },
   label: {
     fontWeight: '600',
