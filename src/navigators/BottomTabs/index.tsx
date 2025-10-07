@@ -10,6 +10,7 @@ import Settings from '../../screens/App/Settings';
 import { responsive } from '../../utils/responsive';
 import Story from '../../screens/App/Story';
 import { useTheme } from '../../utils/colors';
+import Account from '../../screens/App/Account';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +18,7 @@ export const HOME = "Home";
 export const RANDOM_MATCH = "RandomMatch";
 export const ADD = "Add";
 export const CHAT = "Chat";
-export const SETTINGS = "Settings";
+export const ACCOUNT = "Account";
 export const STORY = "Story";
 
 export default function BottomTabs() {
@@ -28,7 +29,7 @@ export default function BottomTabs() {
 
     return (
         <Tab.Navigator
-            initialRouteName={RANDOM_MATCH}
+            initialRouteName={ACCOUNT}
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
@@ -96,8 +97,8 @@ export default function BottomTabs() {
                 }}
             />
             <Tab.Screen
-                name={SETTINGS}
-                component={Settings}
+                name={ACCOUNT}
+                component={Account}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={[styles.iconContainer, focused && styles.activeIcon]}>

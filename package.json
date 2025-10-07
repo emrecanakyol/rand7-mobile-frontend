@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^5.2.6",
     "@jeremybarbet/apple-api-types": "^1.5.1",
     "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.1.2",

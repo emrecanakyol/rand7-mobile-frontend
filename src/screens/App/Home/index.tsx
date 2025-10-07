@@ -17,17 +17,17 @@ import { responsive } from '../../../utils/responsive';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const navigation: any = useNavigation();
     const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
-    const styles = getStyles(colors, isTablet);
-    const navigation: any = useNavigation();
-    const { t } = useTranslation();
-    const [userData, setUserData] = useState<any>();
+    const styles = getStyles(colors, isTablet, height);
     const premiumData: any = useSelector((state: RootState) => state.premiumData.premiumDataList);
+    const [userData, setUserData] = useState<any>();
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<'discover' | 'likes'>('likes');
+    const [activeTab, setActiveTab] = useState<'discover' | 'likes'>('discover');
 
     // Ekran ilk açıldığında kullanıcı yeni kayıt olmuşsa profil oluştur ekranı geliyor.
     const fetchUserDatas = async () => {
@@ -108,12 +108,11 @@ const Home = () => {
                         colors={['transparent', 'rgba(0,0,0,0.7)']}
                         style={styles.gradientOverlay}
                     />
+                    <View style={styles.distanceContainer}>
+                        <Text style={styles.distanceText}>2.5 km away</Text>
+                    </View>
 
                     <View style={styles.infoContainer}>
-                        <View style={styles.distanceContainer}>
-                            <Text style={styles.distanceText}>2.5 km away</Text>
-                        </View>
-
                         <View style={styles.userInfo}>
                             <Text style={styles.userName}>Alfredo Calzoni, 20</Text>
                             <Text style={styles.userLocation}>Hamburg, Germany</Text>
@@ -138,7 +137,7 @@ const Home = () => {
     );
 };
 
-const getStyles = (colors: any, isTablet: boolean) =>
+const getStyles = (colors: any, isTablet: boolean, height: any) =>
     StyleSheet.create({
         container: {
             flex: 1,
@@ -146,6 +145,7 @@ const getStyles = (colors: any, isTablet: boolean) =>
         },
         inContainer: {
             alignItems: 'center',
+            marginTop: responsive(20),
         },
         tabContainer: {
             flexDirection: 'row',
@@ -174,8 +174,8 @@ const getStyles = (colors: any, isTablet: boolean) =>
         },
         cardContainer: {
             width: '90%',
-            height: 500,
-            borderRadius: 20,
+            height: height * 0.63,
+            borderRadius: responsive(20),
             overflow: 'hidden',
             position: 'relative',
             shadowColor: '#000',
@@ -201,7 +201,7 @@ const getStyles = (colors: any, isTablet: boolean) =>
         },
         distanceContainer: {
             position: 'absolute',
-            top: -105,
+            top: 15,
             left: 10,
             backgroundColor: 'rgba(255,255,255,0.8)',
             borderRadius: 12,
@@ -214,7 +214,7 @@ const getStyles = (colors: any, isTablet: boolean) =>
             color: '#333',
         },
         userInfo: {
-            marginTop: 220,
+
         },
         userName: {
             fontSize: 20,
@@ -245,9 +245,10 @@ const getStyles = (colors: any, isTablet: boolean) =>
             borderRadius: 30,
             justifyContent: 'center',
             alignItems: 'center',
+            bottom: 5,
         },
         likeButton: {
-            backgroundColor: '#EAB4F8',
+            backgroundColor: colors.RED_COLOR,
             width: 55,
             height: 55,
             borderRadius: 30,

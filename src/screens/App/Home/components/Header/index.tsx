@@ -75,7 +75,10 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
 
 const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     container: {
-        padding: responsive(24),
+        padding: responsive(10),
+        paddingHorizontal: responsive(20),
+        borderBottomWidth: 0.5,
+        borderColor: colors.GRAY_COLOR,
     },
     inContainer: {
         flexDirection: "row",
