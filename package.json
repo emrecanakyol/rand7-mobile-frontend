@@ -6,6 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "ios13": "react-native run-ios --simulator='iPhone 13 Pro Max'",
+    "ios14": "react-native run-ios --simulator='iPhone 14 Pro Max'",
     "ios16": "react-native run-ios --simulator='iPhone 16 Pro Max'",
     "lint": "eslint .",
     "start": "react-native start",

@@ -150,7 +150,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
         tabContainer: {
             flexDirection: 'row',
             width: '90%',
-            backgroundColor: colors.GREEN_COLOR,
+            backgroundColor: colors.BLACK_COLOR,
             borderRadius: 16,
             padding: 4,
             marginBottom: 20,
