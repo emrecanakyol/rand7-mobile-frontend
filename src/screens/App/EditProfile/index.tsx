@@ -1,486 +1,305 @@
-import { useCallback, useEffect, useState } from "react";
-import firestore from '@react-native-firebase/firestore';
-import auth, { EmailAuthProvider } from '@react-native-firebase/auth';
-import storage from '@react-native-firebase/storage';
-import CPhotosAdd from "../../../components/CPhotosAdd";
-import CTextInput from "../../../components/CTextInput";
-import CButton from "../../../components/CButton";
-import images from "../../../assets/image/images";
-import { StyleSheet, View, ScrollView, TouchableOpacity, Platform, Switch, Alert } from "react-native";
-import { responsive } from "../../../utils/responsive";
-import { useTheme } from "../../../utils/colors";
-import DetailHeaders from "../../../components/DetailHeaders";
-import { ToastError, ToastSuccess } from "../../../utils/toast";
-import CText from "../../../components/CText/CText";
-import { useDispatch } from 'react-redux';
-import { DELETE_ACCOUNT, EMAIL_LOGIN, RESET_PASSWORD } from "../../../navigators/Stack";
-import { signOut } from "../../../store/services/authServices";
-import DatePicker from "react-native-date-picker";
-import DateFormatter from "../../../components/DateFormatter";
-import CModal from "../../../components/CModal";
-import { useTranslation } from "react-i18next";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import CLoading from "../../../components/CLoading";
-import i18n from "../../../utils/i18n";
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  ScrollView,
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const EditProfile = () => {
-  const { colors } = useTheme();
-  const navigation: any = useNavigation()
-  const styles = getStyles(colors);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [emailVerification, setEmailVerification] = useState(false);
-  const [password, setPassword] = useState('');
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-
-  //Şifre Değiştirme 
-  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
-
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-
-  //Şifre Değiştirme
-  const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert(t("error"), t("fill_all_fields"));
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Alert.alert(t("error"), t("new_passwords_do_not_match"));
-      return;
-    }
-
-    try {
-      setPasswordChangeLoading(true);
-      const user = auth().currentUser;
-
-      if (!user?.email) {
-        throw new Error("User email not found.");
-      }
-
-      const credential = EmailAuthProvider.credential(user.email, currentPassword);
-      await user.reauthenticateWithCredential(credential);
-      await user.updatePassword(newPassword);
-
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setPasswordModalVisible(false);
-      ToastSuccess(t("success"), t("password_updated_successfully"));
-    } catch (error: any) {
-      console.log("Password change error:", error);
-      Alert.alert(t("error"), t("failed_to_change_password"));
-    } finally {
-      setPasswordChangeLoading(false);
-    }
-  };
-
-  //Tüm kullanıcı bilgileri firestoreden çekiliyor
-  const fetchUserData = async () => {
-    const user: any = auth().currentUser;
-    const userId = user?.uid;
-    await user.reload();
-
-    if (userId) {
-      try {
-        // Email doğrulanmış ise emailVerification false yapalım.
-        if (user.emailVerified) {
-          await firestore()
-            .collection('users')
-            .doc(userId)
-            .set({
-              emailVerification: false,
-            }, { merge: true });
-        }
-
-        const userDoc: any = await firestore()
-          .collection('users')
-          .doc(userId)
-          .get();
-        const userData = userDoc.data();
-
-        if (userDoc.exists) {
-          setFirstName(userData?.firstName || '');
-          setLastName(userData?.lastName || '');
-          setPhotos(userData?.photos || []);
-          setEmail(userData?.email || '');
-          setEmailVerification(userData.emailVerification);
-          setBirthDate(userData?.birthDate ? userData.birthDate.toDate() : null);
-        }
-
-      } catch (error) {
-        console.log('Error fetching user data: ', error);
-      } finally {
-        setInitialLoading(false);
-      }
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      setTimeout(() => {
-        fetchUserData();
-      }, 1000);
-    }, [])
+const EditProfileScreen = () => {
+  const navigation: any = useNavigation();
+  const [about, setAbout] = useState(
+    "A good listener. I love having a good talk to know each other’s side 😍."
   );
 
-  //Fotoğraf yüklemesi için kütüphane ayarı
-  const uploadPhotos = async () => {
-    const userId = auth().currentUser?.uid;
-    if (!userId) return [];
-
-    if (photos.length === 0) return [];
-
-    const uploadedPhotoUrls = [];
-
-    for (const photo of photos) {
-      if (photo.startsWith('http')) {
-        uploadedPhotoUrls.push(photo);
-        continue;
-      }
-
-      try {
-        const storageRef = storage().ref(
-          `users/profile-photos/${userId}/${Date.now()}`
-        );
-        await storageRef.putFile(photo);
-        const downloadURL = await storageRef.getDownloadURL();
-        uploadedPhotoUrls.push(downloadURL);
-      } catch (error) {
-        console.log('Error uploading photo:', error);
-        throw error;
-      }
-    }
-
-    return uploadedPhotoUrls;
-  };
-
-  //Tüm inputlar dolu olması için kontrol
-  const checkAllFieldsFilled = () => {
-    if (
-      firstName.trim() !== '' &&
-      lastName.trim() !== '' &&
-      birthDate !== null
-    ) {
-      setIsButtonDisabled(false);
-    } else {
-      setIsButtonDisabled(true);
-    }
-  };
-
-  useEffect(() => {
-    checkAllFieldsFilled();
-  }, [firstName, lastName, birthDate]);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(dispatch);
-      await navigation.navigate(EMAIL_LOGIN);
-      Alert.alert(t("success"), t("email_change_request_success"), [{ text: t("okay"), style: 'cancel' }])
-    } catch (error) {
-      console.log('Sign Out Error:', error);
-    }
-  };
-
-  const saveOnPress = async () => {
-    setLoading(true);
-    try {
-      const user = auth().currentUser;
-      const userId = user?.uid;
-
-      if (!user || !userId) {
-        throw new Error(t("user_not_logged_in"));
-      }
-
-      const uploadedPhotoUrls = await uploadPhotos();
-
-      const updateData: any = {
-        firstName: firstName,
-        lastName: lastName,
-        birthDate: birthDate ? firestore.Timestamp.fromDate(birthDate) : null,
-      };
-
-      //Eğer yeni fotoğraf eklendiyse
-      if (uploadedPhotoUrls.length > 0 || photos.length === 0) {
-        updateData.photos = uploadedPhotoUrls;
-      }
-
-      // Burası sadece email değişince çalışıyor
-      // Kullanıcı email ile giriş yaptıysa kontrolü ekledim
-      if (auth().currentUser?.providerData[0].providerId !== "phone") {
-        // Email değiştirildi ise doğrulama gönderiyor
-        if (email !== user?.email) {
-          if (!password) {
-            throw new Error(t("enter_password_to_update_email"));
-          }
-          const credential = EmailAuthProvider.credential(user.email!, password);
-          await user?.reauthenticateWithCredential(credential);
-          await user.verifyBeforeUpdateEmail(email);
-          updateData.emailVerification = true; // firestorede email doğrulamayı aç true olarak firestoreye kaydet.
-          handleSignOut();
-        }
-      }
-
-      // Firestore'da ad/soyad ve fotoğraf güncelle
-      await firestore()
-        .collection('users')
-        .doc(userId)
-        .set(updateData, { merge: true });
-      ToastSuccess(t("success"), t("profile_updated_successfully"));
-      // navigation.goBack();
-    } catch (error: any) {
-      console.log('Error:', error);
-      ToastError(t("error"), t("failed_to_update_profile"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResetPassword = () => {
-    setPasswordModalVisible(false);
-    navigation.navigate(RESET_PASSWORD, { email });
-  };
+  const [interests, setInterests] = useState([
+    '📸 Photography',
+    '🎵 Music',
+    '👗 Fashion',
+    '📖 Read Book',
+  ]);
 
   return (
     <View style={styles.container}>
-      <DetailHeaders title={t("edit_profile")} />
-      {initialLoading ? (
-        <CLoading visible={initialLoading} />
-      ) : (
-        <ScrollView style={styles.inContainer}>
-          <View>
-            <CPhotosAdd
-              imgSource={images.defaultProfilePhoto}
-              photos={photos}
-              setPhotos={setPhotos}
-            />
-            <CTextInput
-              label={t("first_name")}
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder={t("enter_first_name")}
-              maxLength={50}
-              required
-            />
-            <CTextInput
-              label={t("last_name")}
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder={t("enter_last_name")}
-              maxLength={50}
-              required
-            />
-
-            <View>
-              <CText style={styles.label} required>
-                {t("birth_date")}
-              </CText>
-              <TouchableOpacity
-                onPress={() => setIsDatePickerOpen(true)}
-                style={styles.dateDisplayContainer}
-              >
-                <DateFormatter
-                  timestamp={birthDate}
-                  locale={i18n.language === 'tr' ? 'tr-TR' : 'en-US'}
-                  showTime={false}
-                />
-              </TouchableOpacity>
-
-              <DatePicker
-                modal
-                open={isDatePickerOpen}
-                date={birthDate || new Date()}
-                locale={i18n.language === 'tr' ? 'tr-TR' : 'en-US'}
-                mode="date"
-                maximumDate={new Date()}
-                onConfirm={(date) => {
-                  setIsDatePickerOpen(false);
-                  setBirthDate(date);
-                }}
-                onCancel={() => {
-                  setIsDatePickerOpen(false);
-                }}
-              />
-            </View>
-
-            {/* Kullanıcı email ile giriş yaptıysa */}
-            {auth().currentUser?.providerData[0].providerId !== "phone" && (
-              <View style={{ marginTop: 10 }}>
-                <CTextInput
-                  label={t("email")}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder={t("enter_email")}
-                  keyboardType="email-address"
-                  validateEmail
-                  maxLength={100}
-                  required
-                />
-                {emailVerification == true && (
-                  <CText style={styles.emailVerification}>
-                    {t("verify_new_email_message")}
-                  </CText>
-                )}
-                {email !== auth().currentUser?.email && (
-                  <View>
-                    <CTextInput
-                      label={t("password")}
-                      value={password}
-                      onChangeText={setPassword}
-                      placeholder={t("enter_password")}
-                      secureTextEntry
-                      maxLength={100}
-                      required
-                    />
-                    <CText style={styles.emailVerification}>{t("must_enter_password_to_change_email")}</CText>
-                  </View>
-                )}
-                {email === auth().currentUser?.email && (
-                  <TouchableOpacity
-                    onPress={() => setPasswordModalVisible(true)}
-                    style={{ alignSelf: 'flex-end', marginTop: 8, marginBottom: 8 }}
-                  >
-                    <CText style={{ color: colors.DARK_GREEN_COLOR, textDecorationLine: 'underline', fontSize: 14, fontWeight: '500' }}>
-                      {t("change_password")}
-                    </CText>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-
-            <CButton
-              title={t("save")}
-              onPress={saveOnPress}
-              loading={loading}
-              disabled={isButtonDisabled}
-              style={styles.btnContainer}
-            />
-
-            <View style={{ alignItems: "center" }}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate(DELETE_ACCOUNT)}
-                style={styles.deleteAccountBtn}>
-                <CText
-                  color={colors.RED_COLOR}
-                  fontWeight="600">
-                  {t("delete_account")}
-                </CText>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      )}
-      <CModal
-        visible={passwordModalVisible}
-        onClose={() => setPasswordModalVisible(false)}
-        modalTitle={t("change_password")}
-        width={"100%"}
-        height={Platform.OS === "ios" ? "93%" : "99%"}
-        justifyContent={"flex-end"}
-        borderBottomLeftRadius={0}
-        borderBottomRightRadius={0}
-      >
-        <CTextInput
-          label={t("current_password")}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-          placeholder={t("enter_current_password")}
-          secureTextEntry
-          maxLength={100}
-          required
-          validatePassword
-        />
-        <CTextInput
-          label={t("new_password")}
-          value={newPassword}
-          onChangeText={setNewPassword}
-          placeholder={t("enter_new_password")}
-          secureTextEntry
-          maxLength={100}
-          required
-          validatePassword
-        />
-        <CTextInput
-          label={t("confirm_new_password")}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          placeholder={t("confirm_new_password")}
-          secureTextEntry
-          maxLength={100}
-          required
-          validatePassword
-        />
-        <CButton
-          title={passwordChangeLoading ? t("changing") : t("change_password")}
-          onPress={handleChangePassword}
-          loading={passwordChangeLoading}
-          style={{ marginTop: 20 }}
-        />
+      {/* 🔙 Geri Butonu ve Başlık */}
+      <View style={styles.header}>
         <TouchableOpacity
-          onPress={handleResetPassword}
-          style={styles.resetPasswordContainer}>
-          <CText style={styles.resetPasswordText}>
-            {t("forgot_password")}
-          </CText>
+          onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={26} color="#000" />
         </TouchableOpacity>
-      </CModal>
+        <Text style={styles.headerTitle}>Edit Profile</Text>
+        <View style={{ width: 26 }} /> {/* Placeholder for spacing */}
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 80 }}
+      >
+        {/* 📸 Fotoğraf Grid */}
+        <View style={styles.photoGrid}>
+          <View style={styles.mainPhotoContainer}>
+            <Image
+              source={{
+                uri: 'https://images.unsplash.com/photo-1517841905240-472988babdf9',
+              }}
+              style={styles.mainPhoto}
+            />
+            <TouchableOpacity style={styles.changePhotoButton}>
+              <Ionicons name="camera-outline" size={16} color="#fff" />
+              <Text style={styles.changePhotoText}>Change Photo</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.sidePhotos}>
+            {Array(4)
+              .fill(0)
+              .map((_, i) => (
+                <TouchableOpacity key={i} style={styles.addPhotoBox}>
+                  <Ionicons name="add" size={20} color="#E56BFA" />
+                  <Text style={styles.addText}>Add</Text>
+                </TouchableOpacity>
+              ))}
+          </View>
+        </View>
+
+        {/* 🧾 Kişisel Bilgiler */}
+        <Text style={styles.sectionLabel}>PERSONAL DETAILS</Text>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Full Name</Text>
+          <TextInput
+            style={styles.input}
+            value="Nadia Lipshutz"
+            placeholder="Enter full name"
+          />
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Birthdate</Text>
+          <TextInput style={styles.input} value="20/10/2000" />
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>About</Text>
+          <View style={styles.aboutBox}>
+            <TextInput
+              multiline
+              value={about}
+              onChangeText={setAbout}
+              maxLength={250}
+              style={styles.aboutInput}
+            />
+            <Text style={styles.charCount}>{about.length}/250</Text>
+          </View>
+        </View>
+
+        {/* 🎯 İlgi Alanları */}
+        <View style={styles.interestHeader}>
+          <Text style={styles.label}>My Interests</Text>
+          <TouchableOpacity>
+            <Text style={styles.editText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.interestsContainer}>
+          {interests.map((item, i) => (
+            <View key={i} style={styles.interestTag}>
+              <Text style={styles.interestText}>{item}</Text>
+              <Ionicons name="close" size={14} color="#999" />
+            </View>
+          ))}
+        </View>
+
+        {/* 📍 Location */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Location</Text>
+          <TextInput style={styles.input} value="Hamburg, Germany" />
+        </View>
+
+        {/* 🚻 Gender */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Gender</Text>
+          <View style={styles.genderRow}>
+            <Text style={styles.genderText}>Woman</Text>
+            <Ionicons name="information-circle-outline" size={18} color="#999" />
+          </View>
+        </View>
+
+        {/* 💾 Save Butonu */}
+        <TouchableOpacity style={styles.saveButton}>
+          <Text style={styles.saveButtonText}>Save Changes</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
 
-const getStyles = (colors: any) => StyleSheet.create({
+export default EditProfileScreen;
+
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BACKGROUND_COLOR,
+    backgroundColor: '#FFF',
+    paddingHorizontal: 20,
+    paddingTop: 10,
   },
-  inContainer: {
-    padding: responsive(24),
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  emailVerification: {
-    color: colors.RED_COLOR,
-    fontSize: 14,
-    fontWeight: '400',
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1C1C1C',
+  },
+  photoGrid: {
+    flexDirection: 'row',
+    marginTop: 30,
+  },
+  mainPhotoContainer: {
+    flex: 1.2,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginRight: 10,
+  },
+  mainPhoto: {
+    width: '100%',
+    height: 200,
+    borderRadius: 16,
+  },
+  changePhotoButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  changePhotoText: {
+    color: '#fff',
+    marginLeft: 5,
+    fontSize: 12,
+  },
+  sidePhotos: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignContent: 'space-between',
+  },
+  addPhotoBox: {
+    width: '48%',
+    height: 90,
+    borderRadius: 14,
+    backgroundColor: '#F9F3FB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  addText: {
+    color: '#E56BFA',
+    fontSize: 13,
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  sectionLabel: {
+    color: '#A1A1A1',
+    marginTop: 25,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+  fieldGroup: {
+    marginTop: 14,
   },
   label: {
+    color: '#1C1C1C',
     fontWeight: '600',
-    color: colors.TEXT_MAIN_COLOR,
-    marginBottom: responsive(7),
-    marginTop: responsive(17),
+    marginBottom: 6,
   },
-  dateDisplayContainer: {
-    borderWidth: 1,
-    borderColor: colors.GRAY_COLOR,
-    borderRadius: responsive(8),
-    padding: responsive(10),
-    paddingVertical: responsive(13),
+  input: {
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 14,
+    color: '#333',
   },
-  btnContainer: {
-    marginTop: responsive(40),
+  aboutBox: {
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    padding: 10,
+    position: 'relative',
   },
-  deleteAccountBtn: {
-    marginTop: responsive(20),
-    marginBottom: responsive(370),
-    width: responsive(200),
-    alignItems: "center",
+  aboutInput: {
+    fontSize: 14,
+    color: '#333',
+    minHeight: 70,
   },
-  resetPasswordContainer: {
-    alignSelf: "center",
-    marginTop: responsive(20),
+  charCount: {
+    position: 'absolute',
+    bottom: 8,
+    right: 12,
+    fontSize: 12,
+    color: '#999',
   },
-  resetPasswordText: {
-    color: colors.TEXT_DESCRIPTION_COLOR,
-  }
+  interestHeader: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  editText: {
+    color: '#E56BFA',
+    fontWeight: '600',
+  },
+  interestsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
+    gap: 8,
+  },
+  interestTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1ECF5',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  interestText: {
+    fontSize: 13,
+    color: '#333',
+    marginRight: 4,
+  },
+  genderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    padding: 12,
+  },
+  genderText: {
+    fontSize: 14,
+    color: '#333',
+    flex: 1,
+  },
+  saveButton: {
+    backgroundColor: '#3B004D',
+    borderRadius: 30,
+    alignItems: 'center',
+    paddingVertical: 16,
+    marginTop: 30,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 15,
+  },
 });
-
-export default EditProfile;

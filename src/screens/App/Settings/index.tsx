@@ -1,167 +1,228 @@
-import { View, Text, Switch, StyleSheet, ScrollView, Dimensions } from 'react-native'
-import React, { useState, useEffect, useCallback } from 'react'
-import DetailHeaders from '../../../components/DetailHeaders'
-import { useTheme } from '../../../utils/colors';
-import { useDispatch, useSelector } from 'react-redux';
-import { toggleTheme } from '../../../store/reducer/themeReducer';
-import { RootState } from '../../../store/store';
-import CText from '../../../components/CText/CText';
-import { responsive } from '../../../utils/responsive';
-import { useTranslation } from 'react-i18next';
-import i18n from '../../../utils/i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { checkNotifications, openSettings } from 'react-native-permissions';
-import { useFocusEffect } from '@react-navigation/native';
-import CDropdown from '../../../components/CDropdown';
+import React from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    Dimensions,
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { EDIT_PROFILE } from '../../../navigators/Stack';
+import { useNavigation } from '@react-navigation/native';
 
-const Settings = () => {
-    const { colors } = useTheme();
-    const { width, height } = Dimensions.get('window');
-    const isTablet = Math.min(width, height) >= 600;
-    const styles = getStyles(colors, isTablet);
-    const dispatch = useDispatch();
-    const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
-    const { t } = useTranslation();
-    const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
-    const [showNotificationAlert, setShowNotificationAlert] = useState(false);
-    const [selectedLanguage, setSelectedLanguage] = useState(i18n.language); // Mevcut dili i18n.language’den alıyoruz
-
-    // Dil seçenekleri
-    const languageOptions = [
-        { label: '🇬🇧 English', value: 'en' },
-        { label: '🇹🇷 Türkçe', value: 'tr' },
-        { label: '🇩🇪 German', value: 'de' },
-        { label: '🇸🇦 Arabic', value: 'ar' },
-        { label: '🇫🇷 French', value: 'fr' },
-        { label: '🇫🇷 Russian', value: 'ru' },
-        { label: '🇵🇹 Portuguese', value: 'pt' },
-    ];
-
-    // Dil değiştirme işlemi
-    const handleLanguageChange = async (item: any) => {
-        setSelectedLanguage(item.value); // Dropdown dilini değiştir
-        await i18n.changeLanguage(item.value); // i18n dilini değiştir
-        await AsyncStorage.setItem('appLanguage', item.value); // AsyncStorage dilini değiştir
-    };
-
-    const onToggleSwitch = () => {
-        dispatch(toggleTheme());
-    };
-
-    //Bildirimler açık mı kapalı mı kontrol eder
-    const checkNotificationPermission = async () => {
-        const { status } = await checkNotifications();
-        setIsNotificationsEnabled(status === 'granted');
-    };
-
-    const toggleNotificationPermission = async () => {
-        if (!isNotificationsEnabled) {
-            openSettings()
-        }
-    };
-
-    useFocusEffect(
-        useCallback(() => {
-            //Açık mı kapalı sürekli kontrol et
-            checkNotificationPermission();
-            // Açık/kapalı durumuna göre uyarı çıkar
-            if (!isNotificationsEnabled) {
-                setShowNotificationAlert(true);
-            } else {
-                setShowNotificationAlert(false);
-            }
-        }, [isNotificationsEnabled])
-    );
+const SettingsScreen = () => {
+    const { width } = Dimensions.get('window');
+    const navigation: any = useNavigation();
 
     return (
         <View style={styles.container}>
-            <DetailHeaders title={t('settings')} />
-            <ScrollView style={styles.inContainer} showsVerticalScrollIndicator={false}>
-                <View style={styles.darkModeContainer}>
-                    <CText style={styles.label}>{t('dark_mode')}</CText>
-                    <Switch
-                        value={isDarkMode}
-                        onValueChange={onToggleSwitch}
-                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                        thumbColor={isDarkMode ? '#f5dd4b' : '#f4f3f4'}
-                    />
-                </View>
-                <View style={[styles.divider, styles.notifiContainer]}>
-                    <CText style={styles.label}>{t('notifications')}</CText>
-                    <Switch
-                        value={isNotificationsEnabled}
-                        onValueChange={toggleNotificationPermission}
-                        trackColor={{ false: '#767577', true: colors.GREEN_COLOR }}
-                        thumbColor={isNotificationsEnabled ? "#fff" : '#f4f3f4'}
-                    />
-                </View>
+            {/* 🔙 Geri Butonu */}
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}>
+                <Ionicons name="close" size={28} color="#000" />
+            </TouchableOpacity>
 
-                {/* Notification Alert */}
-                {showNotificationAlert && (
-                    <View style={styles.notificationAlertContainer}>
-                        <CText style={styles.notificationAlertText}>
-                            {t('notifications_disabled_message')}
-                        </CText>
-                    </View>
-                )}
+            {/* 👤 Profil Bölümü */}
+            <View style={styles.profileSection}>
+                <Image
+                    source={{
+                        uri: 'https://images.unsplash.com/photo-1517841905240-472988babdf9',
+                    }}
+                    style={styles.profileImage}
+                />
+                <Text style={styles.userName}>Nadia Lipshutz, 20</Text>
+                <Text style={styles.userLocation}>FLORIDA, US</Text>
+            </View>
 
-                <View style={styles.divider}>
-                    <CText style={styles.label}>{t('language_selection')}</CText>
-                    <CDropdown
-                        data={languageOptions}
-                        value={selectedLanguage}
-                        onChange={handleLanguageChange}
-                        placeholder={t('language_selection')}
-                    />
+            {/* 📈 Profil Tamamlama Kartı */}
+            <View style={styles.progressCard}>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.progressText}>70%</Text>
+                    <Text style={styles.progressSubText}>
+                        Complete your profile to stand out
+                    </Text>
                 </View>
-            </ScrollView>
+                <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => navigation.navigate(EDIT_PROFILE)}>
+                    <Text style={styles.editButtonText}>Edit Profile</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* 🧭 Menü Seçenekleri */}
+            <View style={styles.menuContainer}>
+                <TouchableOpacity style={styles.menuItem}>
+                    <Ionicons name="person-outline" size={22} color="#E56BFA" />
+                    <Text style={styles.menuText}>My Account</Text>
+                    <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color="#999"
+                        style={{ marginLeft: 'auto' }}
+                    />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuItem}>
+                    <Ionicons name="language-outline" size={22} color="#E56BFA" />
+                    <Text style={styles.menuText}>Language</Text>
+                    <Text style={styles.menuSubText}>English</Text>
+                    <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color="#999"
+                        style={{ marginLeft: 6 }}
+                    />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.menuItem}>
+                    <Ionicons name="settings-outline" size={22} color="#E56BFA" />
+                    <Text style={styles.menuText}>Settings</Text>
+                    <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color="#999"
+                        style={{ marginLeft: 'auto' }}
+                    />
+                </TouchableOpacity>
+            </View>
+
+            {/* ⭐ Premium Kartı */}
+            <View style={styles.premiumCard}>
+                <View style={styles.starCircle}>
+                    <Ionicons name="star" size={24} color="#fff" />
+                </View>
+                <Text style={styles.premiumTitle}>Get more matches</Text>
+                <Text style={styles.premiumSub}>
+                    Be seen by more people in Encounters
+                </Text>
+                <TouchableOpacity>
+                    <Text style={styles.premiumLink}>Upgrade to Premium</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
-}
+};
 
-const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
+export default SettingsScreen;
+
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.BACKGROUND_COLOR,
+        backgroundColor: '#fff',
+        paddingTop: 30,
+        paddingHorizontal: 20,
     },
-    inContainer: {
-        paddingHorizontal: responsive(16),
+    backButton: {
+        position: 'absolute',
+        top: 10,
+        left: 20,
+        zIndex: 10,
     },
-    darkModeContainer: {
+    profileSection: {
+        alignItems: 'center',
+        marginTop: 30,
+    },
+    profileImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 60,
+        borderWidth: 4,
+        borderColor: '#E56BFA',
+    },
+    userName: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1C1C1C',
+        marginTop: 10,
+    },
+    userLocation: {
+        color: '#9A9A9A',
+        fontSize: 13,
+        marginTop: 2,
+        letterSpacing: 0.5,
+    },
+    progressCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: responsive(20),
+        backgroundColor: '#F6E1FB',
+        borderRadius: 16,
+        padding: 16,
+        marginTop: 25,
     },
-    label: {
+    progressText: {
+        color: '#A02BE5',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    progressSubText: {
+        color: '#4A4A4A',
+        fontSize: 13,
+        marginTop: 4,
+    },
+    editButton: {
+        backgroundColor: '#2C004D',
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    editButtonText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 13,
+    },
+    menuContainer: {
+        marginTop: 30,
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FAFAFA',
+        borderRadius: 14,
+        padding: 16,
+        marginBottom: 12,
+    },
+    menuText: {
+        fontSize: 15,
         fontWeight: '600',
-        marginBottom: responsive(7),
-        marginTop: responsive(17),
+        color: '#1C1C1C',
+        marginLeft: 10,
     },
-    divider: {
-        paddingVertical: isTablet ? 0 : responsive(10),
-        marginVertical: responsive(10),
-        borderTopWidth: 1,
-        borderColor: colors.STROKE_COLOR,
+    menuSubText: {
+        color: '#9A9A9A',
+        fontSize: 13,
+        marginLeft: 'auto',
     },
-    notificationAlertContainer: {
-        backgroundColor: '#f8d7da',
-        padding: responsive(12),
-        marginTop: responsive(10),
-        borderRadius: responsive(8),
+    premiumCard: {
+        backgroundColor: '#F9F1FC',
+        borderRadius: 18,
+        alignItems: 'center',
+        paddingVertical: 26,
+        marginTop: 30,
     },
-    notificationAlertText: {
-        color: '#721c24',
-        fontSize: isTablet ? 20 : 14,
-        fontWeight: '500',
-        textAlign: 'center',
+    starCircle: {
+        backgroundColor: '#E56BFA',
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10,
     },
-    notifiContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginTop: responsive(20),
-    }
+    premiumTitle: {
+        fontWeight: '700',
+        fontSize: 16,
+        color: '#2C004D',
+    },
+    premiumSub: {
+        fontSize: 13,
+        color: '#777',
+        marginTop: 4,
+    },
+    premiumLink: {
+        color: '#E56BFA',
+        fontWeight: '700',
+        marginTop: 8,
+    },
 });
-
-export default Settings;

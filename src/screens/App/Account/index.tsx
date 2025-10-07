@@ -8,15 +8,19 @@ import {
     FlatList,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    TouchableOpacity,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '../../../utils/colors';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import { SETTINGS } from '../../../navigators/Stack';
 
 const Account = () => {
     const bottomSheetRef = useRef<BottomSheet>(null);
     const [activeIndex, setActiveIndex] = useState(0);
-
+    const navigation: any = useNavigation();
     const snapPoints = useMemo(() => ['35%', '90%'], []);
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
@@ -63,6 +67,11 @@ const Account = () => {
                         </View>
                     )}
                 />
+
+                {/* ⚙️ Ayarlar Butonu */}
+                <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.navigate(SETTINGS)}>
+                    <Ionicons name="settings-outline" size={26} color="#fff" />
+                </TouchableOpacity>
 
                 {/* 🔘 Dikey Nokta Göstergesi */}
                 <View style={styles.verticalDotContainer}>
@@ -161,6 +170,15 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             width: 8,
             height: 8,
             borderRadius: 4,
+        },
+        settingsButton: {
+            position: 'absolute',
+            top: 20,
+            right: 20,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            borderRadius: 30,
+            padding: 8,
+            zIndex: 10,
         },
         userInfoContainer: {
             position: 'absolute',

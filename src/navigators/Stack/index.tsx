@@ -19,6 +19,7 @@ import Subscriptions from '../../screens/App/Subscriptions';
 import DeleteAccount from '../../screens/App/DeleteAccount';
 import AddSubscriptions from '../../screens/App/Subscriptions/components/AddSubscriptions';
 import BottomTabs from '../BottomTabs';
+import Settings from '../../screens/App/Settings';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,7 @@ export const ADD_HELP = "Add Help";
 export const SUBSCRIPTONS = "Subscriptions";
 export const DELETE_ACCOUNT = "Delete Account";
 export const ADD_SUBSCRIPTONS = "Add Subscriptions";
+export const SETTINGS = "Settings";
 
 export default function StackNavigator() {
     const user = useSelector((state: any) => state?.auth?.user);
@@ -63,6 +65,7 @@ export default function StackNavigator() {
                     <Stack.Screen name={DELETE_ACCOUNT} component={DeleteAccount} />
                     <Stack.Screen name={RESET_PASSWORD} component={ResetPassword} />
                     <Stack.Screen name={ADD_SUBSCRIPTONS} component={AddSubscriptions} />
+                    <Stack.Screen name={SETTINGS} component={Settings} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator
