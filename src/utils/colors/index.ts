@@ -6,7 +6,6 @@ export const useTheme = () => {
 
     const colors = {
         BACKGROUND_COLOR: isDarkMode ? "#0B0E11" : '#F7F9FB',
-        // BACKGROUND_COLOR: isDarkMode ? "#0B0E11" : '#F7F7F0',
         TEXT_MAIN_COLOR: isDarkMode ? '#FFF' : "#0B0E11",
         TEXT_DESCRIPTION_COLOR: isDarkMode ? '#B0B0B0' : '#525252',
         STROKE_COLOR: isDarkMode ? '#333' : '#E8E8E8',

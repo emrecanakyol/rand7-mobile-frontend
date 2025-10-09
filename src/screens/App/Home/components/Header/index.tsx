@@ -24,9 +24,7 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
     const styles = getStyles(colors, isTablet);
     const { t } = useTranslation();
     const navigation: any = useNavigation();
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const premiumData: any = useSelector((state: RootState) => state.premiumData.premiumDataList);
-    const [activeTab, setActiveTab] = useState<'friends' | 'partners'>('partners');
 
     const openDrawer = () => {
         navigation.openDrawer();
@@ -43,10 +41,10 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                                 ? { uri: userData?.photos[userData?.photos.length - 1] }
                                 : images.defaultProfilePhoto
                         }
-                        width={isTablet ? responsive(35) : responsive(50)}
-                        height={isTablet ? responsive(35) : responsive(50)}
-                        borderRadius={responsive(100)}
-                        imageBorderRadius={responsive(100)}
+                        width={45}
+                        height={45}
+                        borderRadius={100}
+                        imageBorderRadius={100}
                     />
                 </TouchableOpacity>
 
@@ -56,7 +54,7 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                         style={styles.notificationButton}>
                         <Ionicons
                             name="notifications-outline"
-                            size={isTablet ? responsive(24) : responsive(24)}
+                            size={22}
                         />
                     </TouchableOpacity>
 
@@ -64,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                         style={styles.notificationButton}>
                         <Ionicons
                             name="options-outline"
-                            size={isTablet ? responsive(24) : responsive(24)}
+                            size={22}
                         />
                     </TouchableOpacity>
                 </View>
@@ -75,8 +73,8 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
 
 const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     container: {
-        padding: responsive(10),
-        paddingHorizontal: responsive(20),
+        padding: 10,
+        paddingHorizontal: 20,
         borderBottomWidth: 0.5,
         borderColor: colors.GRAY_COLOR,
     },
@@ -89,15 +87,15 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         backgroundColor: "transparent",
         alignItems: "center",
         justifyContent: "center",
-        borderWidth: 0.7,
-        borderColor: colors.GREEN_COLOR,
-        borderRadius: responsive(100),
-        width: isTablet ? responsive(45) : responsive(45),
-        height: isTablet ? responsive(45) : responsive(45),
+        borderWidth: 0.5,
+        borderColor: colors.GRAY_COLOR,
+        borderRadius: 100,
+        width: 40,
+        height: 40,
     },
     buttonContainer: {
         flexDirection: "row",
-        gap: responsive(12),
+        gap: 12,
     },
 
 });

@@ -145,11 +145,11 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
         },
         inContainer: {
             alignItems: 'center',
-            marginTop: responsive(20),
+            paddingHorizontal: 20,
+            marginTop: 20,
         },
         tabContainer: {
             flexDirection: 'row',
-            width: '90%',
             backgroundColor: colors.BLACK_COLOR,
             borderRadius: 16,
             padding: 4,
@@ -173,9 +173,9 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             color: colors.TEXT_MAIN_COLOR,
         },
         cardContainer: {
-            width: '90%',
-            height: height * 0.63,
-            borderRadius: responsive(20),
+            width: "100%",
+            height: isTablet ? height / 1.29 : height / 1.535,
+            borderRadius: 14,
             overflow: 'hidden',
             position: 'relative',
             shadowColor: '#000',
@@ -214,7 +214,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             color: '#333',
         },
         userInfo: {
-
+            marginBottom: 10,
         },
         userName: {
             fontSize: 20,
@@ -245,7 +245,6 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             borderRadius: 30,
             justifyContent: 'center',
             alignItems: 'center',
-            bottom: 5,
         },
         likeButton: {
             backgroundColor: colors.RED_COLOR,
