@@ -20,7 +20,7 @@ const CButton = ({
     onPress,
     backgroundColor,
     textColor,
-    borderRadius = responsive(7),
+    borderRadius = responsive(14),
     style = {},
     loading,
     disabled,

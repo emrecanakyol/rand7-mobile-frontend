@@ -1,31 +1,121 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, TouchableOpacity, Animated, StyleSheet, Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Home from '../../screens/App/Home';
 import Chat from '../../screens/App/Chat';
 import RandomMatch from '../../screens/App/RandomMatch';
-import Settings from '../../screens/App/Settings';
-import { responsive } from '../../utils/responsive';
 import Story from '../../screens/App/Story';
-import { useTheme } from '../../utils/colors';
 import Account from '../../screens/App/Account';
+import { useTheme } from '../../utils/colors';
+import { responsive } from '../../utils/responsive';
 
 const Tab = createBottomTabNavigator();
 
 export const HOME = "Home";
 export const RANDOM_MATCH = "RandomMatch";
-export const ADD = "Add";
+export const STORY = "Story";
 export const CHAT = "Chat";
 export const ACCOUNT = "Account";
-export const STORY = "Story";
+
+function AnimatedTabBar({ state, descriptors, navigation }: any) {
+    const { colors } = useTheme();
+    const animatedValues = useRef(state.routes.map(() => new Animated.Value(1))).current;
+
+    const handlePress = (route: any, index: number, isFocused: boolean) => {
+        const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+        });
+
+        if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+        }
+
+        // Animation
+        Animated.sequence([
+            Animated.timing(animatedValues[index], {
+                toValue: 1.3,
+                duration: 150,
+                useNativeDriver: true,
+            }),
+            Animated.spring(animatedValues[index], {
+                toValue: 1,
+                friction: 3,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    return (
+        <View style={[styles.tabBar, { backgroundColor: '#000' }]}>
+            {state.routes.map((route: any, index: number) => {
+                const { options } = descriptors[route.key];
+                const label =
+                    options.tabBarLabel !== undefined
+                        ? options.tabBarLabel
+                        : options.title !== undefined
+                            ? options.title
+                            : route.name;
+
+                const isFocused = state.index === index;
+                const iconName = getIconName(route.name, isFocused);
+
+                const animatedStyle = {
+                    transform: [{ scale: animatedValues[index] }],
+                };
+
+                return (
+                    <TouchableOpacity
+                        key={route.key}
+                        accessibilityRole="button"
+                        accessibilityState={isFocused ? { selected: true } : {}}
+                        onPress={() => handlePress(route, index, isFocused)}
+                        style={styles.tabButton}
+                        activeOpacity={0.8}
+                    >
+                        <Animated.View
+                            style={[
+                                styles.iconContainer,
+                                isFocused && styles.activeIcon,
+                                animatedStyle,
+                            ]}
+                        >
+                            <Ionicons
+                                name={iconName}
+                                size={24}
+                                color={isFocused ? '#fff' : '#888'}
+                            />
+                        </Animated.View>
+                    </TouchableOpacity>
+                );
+            })}
+        </View>
+    );
+}
+
+function getIconName(routeName: string, focused: boolean) {
+    switch (routeName) {
+        case HOME:
+            return focused ? 'home' : 'home-outline';
+        case RANDOM_MATCH:
+            return focused ? 'compass' : 'compass-outline';
+        case STORY:
+            return focused ? 'add-circle' : 'add-circle-outline';
+        case CHAT:
+            return focused ? 'chatbubble' : 'chatbubble-outline';
+        case ACCOUNT:
+            return focused ? 'person' : 'person-outline';
+        default:
+            return 'ellipse';
+    }
+}
 
 export default function BottomTabs() {
-    const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
-    const styles = getStyles(colors, isTablet);
 
     return (
         <Tab.Navigator
@@ -33,130 +123,48 @@ export default function BottomTabs() {
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
-                tabBarStyle: styles.tabBar,
             }}
+            tabBar={(props) => <AnimatedTabBar {...props} />}
         >
-            <Tab.Screen
-                name={HOME}
-                component={Home}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
-                            <Ionicons
-                                name={focused ? 'home' : 'home-outline'}
-                                size={24}
-                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
-                            />
-                        </View>
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name={RANDOM_MATCH}
-                component={RandomMatch}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
-                            <Ionicons
-                                name={focused ? 'compass' : 'compass-outline'}
-                                size={24}
-                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
-                            />
-                        </View>
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name={STORY}
-                component={Story}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
-                            <Ionicons
-                                name={focused ? 'add' : 'add-outline'}
-                                size={24}
-                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
-                            />
-                        </View>
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name={CHAT}
-                component={Chat}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
-                            <Ionicons
-                                name={focused ? 'chatbubble' : 'chatbubble-outline'}
-                                size={24}
-                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
-                            />
-                        </View>
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name={ACCOUNT}
-                component={Account}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <View style={[styles.iconContainer, focused && styles.activeIcon]}>
-                            <Ionicons
-                                name={focused ? 'person-circle' : 'person-circle-outline'}
-                                size={27}
-                                color={focused ? '#fff' : colors.TEXT_DESCRIPTION_COLOR}
-                            />
-                        </View>
-                    ),
-                }}
-            />
+            <Tab.Screen name={HOME} component={Home} />
+            <Tab.Screen name={RANDOM_MATCH} component={RandomMatch} />
+            <Tab.Screen name={STORY} component={Story} />
+            <Tab.Screen name={CHAT} component={Chat} />
+            <Tab.Screen name={ACCOUNT} component={Account} />
         </Tab.Navigator>
     );
 }
 
-const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
+const styles = StyleSheet.create({
     tabBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        height: 85,
+        paddingBottom: 20,
         position: 'absolute',
-        bottom: responsive(30),
+        bottom: 0,
         left: 0,
         right: 0,
-        marginHorizontal: 25,
-        backgroundColor: '#fff',
-        borderRadius: 50,
-        height: 70,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
         shadowColor: '#000',
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.3,
         shadowOffset: { width: 0, height: 5 },
         shadowRadius: 8,
-        elevation: 8,
+        elevation: 10,
+    },
+    tabButton: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     iconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
     },
     activeIcon: {
-        backgroundColor: colors.GREEN_COLOR,
-    },
-    addButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: -10,
-        shadowColor: '#000',
-        shadowOpacity: 0.15,
-        shadowOffset: { width: 0, height: 3 },
-        shadowRadius: 6,
-        elevation: 6,
+        backgroundColor: '#111',
     },
 });
-

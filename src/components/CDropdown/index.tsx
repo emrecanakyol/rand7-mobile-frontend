@@ -52,6 +52,7 @@ const CDropdown: React.FC<CDropdownProps> = ({
                 value={value}
                 onChange={onChange}
                 disable={!!disabled}
+                autoScroll={false}
             />
         </View>
     );
@@ -62,9 +63,10 @@ const getStyles = (colors: any, isTablet: boolean) =>
         dropdown: {
             height: isTablet ? responsive(35) : responsive(50),
             borderColor: colors.GRAY_COLOR,
-            borderWidth: 1,
-            borderRadius: responsive(7),
+            borderWidth: 0.5,
+            borderRadius: responsive(14),
             paddingHorizontal: responsive(8),
+            backgroundColor: colors.LIGHT_GRAY,
         },
         placeholderStyle: {
             fontSize: isTablet ? 22 : 16,
@@ -77,7 +79,7 @@ const getStyles = (colors: any, isTablet: boolean) =>
             fontWeight: "600",
         },
         dropdownContainerStyle: {
-            backgroundColor: colors.BACKGROUND_COLOR,
+            backgroundColor: colors.LIGHT_GRAY,
             borderColor: colors.GRAY_COLOR,
             borderWidth: 1,
             borderRadius: responsive(7),
