@@ -10,7 +10,7 @@ import { RootState } from '../../../../../store/store';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface HeaderProps {
-    userData: any;
+    userData?: any;
 }
 
 const Header: React.FC<HeaderProps> = ({ userData }) => {

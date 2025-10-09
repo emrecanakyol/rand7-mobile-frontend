@@ -6,16 +6,15 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from '../../screens/App/Home';
 import Chat from '../../screens/App/Chat';
 import RandomMatch from '../../screens/App/RandomMatch';
-import Story from '../../screens/App/Story';
 import Account from '../../screens/App/Account';
 import { useTheme } from '../../utils/colors';
-import { responsive } from '../../utils/responsive';
+import Match from '../../screens/App/Match';
 
 const Tab = createBottomTabNavigator();
 
 export const HOME = "Home";
 export const RANDOM_MATCH = "RandomMatch";
-export const STORY = "Story";
+export const MATCH = "Match";
 export const CHAT = "Chat";
 export const ACCOUNT = "Account";
 
@@ -102,8 +101,8 @@ function getIconName(routeName: string, focused: boolean) {
             return focused ? 'home' : 'home-outline';
         case RANDOM_MATCH:
             return focused ? 'compass' : 'compass-outline';
-        case STORY:
-            return focused ? 'add-circle' : 'add-circle-outline';
+        case MATCH:
+            return focused ? 'sparkles' : 'sparkles-outline';
         case CHAT:
             return focused ? 'chatbubble' : 'chatbubble-outline';
         case ACCOUNT:
@@ -127,8 +126,8 @@ export default function BottomTabs() {
             tabBar={(props) => <AnimatedTabBar {...props} />}
         >
             <Tab.Screen name={HOME} component={Home} />
+            <Tab.Screen name={MATCH} component={Match} />
             <Tab.Screen name={RANDOM_MATCH} component={RandomMatch} />
-            <Tab.Screen name={STORY} component={Story} />
             <Tab.Screen name={CHAT} component={Chat} />
             <Tab.Screen name={ACCOUNT} component={Account} />
         </Tab.Navigator>

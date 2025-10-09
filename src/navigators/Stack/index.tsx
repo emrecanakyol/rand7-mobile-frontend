@@ -9,7 +9,6 @@ import OnBoardingThree from '../../screens/Auth/OnBoardings/OnBoardingThree';
 import Register from '../../screens/Auth/Register';
 import ResetPassword from '../../screens/Auth/ResetPassword';
 import PhoneLogin from '../../screens/Auth/Login/PhoneLogin';
-import Drawer from '../Drawer';
 import PhoneVerification from '../../screens/Auth/PhoneVerification';
 import Home from '../../screens/App/Home';
 import AddProfile from '../../screens/Auth/AddProfile';
@@ -68,7 +67,6 @@ export default function StackNavigator() {
                     screenOptions={{
                         headerShown: false,
                     }}>
-                    <Stack.Screen name={DRAWER} component={Drawer} />
                     <Stack.Screen name={BOOTOMTABS} component={BottomTabs} />
                     <Stack.Screen name={HOME} component={Home} />
                     <Stack.Screen name={GROUP_DETAIL} component={GroupDetail} />
