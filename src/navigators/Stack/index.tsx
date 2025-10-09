@@ -18,7 +18,6 @@ import Subscriptions from '../../screens/App/Subscriptions';
 import DeleteAccount from '../../screens/App/DeleteAccount';
 import AddSubscriptions from '../../screens/App/Subscriptions/components/AddSubscriptions';
 import BottomTabs from '../BottomTabs';
-import Settings from '../../screens/App/Settings';
 import AddProfile2 from '../../screens/Auth/AddProfile/AddProfile2';
 import AddProfile3 from '../../screens/Auth/AddProfile/AddProfile3';
 import AddProfile4 from '../../screens/Auth/AddProfile/AddProfile4';
@@ -26,6 +25,7 @@ import AddProfile5 from '../../screens/Auth/AddProfile/AddProfile5';
 import AddProfile6 from '../../screens/Auth/AddProfile/AddProfile6';
 import AddProfile7 from '../../screens/Auth/AddProfile/AddProfile7';
 import AddProfile8 from '../../screens/Auth/AddProfile/AddProfile8';
+import Profile from '../../screens/App/Profile';
 
 const Stack = createStackNavigator();
 
@@ -46,7 +46,7 @@ export const ADD_HELP = "Add Help";
 export const SUBSCRIPTONS = "Subscriptions";
 export const DELETE_ACCOUNT = "Delete Account";
 export const ADD_SUBSCRIPTONS = "Add Subscriptions";
-export const SETTINGS = "Settings";
+export const PROFILE = "Profile";
 export const ADD_PROFILE = "Add Profile";
 export const ADD_PROFILE_2 = "Add Profile 2";
 export const ADD_PROFILE_3 = "Add Profile 3";
@@ -76,7 +76,7 @@ export default function StackNavigator() {
                     <Stack.Screen name={DELETE_ACCOUNT} component={DeleteAccount} />
                     <Stack.Screen name={RESET_PASSWORD} component={ResetPassword} />
                     <Stack.Screen name={ADD_SUBSCRIPTONS} component={AddSubscriptions} />
-                    <Stack.Screen name={SETTINGS} component={Settings} />
+                    <Stack.Screen name={PROFILE} component={Profile} />
                     <Stack.Screen name={ADD_PROFILE} component={AddProfile} />
                     <Stack.Screen name={ADD_PROFILE_2} component={AddProfile2} />
                     <Stack.Screen name={ADD_PROFILE_3} component={AddProfile3} />
