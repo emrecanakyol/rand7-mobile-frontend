@@ -26,9 +26,9 @@ interface LikeUser {
     city: string;
     match: number;
     distance: string;
-    image: string; // artık string (URL)
+    image: string;
     online?: boolean;
-}
+};
 
 const Likes: React.FC = () => {
     const navigation: any = useNavigation();
@@ -89,6 +89,7 @@ const Likes: React.FC = () => {
             >
                 <Header />
                 {/* Stats */}
+                <Text style={styles.sectionTitle1}>Beğeniler</Text>
                 <View style={styles.statsContainer}>
                     <View style={styles.statItem}>
                         <TouchableOpacity activeOpacity={0.9}>
@@ -100,31 +101,12 @@ const Likes: React.FC = () => {
                                 />
                             </View>
                         </TouchableOpacity>
-                        <Text style={styles.statText}>
-                            Likes <Text style={styles.statNumber}>32</Text>
-                        </Text>
-                    </View>
-
-                    <View style={styles.statItem}>
-                        <TouchableOpacity activeOpacity={0.9}>
-                            <View style={styles.avatarOuter}>
-                                <Image
-                                    source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }}
-                                    style={styles.avatarImage}
-                                    blurRadius={12}
-                                />
-                            </View>
-                        </TouchableOpacity>
-                        <Text style={styles.statText}>
-                            Connect <Text style={styles.statNumber}>15</Text>
-                        </Text>
+                        <Text style={styles.statText}>Likes</Text>
                     </View>
                 </View>
 
                 {/* Your Matches */}
-                <Text style={styles.sectionTitle}>
-                    Your Matches <Text style={styles.matchCount}>47</Text>
-                </Text>
+                <Text style={styles.sectionTitle2}>Eşleşmeler</Text>
 
                 <View style={styles.cardContainer}>
                     {likedUsers.map((user) => (
@@ -167,17 +149,18 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     statsContainer: {
         flexDirection: "row",
         marginTop: 20,
+        marginLeft: 5,
     },
     statItem: {
         alignItems: "center",
-        marginHorizontal: 25,
+        paddingLeft: 15,
     },
     avatarOuter: {
         width: 86,
         height: 86,
-        borderRadius: 43,
-        borderWidth: 4,
-        borderColor: "#E58AD0",
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: colors.BLACK_COLOR,
         overflow: "hidden",
         alignItems: "center",
         justifyContent: "center",
@@ -206,18 +189,19 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         fontWeight: "600",
         marginTop: 8,
     },
-    statNumber: {
-        color: "#E58AD0",
-    },
-    sectionTitle: {
+    sectionTitle1: {
         fontSize: 20,
         fontWeight: "700",
-        color: "#3A0CA3",
+        color: colors.TEXT_MAIN_COLOR,
         marginLeft: 20,
-        marginTop: 30,
+        marginTop: 5,
     },
-    matchCount: {
-        color: "#E58AD0",
+    sectionTitle2: {
+        fontSize: 20,
+        fontWeight: "700",
+        color: colors.TEXT_MAIN_COLOR,
+        marginLeft: 20,
+        marginTop: 20,
     },
     scrollContainer: {
         paddingBottom: 90,
@@ -248,7 +232,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         position: "absolute",
         top: 10,
         left: 0,
-        backgroundColor: "#E58AD0",
+        backgroundColor: colors.RED_COLOR,
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
         paddingVertical: 4,
