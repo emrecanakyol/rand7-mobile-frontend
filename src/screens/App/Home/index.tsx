@@ -9,14 +9,15 @@ import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
-import { fetchPremiumDataList } from '../../../store/services/premiumDataService';
 import Header from './components/Header';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
-import { responsive } from '../../../utils/responsive';
+import { useAppSelector } from '../../../store/hooks';
+import { fetchUserData } from '../../../store/services/userDataService';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const { userData, loading } = useAppSelector((state) => state.userData);
     const navigation: any = useNavigation();
     const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
     const { t } = useTranslation();
@@ -24,48 +25,27 @@ const Home = () => {
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
-    const premiumData: any = useSelector((state: RootState) => state.premiumData.premiumDataList);
-    const [userData, setUserData] = useState<any>();
-    const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'discover' | 'likes'>('discover');
 
-    // Ekran ilk açıldığında kullanıcı yeni kayıt olmuşsa profil oluştur ekranı geliyor.
-    const fetchUserDatas = async () => {
-        const userId = auth().currentUser?.uid;
-        if (!userId) {
-            console.log('User not logged in');
+    // Veriler eksikse yine profil oluştur ekranına yönlendir
+    const checkUserProfile = async () => {
+        if (loading) {
+            return; // Veriler hâlâ yükleniyor, bekle
+        } else if (!userData?.firstName || !userData?.lastName || !userData?.photos?.length) {
+            console.log('📝 Profil eksik, kullanıcı profil ekranına yönlendiriliyor...');
+            navigation.navigate(ADD_PROFILE);
             return;
-        }
-
-        try {
-            const userDoc = await firestore().collection('users').doc(userId).get();
-            if (!userDoc.exists) {
-                // Kullanıcı dokümanı yoksa profil oluştur ekranına git
-                navigation.navigate(ADD_PROFILE);
-                return;
-            }
-
-            // Tüm userData bilgilerini çek ve set et
-            const fetchUserData = userDoc.data();
-            setUserData(fetchUserData)
-
-            // Doküman var ama profil tamamlanmamışsa profil oluştur ekranına git
-            if (!fetchUserData?.firstName || !fetchUserData?.lastName) {
-                navigation.navigate(ADD_PROFILE);
-            }
-        } catch (error) {
-            console.log('Error checking user profile:', error);
         }
     };
 
     useFocusEffect(
         useCallback(() => {
-            fetchUserDatas();
+            checkUserProfile();
         }, [])
     );
 
     useEffect(() => {
-        dispatch(fetchPremiumDataList()); // Uygulama açılır açılmaz premiumData bilgileri varsa çekiyoruz.
+        dispatch(fetchUserData());
         getFcmToken();
     }, []);
 
@@ -76,8 +56,7 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <Header
-                userData={userData} />
+            <Header userData={userData} />
 
             <View style={styles.inContainer}>
                 {/* Tab Buttons */}
@@ -109,12 +88,12 @@ const Home = () => {
                         style={styles.gradientOverlay}
                     />
                     <View style={styles.distanceContainer}>
-                        <Text style={styles.distanceText}>2.5 km away</Text>
+                        <Text style={styles.distanceText}>2.5 km</Text>
                     </View>
 
                     <View style={styles.infoContainer}>
                         <View style={styles.userInfo}>
-                            <Text style={styles.userName}>Alfredo Calzoni, 20</Text>
+                            <Text style={styles.userName}>{userData?.firstName}, 20</Text>
                             <Text style={styles.userLocation}>Hamburg, Germany</Text>
                         </View>
 
@@ -146,7 +125,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
         inContainer: {
             alignItems: 'center',
             paddingHorizontal: 20,
-            marginTop: 20,
+            marginTop: 10,
         },
         tabContainer: {
             flexDirection: 'row',
@@ -162,7 +141,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             borderRadius: 12,
         },
         activeTab: {
-            backgroundColor: '#fff',
+            backgroundColor: colors.WHITE_COLOR,
         },
         tabText: {
             fontSize: 14,
@@ -174,7 +153,8 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
         },
         cardContainer: {
             width: "100%",
-            height: isTablet ? height / 1.29 : height / 1.535,
+            // height: isTablet ? height / 1.29 : height / 1.535,
+            height: isTablet ? height / 1.27 : height / 1.52,
             borderRadius: 14,
             overflow: 'hidden',
             position: 'relative',

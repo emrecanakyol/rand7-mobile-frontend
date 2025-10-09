@@ -26,28 +26,21 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
     const navigation: any = useNavigation();
     const premiumData: any = useSelector((state: RootState) => state.premiumData.premiumDataList);
 
-    const openDrawer = () => {
-        navigation.openDrawer();
-    };
-
     return (
         <View style={styles.container}>
             <View style={styles.inContainer}>
-                <TouchableOpacity onPress={openDrawer}>
-                    <CImage
-                        disablePress={true}
-                        imgSource={
-                            userData?.photos && userData?.photos.length > 0
-                                ? { uri: userData?.photos[userData?.photos.length - 1] }
-                                : images.defaultProfilePhoto
-                        }
-                        width={45}
-                        height={45}
-                        borderRadius={100}
-                        imageBorderRadius={100}
-                    />
-                </TouchableOpacity>
-
+                <CImage
+                    disablePress={true}
+                    imgSource={
+                        userData?.photos && userData?.photos.length > 0
+                            ? { uri: userData?.photos[userData?.photos.length - 1] }
+                            : images.defaultProfilePhoto
+                    }
+                    width={45}
+                    height={45}
+                    borderRadius={100}
+                    imageBorderRadius={100}
+                />
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity

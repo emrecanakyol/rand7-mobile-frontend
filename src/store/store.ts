@@ -5,6 +5,7 @@ import authReducer from "./reducer/authReducer";
 import thunk from "redux-thunk";
 import themeReducer from "./reducer/themeReducer";
 import premiumDataReducer from "./reducer/premiumDataReducer";
+import userDataReducer from "./reducer/userDataReducer";
 
 const authPersistConfig = {
     key: "auth",
@@ -21,15 +22,22 @@ const premiumDataPersistConfig = {
     storage: AsyncStorage,
 };
 
+const userDataPersistConfig = {
+    key: "userData",
+    storage: AsyncStorage,
+};
+
 const authPersistedReducer = persistReducer(authPersistConfig, authReducer);
 const themePersistedReducer = persistReducer(themePersistConfig, themeReducer);
 const premiumDataPersistedReducer = persistReducer(premiumDataPersistConfig, premiumDataReducer);
+const userDataPersistedReducer = persistReducer(userDataPersistConfig, userDataReducer);
 
 const store = configureStore({
     reducer: {
         auth: authPersistedReducer,
         theme: themePersistedReducer,
         premiumData: premiumDataPersistedReducer,
+        userData: userDataPersistedReducer,
     },
     // middleware: [thunk],
     middleware: (getDefaultMiddleware) =>
