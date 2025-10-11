@@ -15,6 +15,7 @@ import { fetchUserData } from '../../../store/services/userDataService';
 import firestore from '@react-native-firebase/firestore';
 import { calculateAge } from '../../../components/CalculateAge';
 import Swiper from 'react-native-deck-swiper';
+import LottieView from 'lottie-react-native';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -143,7 +144,6 @@ const Home = () => {
     };
 
     // 🔹 Seni beğenen kullanıcıları çek
-    // 🔹 Seni beğenen kullanıcıları çek
     const fetchLikedUsers = async () => {
         if (!userData?.userId) return;
         setLoadingData(true);
@@ -185,7 +185,7 @@ const Home = () => {
                     id: doc.id,
                     ...data,
                     // Ek alan: beğeni türü
-                    likeType: superLikers.includes(data.userId) ? "super" : "normal",
+                    likeType: superLikers.includes(data.userId) ? "superLike" : "like",
                 };
             });
 
@@ -226,7 +226,6 @@ const Home = () => {
             setLoadingData(false);
         }
     };
-
 
     // Km göre kullanıcı öneriyor.
     const getDistanceFromLatLonInKm = (
@@ -272,15 +271,18 @@ const Home = () => {
             // 🔹 Karşı taraf beni önceden beğenmiş mi?
             const theyLikedMe = likedUserData.likedUsers?.includes(userData.userId);
 
-            // 🔹 Karşı taraf bana SuperLike atmış mı?
-            const theySuperLikedMe = likedUserData.superLikedUsers?.includes(userData.userId);
+            // 🔹 Karşı tarafın 'likers' listesine beni ekle
+            await userRef.update({
+                likers: firestore.FieldValue.arrayUnion(userData.userId),
+            });
 
             // 🔹 Benim 'likedUsers' listeme onu ekle
             await currentUserRef.update({
                 likedUsers: firestore.FieldValue.arrayUnion(userId),
             });
 
-            console.log("❤️ Like kaydedildi.");
+            // 🔹 Karşı taraf bana SuperLike atmış mı?
+            const theySuperLikedMe = likedUserData.superLikedUsers?.includes(userData.userId);
 
             // 🔹 Eğer karşı taraf da beni beğendiyse → normal eşleşme
             if (theyLikedMe && !theySuperLikedMe) {
@@ -398,16 +400,19 @@ const Home = () => {
                     </View>
 
                     {loadingData ? (
-                        <View style={{ marginTop: 80, alignItems: 'center' }}>
-                            <ActivityIndicator size="large" color={colors.RED_COLOR} />
-                            <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 10 }}>
-                                Veriler yükleniyor...
-                            </Text>
+                        <View style={styles.lottieContainer}>
+                            <LottieView
+                                source={require("../../../assets/lottie/search-person-button.json")}
+                                style={styles.lottie}
+                                autoPlay
+                                loop
+                                speed={0.5}
+                            />
                         </View>
                     ) : activeTab === "discover" ? (
                         nearbyUsers.length > 0 ? (
                             <Swiper
-                                key={nearbyUsers.length} // ✅ Swiper reset için
+                                key={nearbyUsers.length}
                                 ref={swiperRef}
                                 cards={nearbyUsers}
                                 renderCard={(u) => {
@@ -516,13 +521,52 @@ const Home = () => {
                             {nearbyUsers.length > 0 ? (
                                 <View style={styles.matchesGrid}>
                                     {nearbyUsers.map((u, index) => (
-                                        <View key={index} style={styles.matchCard}>
+                                        <View
+                                            key={index}
+                                            style={[
+                                                styles.matchCard,
+                                                u.likeType === "superLike"
+                                                    ? { borderWidth: 2, borderColor: colors.BLUE_COLOR }
+                                                    : u.likeType === "like"
+                                                        ? { borderWidth: 2, borderColor: colors.RED_COLOR }
+                                                        : null,
+                                            ]}
+                                        >
                                             <Image
                                                 source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
                                                 style={styles.matchImage}
                                             />
-                                            <View style={styles.matchBadge}>
-                                                <Text style={styles.matchText}>{calculateAge(u.birthDate)} yaş</Text>
+                                            <TouchableOpacity
+                                                style={styles.closeIcon}
+                                                onPress={() => handleDislike(u.userId)}
+                                            >
+                                                <Ionicons name="close-circle" size={22} color={colors.WHITE_COLOR} />
+                                            </TouchableOpacity>
+                                            <View style={[
+                                                styles.matchBadge,
+                                                u.likeType === "superLike"
+                                                    ? { backgroundColor: colors.BLUE_COLOR }
+                                                    : u.likeType === "like"
+                                                        ? { backgroundColor: colors.RED_COLOR }
+                                                        : null,
+                                            ]}>
+                                                {u.likeType === "superLike" && (
+                                                    <Ionicons
+                                                        name="star"
+                                                        size={18}
+                                                        color={colors.WHITE_COLOR}
+                                                        style={{ marginLeft: 5 }}
+                                                    />
+                                                )}
+
+                                                {u.likeType === "like" && (
+                                                    <Ionicons
+                                                        name="heart"
+                                                        size={18}
+                                                        color={colors.WHITE_COLOR}
+                                                        style={{ marginLeft: 5 }}
+                                                    />
+                                                )}
                                             </View>
                                             <View style={styles.matchInfo}>
                                                 <Text style={styles.likesDistanceText}>
@@ -607,6 +651,18 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         ...StyleSheet.absoluteFillObject,
         borderRadius: 20,
     },
+    lottieContainer: {
+        width: "100%",
+        // height: isTablet ? height / 1.29 : height / 1.535,
+        height: isTablet ? height / 1.27 : height / 1.52,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    lottie: {
+        width: isTablet ? 400 : 200,
+        height: isTablet ? 400 : 200,
+        alignItems: "center",
+    },
     infoContainer: {
         position: 'absolute',
         bottom: 0,
@@ -654,7 +710,8 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         alignItems: 'center',
     },
     starButton: {
-        backgroundColor: '#5A2D82',
+        backgroundColor: colors.BLUE_COLOR,
+        // backgroundColor: '#5A2D82',
         width: 55,
         height: 55,
         borderRadius: 30,
@@ -695,16 +752,10 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         position: 'absolute',
         top: 10,
         left: 0,
-        backgroundColor: colors.RED_COLOR,
         paddingHorizontal: 8,
         paddingVertical: 3,
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
-    },
-    matchText: {
-        color: '#fff',
-        fontSize: 12,
-        fontWeight: '600',
     },
     matchInfo: {
         position: 'absolute',
@@ -725,7 +776,13 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         fontSize: 16,
         fontWeight: '700',
     },
-
+    closeIcon: {
+        position: "absolute",
+        top: 8,
+        right: 8,
+        backgroundColor: "#000",
+        borderRadius: 50,
+    },
 });
 
 export default Home;

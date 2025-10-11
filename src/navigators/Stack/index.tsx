@@ -92,7 +92,7 @@ export default function StackNavigator() {
                     <Stack.Screen name={ADD_PROFILE_7} component={AddProfile7} />
                     <Stack.Screen name={ADD_PROFILE_8} component={AddProfile8} />
                     <Stack.Screen name={FILTER} component={Filter}
-                        options={{ presentation: "modal" }} // Ekrana yönlendirilirkenki efekti değiştirdim.
+                        options={{ presentation: "transparentModal" }} // Ekrana yönlendirilirkenki efekti değiştirdim.
                     />
                     <Stack.Screen name={LIKE_MATCHED} component={LikeMatched}
                         options={{ presentation: "transparentModal" }} // Ekrana yönlendirilirkenki efekti değiştirdim.

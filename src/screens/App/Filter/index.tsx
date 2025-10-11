@@ -6,8 +6,9 @@ import {
     TouchableOpacity,
     Switch,
     Dimensions,
+    Platform,
 } from "react-native";
-import Slider from "@react-native-community/slider";
+import Slider from '@react-native-community/slider';
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import CBackButton from "../../../components/CBackButton";
 import { useNavigation } from "@react-navigation/native";
@@ -88,7 +89,11 @@ const Filter = () => {
                     style={{
                         width: "100%",
                         marginTop: 30,
-                        transform: [{ scaleY: 1.2 }, { scaleX: 1.06 }], // 👈 marker ve track büyür
+                        transform: [{
+                            scaleY: Platform.OS === "android" ? 1.2 : 1.1
+                        }, {
+                            scaleX: Platform.OS === "android" ? 1.06 : 1
+                        }],
                     }}
                 />
             </View>
@@ -111,12 +116,17 @@ const Filter = () => {
                     unselectedStyle={{ backgroundColor: "#E0E0E0" }}
                     markerStyle={{
                         backgroundColor: colors.BLACK_COLOR,
-                        height: 20,
-                        width: 20,
+                        height: Platform.OS === "android" ? 12 : 30,
+                        width: Platform.OS === "android" ? 12 : 30
                     }}
                     containerStyle={{
                         marginTop: 20,
                         alignItems: "center",
+                        transform: [{
+                            scaleY: Platform.OS === "android" ? 1.2 : 1.1
+                        }, {
+                            scaleX: Platform.OS === "android" ? 1.25 : 1.1
+                        }],
                     }}
                 />
             </View>
@@ -241,6 +251,7 @@ const getStyles = (colors: any, isTablet: boolean) =>
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
+            marginBottom: 20,
         },
         preferenceContainer: {
             flexDirection: "row",
