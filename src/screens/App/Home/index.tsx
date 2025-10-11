@@ -12,6 +12,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import { useAppSelector } from '../../../store/hooks';
 import { fetchUserData } from '../../../store/services/userDataService';
+import firestore from '@react-native-firebase/firestore';
+import { calculateAge } from '../../../components/CalculateAge';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -24,12 +26,13 @@ const Home = () => {
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
     const [activeTab, setActiveTab] = useState<'discover' | 'likes'>('discover');
+    const [nearbyUsers, setNearbyUsers] = useState<any[]>([]);
 
     // Veriler eksikse yine profil oluştur ekranına yönlendir
     const checkUserProfile = async () => {
         if (loading) {
             return; // Veriler hâlâ yükleniyor, bekle
-        } else if (!userData?.firstName || !userData?.lastName || !userData?.photos?.length) {
+        } else if (!userData.firstName || !userData.lastName || !userData.photos?.length) {
             console.log('📝 Profil eksik, kullanıcı profil ekranına yönlendiriliyor...');
             navigation.navigate(ADD_PROFILE);
             return;
@@ -38,12 +41,12 @@ const Home = () => {
 
     useFocusEffect(
         useCallback(() => {
+            dispatch(fetchUserData());
             checkUserProfile();
         }, [])
     );
 
     useEffect(() => {
-        dispatch(fetchUserData());
         getFcmToken();
     }, []);
 
@@ -51,6 +54,98 @@ const Home = () => {
         const unsubscribe = registerListenerWithFCM(navigation);
         return unsubscribe;
     }, [navigation]);
+
+
+    // Tüm kullanıcı tablosunu çekiyor
+    const fetchNearbyUsers = async () => {
+        if (!userData?.latitude || !userData?.longitude) return;
+
+        try {
+            const snapshot = await firestore().collection("users").get();
+
+            const allUsers = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter((u: any) => u.userId !== userData.userId && u.latitude && u.longitude);
+
+            // const filtered = allUsers.filter((u: any) => {
+            //     const distance = getDistanceFromLatLonInKm(
+            //         userData.latitude,
+            //         userData.longitude,
+            //         u.latitude,
+            //         u.longitude
+            //     );
+
+            //     const age = calculateAge(u.birthDate);
+            //     const minAge = userData?.ageRange?.min || 18;
+            //     const maxAge = userData?.ageRange?.max || 90;
+
+            //     return (
+            //         distance <= (userData.maxDistance || 150) &&
+            //         age >= minAge &&
+            //         age <= maxAge
+            //     );
+            const filtered = allUsers.filter((u: any) => {
+                // 🔹 Kendini listeleme
+                if (u.userId === userData.userId) return false;
+
+                // 🔹 Mesafe
+                const distance = getDistanceFromLatLonInKm(
+                    userData.latitude,
+                    userData.longitude,
+                    u.latitude,
+                    u.longitude
+                );
+
+                // 🔹 Yaş
+                const age = calculateAge(u.birthDate);
+                const minAge = userData?.ageRange?.min || 18;
+                const maxAge = userData?.ageRange?.max || 90;
+
+                // 🔹 Cinsiyet filtresi
+                const matchesGender =
+                    userData?.lookingFor === "any" ||
+                    !userData?.lookingFor ||
+                    userData?.lookingFor?.toLowerCase() === u.gender?.toLowerCase();
+
+                return (
+                    distance <= (userData.maxDistance || 150) &&
+                    age >= minAge &&
+                    age <= maxAge &&
+                    matchesGender
+                );
+            });
+
+            console.log("📍 Yakındaki kullanıcılar:", filtered.length);
+            setNearbyUsers(filtered);
+        } catch (err) {
+            console.error("❌ Kullanıcıları çekerken hata:", err);
+        }
+    };
+
+    // Km göre kullanıcı öneriyor.
+    const getDistanceFromLatLonInKm = (
+        lat1: number,
+        lon1: number,
+        lat2: number,
+        lon2: number
+    ): number => {
+        const R = 6371; // Dünya'nın yarıçapı (km)
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) *
+            Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
+    useEffect(() => {
+        if (userData) {
+            fetchNearbyUsers();
+        }
+    }, [userData]);
 
     return (
         <View style={styles.container}>
@@ -77,38 +172,51 @@ const Home = () => {
                     </View>
 
                     {activeTab === "discover" ? (
-                        <View style={styles.cardContainer}>
-                            <Image
-                                source={{ uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e' }}
-                                style={styles.profileImage}
-                            />
-                            <LinearGradient
-                                colors={['transparent', 'rgba(0,0,0,0.7)']}
-                                style={styles.gradientOverlay}
-                            />
-                            <View style={styles.distanceContainer}>
-                                <Text style={styles.distanceText}>2.5 km</Text>
-                            </View>
+                        nearbyUsers.length > 0 ? (
+                            nearbyUsers.map((u, index) => (
+                                <View key={index} style={styles.cardContainer}>
+                                    <Image
+                                        source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                        style={styles.profileImage}
+                                    />
+                                    <LinearGradient
+                                        colors={['transparent', 'rgba(0,0,0,0.7)']}
+                                        style={styles.gradientOverlay}
+                                    />
+                                    <View style={styles.distanceContainer}>
+                                        <Text style={styles.distanceText}>
+                                            {getDistanceFromLatLonInKm(
+                                                userData.latitude,
+                                                userData.longitude,
+                                                u.latitude,
+                                                u.longitude
+                                            ).toFixed(1)} km
+                                        </Text>
+                                    </View>
 
-                            <View style={styles.infoContainer}>
-                                <View style={styles.userInfo}>
-                                    <Text style={styles.userName}>Ahmet, 20</Text>
-                                    <Text style={styles.userLocation}>Hamburg, Germany</Text>
-                                </View>
+                                    <View style={styles.infoContainer}>
+                                        <View style={styles.userInfo}>
+                                            <Text style={styles.userName}>{u.firstName}, {new Date().getFullYear() - new Date(u.birthDate.seconds * 1000).getFullYear()}</Text>
+                                            <Text style={styles.userLocation}>{u.province}, {u.country}</Text>
+                                        </View>
 
-                                <View style={styles.actionButtons}>
-                                    <TouchableOpacity style={styles.dislikeButton}>
-                                        <Ionicons name="close" size={28} color="#000" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.starButton}>
-                                        <Ionicons name="star" size={26} color="#fff" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.likeButton}>
-                                        <Ionicons name="heart" size={28} color="#fff" />
-                                    </TouchableOpacity>
+                                        <View style={styles.actionButtons}>
+                                            <TouchableOpacity style={styles.dislikeButton}>
+                                                <Ionicons name="close" size={28} color="#000" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.starButton}>
+                                                <Ionicons name="star" size={26} color="#fff" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.likeButton}>
+                                                <Ionicons name="heart" size={28} color="#fff" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
                                 </View>
-                            </View>
-                        </View>
+                            ))
+                        ) : (
+                            <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>Yakında kimse bulunamadı.</Text>
+                        )
                     ) : (
                         <View style={styles.likesContainer}>
                             <View style={styles.matchesGrid}>

@@ -98,7 +98,7 @@ const Profile = () => {
                 {/* 👤 Kullanıcı Bilgisi */}
                 <View style={styles.userInfoContainer}>
                     <Text style={styles.userName}>{userData.firstName}, {calculateAge(userData.birthDate)}</Text>
-                    <Text style={styles.userLocation}>{userData.province}, {userData.country}</Text>
+                    <Text style={styles.userLocation}>{userData.city}, {userData.country}</Text>
                 </View>
             </View>
 

@@ -12,6 +12,7 @@ import CTextInput from "../../../components/CTextInput";
 import CLoading from "../../../components/CLoading";
 import { BOOTOMTABS } from "../../../navigators/Stack";
 import { ToastError } from "../../../utils/toast";
+import { calculateAge } from "../../../components/CalculateAge";
 
 const AddProfile8 = ({ navigation, route }: any) => {
     const { colors } = useTheme();
@@ -107,7 +108,6 @@ const AddProfile8 = ({ navigation, route }: any) => {
                         {
                             annonId,
                             photos: uploadedPhotoUrls,
-                            birthDate: birthDate ? firestore.Timestamp.fromDate(birthDate) : null,
                             firstName,
                             lastName,
                             gender,
@@ -121,6 +121,13 @@ const AddProfile8 = ({ navigation, route }: any) => {
                             longitude,
                             province,
                             country,
+                            maxDistance: 150,
+                            ageRange: {
+                                min: 18,
+                                max: 90,
+                            },
+                            birthDate: birthDate ? firestore.Timestamp.fromDate(birthDate) : null,
+                            age: calculateAge(birthDate.birthDate),
                         },
                         { merge: true },
                     );

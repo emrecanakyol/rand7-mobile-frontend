@@ -9,7 +9,7 @@ import {
     ScrollView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { EDIT_PROFILE, PROFILE } from '../../../navigators/Stack';
+import { EDIT_PROFILE, ONEBOARDINGONE, PROFILE } from '../../../navigators/Stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../utils/colors';
 import { useDispatch } from 'react-redux';
@@ -18,6 +18,7 @@ import { useAppSelector } from '../../../store/hooks';
 import { fetchUserData } from '../../../store/services/userDataService';
 import CImage from '../../../components/CImage';
 import { calculateAge } from '../../../components/CalculateAge';
+import { signOut } from '../../../store/services/authServices';
 
 const SettingsScreen = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +32,11 @@ const SettingsScreen = () => {
     useEffect(() => {
         dispatch(fetchUserData());
     }, []);
+
+    const out = async () => {
+        await signOut(dispatch);
+        await navigation.navigate(ONEBOARDINGONE);
+    }
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -97,6 +103,16 @@ const SettingsScreen = () => {
                     <TouchableOpacity style={styles.menuItem}>
                         <Ionicons name="settings-outline" size={22} color="#E56BFA" />
                         <Text style={styles.menuText}>Settings</Text>
+                        <Ionicons
+                            name="chevron-forward-outline"
+                            size={20}
+                            color="#999"
+                            style={{ marginLeft: 'auto' }}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem} onPress={out}>
+                        <Ionicons name="close-outline" size={22} color="#E56BFA" />
+                        <Text style={styles.menuText}>Çıkış yap</Text>
                         <Ionicons
                             name="chevron-forward-outline"
                             size={20}

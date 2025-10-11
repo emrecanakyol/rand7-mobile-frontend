@@ -80,7 +80,7 @@ const CImage: React.FC<CImageProps> = ({
                             left: 0,
                         },
                     ]}
-                    resizeMode={resizeMode ? resizeMode : 'contain'}
+                    resizeMode={resizeMode ? resizeMode : "cover"}
                     onLoadEnd={() => setLoading(false)}
                 />
             </TouchableOpacity>
@@ -105,7 +105,7 @@ const CImage: React.FC<CImageProps> = ({
                             height: responsive(300),
                             borderRadius: responsive(7),
                         }}
-                        resizeMode={resizeMode ? resizeMode : 'contain'}
+                        resizeMode={resizeMode ? resizeMode : 'cover'}
                     />
                 </View>
             </Modal>

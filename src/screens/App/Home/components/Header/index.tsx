@@ -5,9 +5,8 @@ import images from '../../../../../assets/image/images';
 import { useNavigation } from '@react-navigation/native';
 import CImage from '../../../../../components/CImage';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../../store/store';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { FILTER } from '../../../../../navigators/Stack';
 
 interface HeaderProps {
     userData: any;
@@ -47,7 +46,8 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={styles.notificationButton}>
+                        style={styles.notificationButton}
+                        onPress={() => navigation.navigate(FILTER)}>
                         <Ionicons
                             name="options-outline"
                             size={22}
