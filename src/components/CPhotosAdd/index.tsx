@@ -21,6 +21,7 @@ interface CPhotosAddProps {
   index: number;
   imgSource?: any;
   photos: string[];
+  resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
   setPhotos: (photos: string[]) => void;
   width?: number;
   height?: number;
@@ -35,6 +36,7 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
   photos,
   setPhotos,
   borderWidth,
+  resizeMode,
   width = 100,
   height = 100,
   borderRadius = 14,
@@ -61,8 +63,8 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
         mediaType: "photo",
         multiple: false,
         compressImageQuality: 0.5,
-        height: 1000,
-        width: 1000,
+        height: 1600,
+        width: 1200,
         cropping: true,
         cropperToolbarTitle: t("edit"),
         includeBase64: false,
@@ -85,8 +87,8 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
         mediaType: "photo",
         multiple: false,
         compressImageQuality: 0.5,
-        height: 1000,
-        width: 1000,
+        height: 1600,
+        width: 1200,
         cropping: true,
         cropperToolbarTitle: t("edit"),
         includeBase64: false,
@@ -143,6 +145,7 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
                   styles.image,
                   {
                     borderRadius: imageBorderRadius,
+                    resizeMode: resizeMode
                   },
                 ]}
               />

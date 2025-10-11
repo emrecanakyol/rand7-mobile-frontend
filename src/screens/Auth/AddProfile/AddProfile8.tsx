@@ -4,12 +4,14 @@ import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import CButton from "../../../components/CButton";
-import { DRAWER } from "../../../navigators/Stack";
 import { responsive } from "../../../utils/responsive";
 import { useTheme } from "../../../utils/colors";
 import CustomBackButton from "../../../components/CBackButton";
 import CText from "../../../components/CText/CText";
 import CTextInput from "../../../components/CTextInput";
+import CLoading from "../../../components/CLoading";
+import { BOOTOMTABS } from "../../../navigators/Stack";
+import { ToastError } from "../../../utils/toast";
 
 const AddProfile8 = ({ navigation, route }: any) => {
     const { colors } = useTheme();
@@ -24,11 +26,12 @@ const AddProfile8 = ({ navigation, route }: any) => {
         birthDate,
         gender,
         height,
-        country,
-        city,
         lookingFor,
         relationshipType,
         hobbies,
+        location,
+        latitude,
+        longitude,
     } = route.params;
 
     const uploadPhotos = async () => {
@@ -105,18 +108,20 @@ const AddProfile8 = ({ navigation, route }: any) => {
                             lastName,
                             gender,
                             height,
-                            country,
-                            city,
                             lookingFor,
                             relationshipType,
                             hobbies,
                             about,
+                            location,
+                            latitude,
+                            longitude,
                         },
                         { merge: true },
                     );
-                await navigation.navigate(DRAWER);
+                await navigation.navigate(BOOTOMTABS);
             } catch (error) {
                 console.log('Error saving profile: ', error);
+                ToastError("Hata", "Lütfen internet bağlantınızı kontrol edin !")
             }
         } else {
             console.log('User not logged in');
@@ -125,35 +130,40 @@ const AddProfile8 = ({ navigation, route }: any) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View>
-                <CustomBackButton />
+        <>
+            {loading ? (
+                <CLoading visible={loading} />
+            ) : (
+                <View style={styles.container}>
+                    <View>
+                        <CustomBackButton />
 
-                <CText style={styles.title}>Bize biraz kendinden bahset</CText>
-                <CText style={styles.description}>
-                    Profilinde kısa bir açıklama ekleyerek diğer kullanıcıların seni tanımasını sağla.
-                </CText>
+                        <CText style={styles.title}>Bize biraz kendinden bahset</CText>
+                        <CText style={styles.description}>
+                            Profilinde kısa bir açıklama ekleyerek diğer kullanıcıların seni tanımasını sağla.
+                        </CText>
 
-                <CTextInput
-                    value={about}
-                    onChangeText={setAbout}
-                    multiline
-                    maxLength={1500}
-                    placeholder="Örneğin: Seyahat etmeyi, müzik dinlemeyi ve yeni insanlarla tanışmayı seviyorum."
-                    style={styles.textInput}
-                />
-            </View>
+                        <CTextInput
+                            value={about}
+                            onChangeText={setAbout}
+                            multiline
+                            maxLength={1500}
+                            placeholder="Örneğin: Seyahat etmeyi, müzik dinlemeyi ve yeni insanlarla tanışmayı seviyorum."
+                            style={styles.textInput}
+                        />
+                    </View>
 
-            <View style={styles.footer}>
-                <CButton
-                    title="Kaydet"
-                    onPress={saveOnPress}
-                    loading={loading}
-                    disabled={!about}
-                    style={styles.saveButton}
-                />
-            </View>
-        </View>
+                    <View style={styles.footer}>
+                        <CButton
+                            title="Kaydet"
+                            onPress={saveOnPress}
+                            disabled={!about}
+                            style={styles.saveButton}
+                        />
+                    </View>
+                </View>
+            )}
+        </>
     );
 };
 

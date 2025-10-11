@@ -19,6 +19,7 @@ interface CTextInputProps {
     validatePassword?: boolean;  // Şifre doğrulama için yeni özellik
     required?: boolean;  // Yeni required prop'u
     multiline?: boolean;  // Çok satırlı metin girişi için yeni özellik
+    disabled?: boolean;
 }
 
 const CTextInput = ({
@@ -35,6 +36,7 @@ const CTextInput = ({
     validatePassword = false,  // Şifre doğrulama kontrolü
     required = false,  // Varsayılan değer false
     multiline = false,  // Varsayılan değer false
+    disabled = true,
 }: CTextInputProps) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
@@ -97,6 +99,7 @@ const CTextInput = ({
                     autoCapitalize="none"
                     multiline={multiline}
                     textAlignVertical={multiline ? 'top' : 'center'}
+                    editable={disabled}
                 />
                 {secureTextEntry && (
                     <TouchableOpacity

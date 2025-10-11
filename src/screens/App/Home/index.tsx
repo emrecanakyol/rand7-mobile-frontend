@@ -92,7 +92,7 @@ const Home = () => {
 
                             <View style={styles.infoContainer}>
                                 <View style={styles.userInfo}>
-                                    <Text style={styles.userName}>{userData?.firstName}, 20</Text>
+                                    <Text style={styles.userName}>Ahmet, 20</Text>
                                     <Text style={styles.userLocation}>Hamburg, Germany</Text>
                                 </View>
 
