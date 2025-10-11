@@ -59,9 +59,36 @@ const Home = () => {
 
     // Yakındaki kullanıcıları çek
     const fetchNearbyUsers = async () => {
-        if (!userData?.latitude || !userData?.longitude) return;
+        if (!userData?.latitude || !userData?.longitude || !userData?.userId) return;
         setLoadingData(true);
         try {
+            const currentUserRef = firestore().collection("users").doc(userData.userId);
+            const currentUserSnap = await currentUserRef.get();
+            const currentUserData = currentUserSnap.data();
+
+            // 12 saatte bir tüm kullanıcıları yeniden göstersin
+            const lastRefresh = userData?.lastDiscoverRefresh
+                ? new Date(userData.lastDiscoverRefresh.toDate())
+                : null;
+
+            const now = new Date();
+            const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+
+            let shouldReset = false;
+
+            //firestoreye zamanı kaydet
+            if (!lastRefresh || lastRefresh < twelveHoursAgo) {
+                shouldReset = true;
+                await currentUserRef.update({
+                    lastDiscoverRefresh: firestore.Timestamp.fromDate(now),
+                });
+                console.log("🕒 Discover listesi sıfırlandı (12 saat dolmuş).");
+            }
+
+            const likedUsers = currentUserData?.likedUsers || [];
+            const superLikedUsers = currentUserData?.superLikedUsers || [];
+
+            // 🔹 Yakındaki kullanıcıları çek
             const snapshot = await firestore().collection("users").get();
 
             const allUsers = snapshot.docs
@@ -71,6 +98,11 @@ const Home = () => {
             const filtered = allUsers.filter((u: any) => {
                 // 🔹 Kendini listeleme
                 if (u.userId === userData.userId) return false;
+
+                // 🔹 Eğer 12 saat dolmadıysa, beğenilenleri gösterme
+                if (!shouldReset && (likedUsers.includes(u.userId) || superLikedUsers.includes(u.userId))) {
+                    return false;
+                }
 
                 // 🔹 Mesafe
                 const distance = getDistanceFromLatLonInKm(
@@ -114,31 +146,48 @@ const Home = () => {
         if (!userData?.userId) return;
         setLoadingData(true);
         try {
-            // likes tablosu: örneğin /likes/{currentUserId}/receivedLikes
-            const snapshot = await firestore()
-                .collection("likes")
-                .doc(userData.userId)
-                .collection("receivedLikes")
-                .get();
+            const currentUserRef = firestore().collection("users").doc(userData.userId);
+            const currentUserSnap = await currentUserRef.get();
 
-            const likedUserIds = snapshot.docs.map(doc => doc.id);
-
-            if (likedUserIds.length === 0) {
-                setNearbyUsers([]); // sonuç yoksa boş liste
+            if (!currentUserSnap.exists) {
+                console.log("❌ Kullanıcı belgesi bulunamadı.");
+                setNearbyUsers([]);
                 return;
             }
 
+            const currentUserData = currentUserSnap.data();
+
+            // 🔹 Normal beğenenler + süper beğenenler
+            const likers = currentUserData?.likers || [];
+            const superLikers = currentUserData?.superLikers || [];
+
+            // 🔹 Eğer hiç beğeni yoksa
+            if (likers.length === 0 && superLikers.length === 0) {
+                setNearbyUsers([]);
+                console.log("🕊 Seni beğenen yok.");
+                return;
+            }
+
+            // 🔹 Tüm beğenen kullanıcıların ID'lerini tek listede birleştir
+            const allLikers = Array.from(new Set([...likers, ...superLikers]));
+
+            // 🔹 Bu kullanıcıların verilerini Firestore'dan çek
             const usersSnapshot = await firestore()
                 .collection("users")
-                .where("userId", "in", likedUserIds)
+                .where("userId", "in", allLikers)
                 .get();
 
-            const allUsers = usersSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
+            const allUsers = usersSnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    // Ek alan: beğeni türü
+                    likeType: superLikers.includes(data.userId) ? "super" : "normal",
+                };
+            });
 
-            // 🔹 Discover'daki filtreleme aynı şekilde
+            // 🔹 Discover’daki filtreleme kurallarını aynen uygula
             const filtered = allUsers.filter((u: any) => {
                 if (u.userId === userData.userId) return false;
 
@@ -166,7 +215,7 @@ const Home = () => {
                 );
             });
 
-            console.log("❤️ Seni beğenen kullanıcılar:", filtered.length);
+            console.log("❤️ + 💫 Seni beğenen kullanıcılar:", filtered.length);
             setNearbyUsers(filtered);
         } catch (err) {
             console.error("❌ Beğenen kullanıcıları çekerken hata:", err);
@@ -175,6 +224,7 @@ const Home = () => {
             setLoadingData(false);
         }
     };
+
 
     // Km göre kullanıcı öneriyor.
     const getDistanceFromLatLonInKm = (
@@ -204,6 +254,77 @@ const Home = () => {
             fetchLikedUsers();
         }
     }, [userData, activeTab]);
+
+    const handleLike = async (userId: string) => {
+        if (!userData?.userId) return;
+
+        try {
+            const userRef = firestore().collection("users").doc(userId);
+            const currentUserRef = firestore().collection("users").doc(userData.userId);
+
+            // 🔹 Beğenilen kullanıcının 'likers' listesine beni ekle
+            await userRef.update({
+                likers: firestore.FieldValue.arrayUnion(userData.userId),
+            });
+
+            // 🔹 Benim 'likedUsers' listeme beğendiğim kişiyi ekle
+            await currentUserRef.update({
+                likedUsers: firestore.FieldValue.arrayUnion(userId),
+            });
+
+            console.log("❤️ Beğeni kaydedildi (karşı tarafa + bana eklendi).");
+        } catch (err) {
+            console.error("❌ Beğeni eklerken hata:", err);
+        }
+    };
+
+    const handleSuperLike = async (userId: string) => {
+        if (!userData?.userId) return;
+
+        try {
+            const userRef = firestore().collection("users").doc(userId);
+            const currentUserRef = firestore().collection("users").doc(userData.userId);
+
+            // 🔹 Beğenilen kullanıcının 'superLikers' listesine beni ekle
+            await userRef.update({
+                superLikers: firestore.FieldValue.arrayUnion(userData.userId),
+            });
+
+            // 🔹 Benim 'superLikedUsers' listeme beğendiğim kişiyi ekle
+            await currentUserRef.update({
+                superLikedUsers: firestore.FieldValue.arrayUnion(userId),
+            });
+
+            console.log("💫 Süper beğeni kaydedildi (karşı tarafa + bana eklendi).");
+        } catch (err) {
+            console.error("❌ Süper beğeni eklerken hata:", err);
+        }
+    };
+
+    const handleDislike = async (userId: string) => {
+        if (!userData?.userId) return;
+
+        try {
+            const userRef = firestore().collection("users").doc(userId);
+            const currentUserRef = firestore().collection("users").doc(userData.userId);
+
+            // 🔹 Karşı tarafın listelerinden beni kaldır
+            await userRef.update({
+                likers: firestore.FieldValue.arrayRemove(userData.userId),
+                superLikers: firestore.FieldValue.arrayRemove(userData.userId),
+            });
+
+            // 🔹 Benim listelerimden o kişiyi kaldır
+            await currentUserRef.update({
+                likedUsers: firestore.FieldValue.arrayRemove(userId),
+                superLikedUsers: firestore.FieldValue.arrayRemove(userId),
+            });
+
+            console.log("❌ Beğeni(ler) geri alındı, tüm listelerden silindi.");
+        } catch (err) {
+            console.error("❌ Dislike işleminde hata:", err);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -274,19 +395,29 @@ const Home = () => {
                                             <View style={styles.actionButtons}>
                                                 <TouchableOpacity
                                                     style={styles.dislikeButton}
-                                                    onPress={() => swiperRef.current.swipeLeft()}
+                                                    onPress={() => {
+                                                        handleDislike(u.userId);
+                                                        swiperRef.current.swipeLeft();
+                                                    }}
                                                 >
                                                     <Ionicons name="close" size={28} color="#000" />
                                                 </TouchableOpacity>
                                                 <TouchableOpacity
                                                     style={styles.starButton}
-                                                    onPress={() => swiperRef.current.swipeRight()}
+                                                    onPress={() => {
+                                                        handleSuperLike(u.userId);
+                                                        swiperRef.current.swipeRight(); // Süper beğeniyi sağa kaydırarak animasyonu koruyoruz
+                                                    }}
                                                 >
                                                     <Ionicons name="star" size={26} color="#fff" />
                                                 </TouchableOpacity>
                                                 <TouchableOpacity
                                                     style={styles.likeButton}
-                                                    onPress={() => swiperRef.current.swipeRight()}
+                                                    onPress={() => {
+                                                        // Burada doğrudan 'u.userId' ile 'handleLike' fonksiyonunu çağırıyoruz
+                                                        handleLike(u.userId);
+                                                        swiperRef.current.swipeRight(); // Beğenilen kullanıcıyı sağa kaydır
+                                                    }}
                                                 >
                                                     <Ionicons name="heart" size={28} color="#fff" />
                                                 </TouchableOpacity>
