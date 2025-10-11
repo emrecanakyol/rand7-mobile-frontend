@@ -67,8 +67,8 @@ const Home = () => {
             const currentUserData = currentUserSnap.data();
 
             // 12 saatte bir tüm kullanıcıları yeniden göstersin
-            const lastRefresh = userData?.lastDiscoverRefresh
-                ? new Date(userData.lastDiscoverRefresh.toDate())
+            const lastRefresh = currentUserData?.lastDiscoverRefresh
+                ? new Date(currentUserData.lastDiscoverRefresh.toDate())
                 : null;
 
             const now = new Date();
@@ -141,6 +141,7 @@ const Home = () => {
         }
     };
 
+    // 🔹 Seni beğenen kullanıcıları çek
     // 🔹 Seni beğenen kullanıcıları çek
     const fetchLikedUsers = async () => {
         if (!userData?.userId) return;
