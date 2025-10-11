@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { useTheme } from '../../../utils/colors';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ADD_PROFILE } from '../../../navigators/Stack';
@@ -20,7 +20,6 @@ const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { userData, loading } = useAppSelector((state) => state.userData);
     const navigation: any = useNavigation();
-    const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
@@ -29,6 +28,7 @@ const Home = () => {
     const [activeTab, setActiveTab] = useState<'discover' | 'likes'>('discover');
     const [nearbyUsers, setNearbyUsers] = useState<any[]>([]);
     const swiperRef = useRef<any>(null);
+    const [loadingData, setLoadingData] = useState(false);
 
     // Veriler eksikse yine profil oluştur ekranına yönlendir
     const checkUserProfile = async () => {
@@ -57,11 +57,10 @@ const Home = () => {
         return unsubscribe;
     }, [navigation]);
 
-
-    // Tüm kullanıcı tablosunu çekiyor
+    // Yakındaki kullanıcıları çek
     const fetchNearbyUsers = async () => {
         if (!userData?.latitude || !userData?.longitude) return;
-
+        setLoadingData(true);
         try {
             const snapshot = await firestore().collection("users").get();
 
@@ -104,6 +103,76 @@ const Home = () => {
             setNearbyUsers(filtered);
         } catch (err) {
             console.error("❌ Kullanıcıları çekerken hata:", err);
+        } finally {
+            await new Promise(resolve => setTimeout(resolve, 3000)); // 3 saniye beklet
+            setLoadingData(false);
+        }
+    };
+
+    // 🔹 Seni beğenen kullanıcıları çek
+    const fetchLikedUsers = async () => {
+        if (!userData?.userId) return;
+        setLoadingData(true);
+        try {
+            // likes tablosu: örneğin /likes/{currentUserId}/receivedLikes
+            const snapshot = await firestore()
+                .collection("likes")
+                .doc(userData.userId)
+                .collection("receivedLikes")
+                .get();
+
+            const likedUserIds = snapshot.docs.map(doc => doc.id);
+
+            if (likedUserIds.length === 0) {
+                setNearbyUsers([]); // sonuç yoksa boş liste
+                return;
+            }
+
+            const usersSnapshot = await firestore()
+                .collection("users")
+                .where("userId", "in", likedUserIds)
+                .get();
+
+            const allUsers = usersSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+
+            // 🔹 Discover'daki filtreleme aynı şekilde
+            const filtered = allUsers.filter((u: any) => {
+                if (u.userId === userData.userId) return false;
+
+                const distance = getDistanceFromLatLonInKm(
+                    userData.latitude,
+                    userData.longitude,
+                    u.latitude,
+                    u.longitude
+                );
+
+                const age = calculateAge(u.birthDate);
+                const minAge = userData?.ageRange?.min || 18;
+                const maxAge = userData?.ageRange?.max || 90;
+
+                const matchesGender =
+                    userData?.lookingFor === "any" ||
+                    !userData?.lookingFor ||
+                    userData?.lookingFor?.toLowerCase() === u.gender?.toLowerCase();
+
+                return (
+                    distance <= (userData.maxDistance || 150) &&
+                    age >= minAge &&
+                    age <= maxAge &&
+                    matchesGender
+                );
+            });
+
+            console.log("❤️ Seni beğenen kullanıcılar:", filtered.length);
+            setNearbyUsers(filtered);
+        } catch (err) {
+            console.error("❌ Beğenen kullanıcıları çekerken hata:", err);
+        } finally {
+            await new Promise(resolve => setTimeout(resolve, 3000)); // 3 saniye beklet
+            setLoadingData(false);
         }
     };
 
@@ -127,10 +196,14 @@ const Home = () => {
     };
 
     useEffect(() => {
-        if (userData) {
+        if (!userData) return;
+
+        if (activeTab === "discover") {
             fetchNearbyUsers();
+        } else if (activeTab === "likes") {
+            fetchLikedUsers();
         }
-    }, [userData]);
+    }, [userData, activeTab]);
 
     return (
         <View style={styles.container}>
@@ -156,7 +229,14 @@ const Home = () => {
                         </TouchableOpacity>
                     </View>
 
-                    {activeTab === "discover" ? (
+                    {loadingData ? (
+                        <View style={{ marginTop: 80, alignItems: 'center' }}>
+                            <ActivityIndicator size="large" color={colors.RED_COLOR} />
+                            <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 10 }}>
+                                Veriler yükleniyor...
+                            </Text>
+                        </View>
+                    ) : activeTab === "discover" ? (
                         nearbyUsers.length > 0 ? (
                             <Swiper
                                 cards={nearbyUsers}
@@ -232,29 +312,36 @@ const Home = () => {
                         )
                     ) : (
                         <View style={styles.likesContainer}>
-                            <View style={styles.matchesGrid}>
-                                {[
-                                    { name: 'James', age: 20, match: 100, distance: '1.3 km', image: 'https://images.unsplash.com/photo-1603415526960-f7e0328d6ea9' },
-                                    { name: 'Eddie', age: 23, match: 94, distance: '2 km', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e' },
-                                    { name: 'Brandon', age: 20, match: 89, distance: '2.5 km', image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde' },
-                                    { name: 'Alfredo', age: 20, match: 80, distance: '2.5 km', image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e' },
-                                    { name: 'Eddie', age: 23, match: 94, distance: '2 km', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e' },
-                                    { name: 'Brandon', age: 20, match: 89, distance: '2.5 km', image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde' },
-                                    { name: 'James', age: 20, match: 100, distance: '1.3 km', image: 'https://images.unsplash.com/photo-1603415526960-f7e0328d6ea9' },
-                                ].map((user, index) => (
-                                    <View key={index} style={styles.matchCard}>
-                                        <Image source={{ uri: user.image }} style={styles.matchImage} />
-                                        <View style={styles.matchBadge}>
-                                            <Text style={styles.matchText}>{user.match}% Match</Text>
+                            {nearbyUsers.length > 0 ? (
+                                <View style={styles.matchesGrid}>
+                                    {nearbyUsers.map((u, index) => (
+                                        <View key={index} style={styles.matchCard}>
+                                            <Image
+                                                source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                                style={styles.matchImage}
+                                            />
+                                            <View style={styles.matchBadge}>
+                                                <Text style={styles.matchText}>{calculateAge(u.birthDate)} yaş</Text>
+                                            </View>
+                                            <View style={styles.matchInfo}>
+                                                <Text style={styles.likesDistanceText}>
+                                                    {getDistanceFromLatLonInKm(
+                                                        userData.latitude,
+                                                        userData.longitude,
+                                                        u.latitude,
+                                                        u.longitude
+                                                    ).toFixed(1)} km uzakta
+                                                </Text>
+                                                <Text style={styles.likesUserName}>{u.firstName}, {calculateAge(u.birthDate)}</Text>
+                                            </View>
                                         </View>
-
-                                        <View style={styles.matchInfo}>
-                                            <Text style={styles.likesDistanceText}>{user.distance} away</Text>
-                                            <Text style={styles.likesUserName}>{user.name}, {user.age}</Text>
-                                        </View>
-                                    </View>
-                                ))}
-                            </View>
+                                    ))}
+                                </View>
+                            ) : (
+                                <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>
+                                    Seni henüz kimse beğenmedi.
+                                </Text>
+                            )}
                         </View>
                     )}
 
