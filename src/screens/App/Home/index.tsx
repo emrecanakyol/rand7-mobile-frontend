@@ -361,15 +361,19 @@ const Home = () => {
             await userRef.update({
                 likers: firestore.FieldValue.arrayRemove(userData.userId),
                 superLikers: firestore.FieldValue.arrayRemove(userData.userId),
+                likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
             });
 
             // 🔹 Benim listelerimden o kişiyi kaldır
             await currentUserRef.update({
                 likedUsers: firestore.FieldValue.arrayRemove(userId),
                 superLikedUsers: firestore.FieldValue.arrayRemove(userId),
+                likers: firestore.FieldValue.arrayRemove(userId),
+                superLikers: firestore.FieldValue.arrayRemove(userId),
             });
 
-            console.log("❌ Beğeni(ler) geri alındı, tüm listelerden silindi.");
+            setNearbyUsers(prev => prev.filter(user => user.userId !== userId));
         } catch (err) {
             console.error("❌ Dislike işleminde hata:", err);
         }
@@ -538,7 +542,9 @@ const Home = () => {
                                             />
                                             <TouchableOpacity
                                                 style={styles.closeIcon}
-                                                onPress={() => handleDislike(u.userId)}
+                                                onPress={() => {
+                                                    handleDislike(u.userId);
+                                                }}
                                             >
                                                 <Ionicons name="close-circle" size={22} color={colors.WHITE_COLOR} />
                                             </TouchableOpacity>
