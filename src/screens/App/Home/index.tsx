@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { useTheme } from '../../../utils/colors';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { ADD_PROFILE } from '../../../navigators/Stack';
+import { ADD_PROFILE, LIKE_MATCHED, SUPER_LIKE_MATCHED } from '../../../navigators/Stack';
 import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -72,7 +72,8 @@ const Home = () => {
                 : null;
 
             const now = new Date();
-            const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+            const twelveHoursAgo = new Date(now.getTime() - 0 * 60 * 60 * 1000); // Test için 0 yaptık
+            // const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
 
             let shouldReset = false;
 
@@ -257,53 +258,98 @@ const Home = () => {
     }, [userData, activeTab]);
 
     const handleLike = async (userId: string) => {
-        if (!userData?.userId) return;
+        if (!userData?.userId || !userData) return;
 
         try {
             const userRef = firestore().collection("users").doc(userId);
             const currentUserRef = firestore().collection("users").doc(userData.userId);
 
-            // 🔹 Beğenilen kullanıcının 'likers' listesine beni ekle
-            await userRef.update({
-                likers: firestore.FieldValue.arrayUnion(userData.userId),
-            });
+            const userSnap = await userRef.get();
+            const likedUserData = userSnap.data();
 
-            // 🔹 Benim 'likedUsers' listeme beğendiğim kişiyi ekle
+            if (!likedUserData) return;
+
+            // 🔹 Karşı taraf beni önceden beğenmiş mi?
+            const theyLikedMe = likedUserData.likedUsers?.includes(userData.userId);
+
+            // 🔹 Karşı taraf bana SuperLike atmış mı?
+            const theySuperLikedMe = likedUserData.superLikedUsers?.includes(userData.userId);
+
+            // 🔹 Benim 'likedUsers' listeme onu ekle
             await currentUserRef.update({
                 likedUsers: firestore.FieldValue.arrayUnion(userId),
             });
 
-            console.log("❤️ Beğeni kaydedildi (karşı tarafa + bana eklendi).");
+            console.log("❤️ Like kaydedildi.");
+
+            // 🔹 Eğer karşı taraf da beni beğendiyse → normal eşleşme
+            if (theyLikedMe && !theySuperLikedMe) {
+                console.log("💘 Karşılıklı like! Matched ekranına yönlendiriliyor...");
+                navigation.navigate(LIKE_MATCHED, {
+                    user1: userData,
+                    user2: likedUserData,
+                });
+            }
+
+            // 🔹 Eğer karşı taraf bana SuperLike atmışsa → SuperLikeMatched
+            else if (theySuperLikedMe) {
+                console.log("💙 SuperLike eşleşmesi! SuperLikeMatched ekranına yönlendiriliyor...");
+                navigation.navigate(SUPER_LIKE_MATCHED, {
+                    user1: userData,
+                    user2: likedUserData,
+                });
+            }
+
         } catch (err) {
-            console.error("❌ Beğeni eklerken hata:", err);
+            console.error("❌ Like eklerken hata:", err);
         }
     };
 
     const handleSuperLike = async (userId: string) => {
-        if (!userData?.userId) return;
+        if (!userData?.userId || !userData) return;
 
         try {
             const userRef = firestore().collection("users").doc(userId);
             const currentUserRef = firestore().collection("users").doc(userData.userId);
 
-            // 🔹 Beğenilen kullanıcının 'superLikers' listesine beni ekle
+            // 🔹 SuperLike atılan kullanıcının verisini al
+            const userSnap = await userRef.get();
+            const superLikedUserData = userSnap.data();
+
+            if (!superLikedUserData) return;
+
+            // 🔹 Karşı taraf beni daha önce beğenmiş veya süperlike’lamış mı?
+            const theyLikedMe =
+                superLikedUserData.likedUsers?.includes(userData.userId) ||
+                superLikedUserData.superLikedUsers?.includes(userData.userId);
+
+            // 🔹 Karşı tarafın 'superLikers' listesine beni ekle
             await userRef.update({
                 superLikers: firestore.FieldValue.arrayUnion(userData.userId),
             });
 
-            // 🔹 Benim 'superLikedUsers' listeme beğendiğim kişiyi ekle
+            // 🔹 Benim 'superLikedUsers' listeme onu ekle
             await currentUserRef.update({
                 superLikedUsers: firestore.FieldValue.arrayUnion(userId),
             });
 
-            console.log("💫 Süper beğeni kaydedildi (karşı tarafa + bana eklendi).");
+            console.log("💙 SuperLike kaydedildi.");
+
+            // 🔹 Eğer karşı taraf da beni beğendiyse veya superlike'ladıysa → eşleşme!
+            if (theyLikedMe) {
+                console.log("💫 Karşılıklı beğeni! SuperLikeMatched ekranına yönlendiriliyor...");
+                navigation.navigate("SuperLikeMatched", {
+                    user1: userData,
+                    user2: superLikedUserData,
+                });
+            }
         } catch (err) {
-            console.error("❌ Süper beğeni eklerken hata:", err);
+            console.error("❌ SuperLike eklerken hata:", err);
         }
     };
 
     const handleDislike = async (userId: string) => {
-        if (!userData?.userId) return;
+        if (!userData?.userId || !userData) return;
 
         try {
             const userRef = firestore().collection("users").doc(userId);
@@ -361,71 +407,95 @@ const Home = () => {
                     ) : activeTab === "discover" ? (
                         nearbyUsers.length > 0 ? (
                             <Swiper
+                                key={nearbyUsers.length} // ✅ Swiper reset için
+                                ref={swiperRef}
                                 cards={nearbyUsers}
-                                renderCard={(u) => (
-                                    <View style={styles.cardContainer}>
-                                        <Image
-                                            source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
-                                            style={styles.profileImage}
-                                        />
-                                        <LinearGradient
-                                            colors={['transparent', 'rgba(0,0,0,0.7)']}
-                                            style={styles.gradientOverlay}
-                                        />
-                                        <View style={styles.distanceContainer}>
-                                            <Text style={styles.distanceText}>
-                                                {getDistanceFromLatLonInKm(
-                                                    userData.latitude,
-                                                    userData.longitude,
-                                                    u.latitude,
-                                                    u.longitude
-                                                ).toFixed(1)} km
-                                            </Text>
-                                        </View>
-
-                                        <View style={styles.infoContainer}>
-                                            <View style={styles.userInfo}>
-                                                <Text style={styles.userName}>
-                                                    {u.firstName}, {calculateAge(u.birthDate)}
+                                renderCard={(u) => {
+                                    if (!u) {
+                                        // ✅ undefined kart gelirse beyaz ekran yerine fallback göster
+                                        return (
+                                            <View style={{
+                                                flex: 1,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                backgroundColor: colors.BACKGROUND_COLOR,
+                                                borderRadius: 14,
+                                            }}>
+                                                <Text style={{ color: colors.TEXT_MAIN_COLOR }}>
+                                                    Gösterilecek başka kişi kalmadı.
                                                 </Text>
-                                                <Text style={styles.userLocation}>
-                                                    {u.province}, {u.country}
+                                            </View>
+                                        );
+                                    }
+
+                                    return (
+                                        <View style={styles.cardContainer}>
+                                            <Image
+                                                source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                                style={styles.profileImage}
+                                            />
+                                            <LinearGradient
+                                                colors={['transparent', 'rgba(0,0,0,0.7)']}
+                                                style={styles.gradientOverlay}
+                                            />
+                                            <View style={styles.distanceContainer}>
+                                                <Text style={styles.distanceText}>
+                                                    {getDistanceFromLatLonInKm(
+                                                        userData.latitude,
+                                                        userData.longitude,
+                                                        u.latitude,
+                                                        u.longitude
+                                                    ).toFixed(1)} km
                                                 </Text>
                                             </View>
 
-                                            <View style={styles.actionButtons}>
-                                                <TouchableOpacity
-                                                    style={styles.dislikeButton}
-                                                    onPress={() => {
-                                                        handleDislike(u.userId);
-                                                        swiperRef.current.swipeLeft();
-                                                    }}
-                                                >
-                                                    <Ionicons name="close" size={28} color="#000" />
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={styles.starButton}
-                                                    onPress={() => {
-                                                        handleSuperLike(u.userId);
-                                                        swiperRef.current.swipeRight(); // Süper beğeniyi sağa kaydırarak animasyonu koruyoruz
-                                                    }}
-                                                >
-                                                    <Ionicons name="star" size={26} color="#fff" />
-                                                </TouchableOpacity>
-                                                <TouchableOpacity
-                                                    style={styles.likeButton}
-                                                    onPress={() => {
-                                                        // Burada doğrudan 'u.userId' ile 'handleLike' fonksiyonunu çağırıyoruz
-                                                        handleLike(u.userId);
-                                                        swiperRef.current.swipeRight(); // Beğenilen kullanıcıyı sağa kaydır
-                                                    }}
-                                                >
-                                                    <Ionicons name="heart" size={28} color="#fff" />
-                                                </TouchableOpacity>
+                                            <View style={styles.infoContainer}>
+                                                <View style={styles.userInfo}>
+                                                    <Text style={styles.userName}>
+                                                        {u.firstName}, {calculateAge(u.birthDate)}
+                                                    </Text>
+                                                    <Text style={styles.userLocation}>
+                                                        {u.province}, {u.country}
+                                                    </Text>
+                                                </View>
+
+                                                <View style={styles.actionButtons}>
+                                                    <TouchableOpacity
+                                                        style={styles.dislikeButton}
+                                                        onPress={() => {
+                                                            handleDislike(u.userId);
+                                                            swiperRef.current?.swipeLeft();
+                                                        }}
+                                                    >
+                                                        <Ionicons name="close" size={28} color="#000" />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={styles.starButton}
+                                                        onPress={() => {
+                                                            handleSuperLike(u.userId);
+                                                            swiperRef.current?.swipeRight();
+                                                        }}
+                                                    >
+                                                        <Ionicons name="star" size={26} color="#fff" />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={styles.likeButton}
+                                                        onPress={() => {
+                                                            handleLike(u.userId);
+                                                            swiperRef.current?.swipeRight();
+                                                        }}
+                                                    >
+                                                        <Ionicons name="heart" size={28} color="#fff" />
+                                                    </TouchableOpacity>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
-                                )}
+                                    );
+                                }}
+                                onSwipedAll={() => {
+                                    console.log("🕊 Tüm kartlar bitti.");
+                                    setNearbyUsers([]); // ✅ beyaz ekran yerine “yakında kimse yok” gösterecek
+                                }}
                                 onSwipedLeft={(cardIndex) => {
                                     console.log('❌ Dislike:', nearbyUsers[cardIndex]?.firstName);
                                 }}
@@ -437,7 +507,6 @@ const Home = () => {
                                 cardIndex={0}
                                 animateCardOpacity
                                 verticalSwipe={false}
-                                ref={swiperRef}
                             />
                         ) : (
                             <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>Yakında kimse bulunamadı.</Text>
