@@ -14,6 +14,7 @@ import { useAppSelector } from '../../../store/hooks';
 import { fetchUserData } from '../../../store/services/userDataService';
 import firestore from '@react-native-firebase/firestore';
 import { calculateAge } from '../../../components/CalculateAge';
+import Swiper from 'react-native-deck-swiper';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -27,6 +28,7 @@ const Home = () => {
     const styles = getStyles(colors, isTablet, height);
     const [activeTab, setActiveTab] = useState<'discover' | 'likes'>('discover');
     const [nearbyUsers, setNearbyUsers] = useState<any[]>([]);
+    const swiperRef = useRef<any>(null);
 
     // Veriler eksikse yine profil oluştur ekranına yönlendir
     const checkUserProfile = async () => {
@@ -67,23 +69,6 @@ const Home = () => {
                 .map(doc => ({ id: doc.id, ...doc.data() }))
                 .filter((u: any) => u.userId !== userData.userId && u.latitude && u.longitude);
 
-            // const filtered = allUsers.filter((u: any) => {
-            //     const distance = getDistanceFromLatLonInKm(
-            //         userData.latitude,
-            //         userData.longitude,
-            //         u.latitude,
-            //         u.longitude
-            //     );
-
-            //     const age = calculateAge(u.birthDate);
-            //     const minAge = userData?.ageRange?.min || 18;
-            //     const maxAge = userData?.ageRange?.max || 90;
-
-            //     return (
-            //         distance <= (userData.maxDistance || 150) &&
-            //         age >= minAge &&
-            //         age <= maxAge
-            //     );
             const filtered = allUsers.filter((u: any) => {
                 // 🔹 Kendini listeleme
                 if (u.userId === userData.userId) return false;
@@ -173,47 +158,75 @@ const Home = () => {
 
                     {activeTab === "discover" ? (
                         nearbyUsers.length > 0 ? (
-                            nearbyUsers.map((u, index) => (
-                                <View key={index} style={styles.cardContainer}>
-                                    <Image
-                                        source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
-                                        style={styles.profileImage}
-                                    />
-                                    <LinearGradient
-                                        colors={['transparent', 'rgba(0,0,0,0.7)']}
-                                        style={styles.gradientOverlay}
-                                    />
-                                    <View style={styles.distanceContainer}>
-                                        <Text style={styles.distanceText}>
-                                            {getDistanceFromLatLonInKm(
-                                                userData.latitude,
-                                                userData.longitude,
-                                                u.latitude,
-                                                u.longitude
-                                            ).toFixed(1)} km
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.infoContainer}>
-                                        <View style={styles.userInfo}>
-                                            <Text style={styles.userName}>{u.firstName}, {new Date().getFullYear() - new Date(u.birthDate.seconds * 1000).getFullYear()}</Text>
-                                            <Text style={styles.userLocation}>{u.province}, {u.country}</Text>
+                            <Swiper
+                                cards={nearbyUsers}
+                                renderCard={(u) => (
+                                    <View style={styles.cardContainer}>
+                                        <Image
+                                            source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                            style={styles.profileImage}
+                                        />
+                                        <LinearGradient
+                                            colors={['transparent', 'rgba(0,0,0,0.7)']}
+                                            style={styles.gradientOverlay}
+                                        />
+                                        <View style={styles.distanceContainer}>
+                                            <Text style={styles.distanceText}>
+                                                {getDistanceFromLatLonInKm(
+                                                    userData.latitude,
+                                                    userData.longitude,
+                                                    u.latitude,
+                                                    u.longitude
+                                                ).toFixed(1)} km
+                                            </Text>
                                         </View>
 
-                                        <View style={styles.actionButtons}>
-                                            <TouchableOpacity style={styles.dislikeButton}>
-                                                <Ionicons name="close" size={28} color="#000" />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity style={styles.starButton}>
-                                                <Ionicons name="star" size={26} color="#fff" />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity style={styles.likeButton}>
-                                                <Ionicons name="heart" size={28} color="#fff" />
-                                            </TouchableOpacity>
+                                        <View style={styles.infoContainer}>
+                                            <View style={styles.userInfo}>
+                                                <Text style={styles.userName}>
+                                                    {u.firstName}, {calculateAge(u.birthDate)}
+                                                </Text>
+                                                <Text style={styles.userLocation}>
+                                                    {u.province}, {u.country}
+                                                </Text>
+                                            </View>
+
+                                            <View style={styles.actionButtons}>
+                                                <TouchableOpacity
+                                                    style={styles.dislikeButton}
+                                                    onPress={() => swiperRef.current.swipeLeft()}
+                                                >
+                                                    <Ionicons name="close" size={28} color="#000" />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={styles.starButton}
+                                                    onPress={() => swiperRef.current.swipeRight()}
+                                                >
+                                                    <Ionicons name="star" size={26} color="#fff" />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={styles.likeButton}
+                                                    onPress={() => swiperRef.current.swipeRight()}
+                                                >
+                                                    <Ionicons name="heart" size={28} color="#fff" />
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            ))
+                                )}
+                                onSwipedLeft={(cardIndex) => {
+                                    console.log('❌ Dislike:', nearbyUsers[cardIndex]?.firstName);
+                                }}
+                                onSwipedRight={(cardIndex) => {
+                                    console.log('❤️ Like:', nearbyUsers[cardIndex]?.firstName);
+                                }}
+                                stackSize={3}
+                                backgroundColor="transparent"
+                                cardIndex={0}
+                                animateCardOpacity
+                                verticalSwipe={false}
+                                ref={swiperRef}
+                            />
                         ) : (
                             <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>Yakında kimse bulunamadı.</Text>
                         )
