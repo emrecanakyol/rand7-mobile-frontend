@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
@@ -32,7 +32,11 @@ const AddProfile8 = ({ navigation, route }: any) => {
         location,
         latitude,
         longitude,
+        province,
+        country,
     } = route.params;
+
+    console.log(route.params)
 
     const uploadPhotos = async () => {
         const userId = auth().currentUser?.uid;
@@ -115,6 +119,8 @@ const AddProfile8 = ({ navigation, route }: any) => {
                             location,
                             latitude,
                             longitude,
+                            province,
+                            country,
                         },
                         { merge: true },
                     );
@@ -134,34 +140,41 @@ const AddProfile8 = ({ navigation, route }: any) => {
             {loading ? (
                 <CLoading visible={loading} />
             ) : (
-                <View style={styles.container}>
-                    <View>
-                        <CustomBackButton />
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                    <ScrollView
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.container}
+                        scrollEnabled={false}
+                    >
+                        <View>
+                            <CustomBackButton />
 
-                        <CText style={styles.title}>Bize biraz kendinden bahset</CText>
-                        <CText style={styles.description}>
-                            Profilinde kısa bir açıklama ekleyerek diğer kullanıcıların seni tanımasını sağla.
-                        </CText>
+                            <CText style={styles.title}>Bize biraz kendinden bahset</CText>
+                            <CText style={styles.description}>
+                                Profilinde kısa bir açıklama ekleyerek diğer kullanıcıların seni tanımasını sağla.
+                            </CText>
 
-                        <CTextInput
-                            value={about}
-                            onChangeText={setAbout}
-                            multiline
-                            maxLength={1500}
-                            placeholder="Örneğin: Seyahat etmeyi, müzik dinlemeyi ve yeni insanlarla tanışmayı seviyorum."
-                            style={styles.textInput}
-                        />
-                    </View>
+                            <CTextInput
+                                value={about}
+                                onChangeText={setAbout}
+                                multiline
+                                maxLength={1500}
+                                placeholder="Örneğin: Seyahat etmeyi, müzik dinlemeyi ve yeni insanlarla tanışmayı seviyorum."
+                                style={styles.textInput}
+                            />
+                        </View>
 
-                    <View style={styles.footer}>
-                        <CButton
-                            title="Kaydet"
-                            onPress={saveOnPress}
-                            disabled={!about}
-                            style={styles.saveButton}
-                        />
-                    </View>
-                </View>
+                        <View style={styles.footer}>
+                            <CButton
+                                title="Kaydet"
+                                onPress={saveOnPress}
+                                disabled={!about}
+                                style={styles.saveButton}
+                            />
+                        </View>
+                    </ScrollView>
+                </TouchableWithoutFeedback>
             )}
         </>
     );

@@ -7,29 +7,55 @@ import CButton from "../../../components/CButton";
 import { ADD_PROFILE_8 } from "../../../navigators/Stack";
 import CustomBackButton from "../../../components/CBackButton";
 
-const hobbiesList = [
-    "🎮 Oyun",
-    "💃 Dans",
-    "💬 Dil",
-    "🎵 Müzik",
-    "🎬 Film",
-    "📸 Fotoğraf",
-    "🏛 Mimari",
-    "👗 Moda",
-    "📚 Kitap",
-    "✍️ Yazmak",
-    "🌿 Doğa",
-    "🎨 Resim",
-    "⚽ Futbol",
-    "🙂 İnsanlar",
-    "🐼 Hayvanlar",
-    "💪 Spor & Fitness",
-];
+// 🎨 Kategorilere göre hobiler
+const categorizedHobbies = {
+    "🎨 Sanat & Yaratıcılık": [
+        "🎵 Müzik",
+        "🎨 Resim",
+        "✍️ Yazmak",
+        "💃 Dans",
+        "📸 Fotoğraf",
+        "🎬 Film",
+        "🏛 Mimari",
+    ],
+    "⚽ Spor & Aktivite": [
+        "⚽ Futbol",
+        "🏀 Basketbol",
+        "🏋️ Fitness",
+        "🚴 Bisiklet",
+        "🏊 Yüzme",
+        "⛷️ Kayak",
+        "🧘 Yoga",
+        "🚶 Doğa yürüyüşü",
+    ],
+    "🌍 Yaşam & Kültür": [
+        "💬 Dil öğrenmek",
+        "📚 Kitap okumak",
+        "✈️ Seyahat",
+        "🍳 Yemek yapmak",
+        "☕ Kahve kültürü",
+        "🎭 Tiyatro",
+    ],
+    "💻 Teknoloji & Oyun": [
+        "🎮 Oyun",
+        "💻 Kodlama",
+        "🤖 Yapay zeka",
+        "🧩 Bulmacalar",
+        "📱 Sosyal medya",
+    ],
+    "🧡 Sosyal & Günlük": [
+        "🙂 Yeni insanlar tanımak",
+        "🐼 Hayvanlar",
+        "👗 Moda",
+        "🌿 Doğa",
+        "💪 Spor & Fitness",
+    ],
+};
 
 const AddProfile7 = ({ navigation, route }: any) => {
     const { colors } = useTheme();
     const [selected, setSelected] = useState<string[]>([]);
-    const maxSelection = 5;
+    const maxSelection = 10;
 
     const toggle = (item: string) => {
         setSelected((prev) => {
@@ -40,55 +66,68 @@ const AddProfile7 = ({ navigation, route }: any) => {
     };
 
     const next = () =>
-        navigation.navigate(ADD_PROFILE_8, { ...route.params, hobbies: selected });
+        navigation.navigate(ADD_PROFILE_8, {
+            ...route.params,
+            hobbies: selected
+        });
 
     const styles = getStyles(colors);
 
     return (
-        <View style={styles.container}>
-            <CustomBackButton />
+        <ScrollView >
+            <View style={styles.container}>
 
-            <CText style={styles.title}>En fazla 5 ilgi alanı seç</CText>
-            <CText style={styles.subtitle}>
-                Seni daha iyi tanımamız için ilgi alanlarını seç.
-            </CText>
+                <CustomBackButton />
 
-            <ScrollView
-                contentContainerStyle={styles.hobbiesContainer}
-                showsVerticalScrollIndicator={false}
-            >
-                {hobbiesList.map((hobby) => {
-                    const isSelected = selected.includes(hobby);
-                    return (
-                        <CButton
-                            key={hobby}
-                            title={hobby}
-                            onPress={() => toggle(hobby)}
-                            backgroundColor={
-                                isSelected ? colors.BLACK_COLOR : colors.WHITE_COLOR
-                            }
-                            textColor={
-                                isSelected ? colors.WHITE_COLOR : colors.TEXT_MAIN_COLOR
-                            }
-                            style={styles.hobbyButton}
-                        />
-                    );
-                })}
-            </ScrollView>
+                <View>
+                    <CText style={styles.title}>İlgi alanlarını seçebilirsin</CText>
+                    <CText style={styles.subtitle}>
+                        Neleri sevdiğini bilmek, seni tanımanın en güzel yolu. Hadi, ilgi alanlarını seç ve hikayeni başlat.
+                    </CText>
+                </View>
 
-            <View style={styles.footer}>
-                <CText style={styles.progressText}>
-                    {selected.length}/{maxSelection}
-                </CText>
+                {Object.entries(categorizedHobbies).map(([category, hobbies]) => (
+                    <View key={category} style={styles.categoryContainer}>
+                        <CText style={styles.categoryTitle}>{category}</CText>
 
-                <CButton
-                    title="İleri"
-                    disabled={selected.length === 0}
-                    onPress={next}
-                    style={styles.nextButton}
-                />
-            </View>
-        </View>
+                        <View style={styles.hobbiesContainer}>
+                            {hobbies.map((hobby) => {
+                                const isSelected = selected.includes(hobby);
+                                return (
+                                    <CButton
+                                        key={hobby}
+                                        title={hobby}
+                                        onPress={() => toggle(hobby)}
+                                        backgroundColor={
+                                            isSelected ? colors.BLACK_COLOR : colors.WHITE_COLOR
+                                        }
+                                        textColor={
+                                            isSelected ? colors.WHITE_COLOR : colors.TEXT_MAIN_COLOR
+                                        }
+                                        style={styles.hobbyButton}
+                                    />
+                                );
+                            })}
+                        </View>
+                    </View>
+                ))}
+
+                <View style={styles.btnContainer}>
+                    <CText style={styles.progressText}>
+                        {selected.length}/{maxSelection}
+                    </CText>
+
+                    <CButton
+                        title="İleri"
+                        disabled={selected.length === 0}
+                        onPress={next}
+                        style={styles.btnStyle}
+                    />
+                </View>
+
+            </View >
+        </ScrollView>
+
     );
 };
 
@@ -98,48 +137,57 @@ const getStyles = (colors: any) =>
             flex: 1,
             backgroundColor: colors.BACKGROUND_COLOR,
             padding: responsive(20),
+            justifyContent: "space-between",
+        },
+        inContainer: {
+            backgroundColor: "red",
         },
         title: {
             fontSize: responsive(22),
             fontWeight: "700",
             color: colors.TEXT_MAIN_COLOR,
-            textAlign: "center",
             marginTop: responsive(30),
         },
         subtitle: {
             fontSize: responsive(15),
             color: colors.TEXT_SECONDARY_COLOR,
-            textAlign: "center",
             marginTop: responsive(6),
-            marginBottom: responsive(20),
+            marginBottom: responsive(30),
         },
-        hobbiesContainer: {
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: responsive(10),
-            paddingBottom: responsive(100),
+        categoryContainer: {
+            marginBottom: responsive(25),
         },
-        hobbyButton: {
-            borderRadius: responsive(25),
-            marginVertical: responsive(10),
-        },
-        footer: {
-            position: "absolute",
-            bottom: responsive(30),
-            left: responsive(20),
-            right: responsive(20),
-            alignItems: "center",
-        },
-        progressText: {
-            textAlign: "center",
-            fontSize: responsive(16),
+        categoryTitle: {
+            fontSize: 18,
             fontWeight: "600",
             color: colors.TEXT_MAIN_COLOR,
             marginBottom: responsive(10),
         },
-        nextButton: {
-            width: "100%",
+        hobbiesContainer: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "flex-start",
+            gap: responsive(10),
+        },
+        hobbyButton: {
+            borderRadius: responsive(25),
+            marginVertical: responsive(5),
+        },
+        btnContainer: {
+            marginTop: responsive(50),
+            marginBottom: responsive(10),
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+        progressText: {
+            textAlign: "center",
+            fontSize: 20,
+            fontWeight: "600",
+            color: colors.TEXT_MAIN_COLOR,
+        },
+        btnStyle: {
+            width: responsive(80),
         },
     });
 

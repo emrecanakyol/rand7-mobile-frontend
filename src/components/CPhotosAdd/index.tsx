@@ -74,7 +74,7 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
         const uri = response.path;
         const updated = [...photos];
         updated[index] = uri;
-        setPhotos([...photos, uri]);
+        setPhotos(updated);
       }
     } catch (error) {
       console.log("Error selecting image:", error);
@@ -98,7 +98,7 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
         const uri = response.path;
         const updated = [...photos];
         updated[index] = uri;
-        setPhotos([...photos, uri]);
+        setPhotos(updated);
       }
     } catch (error) {
       console.log("Error taking photo:", error);

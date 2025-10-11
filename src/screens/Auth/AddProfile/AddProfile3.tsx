@@ -20,7 +20,6 @@ const AddProfile3 = ({ navigation, route }: any) => {
         return { label: `${meters} cm`, value: `${rawValue}` };
     });
 
-
     const next = () =>
         navigation.navigate(ADD_PROFILE_4, {
             ...route.params,

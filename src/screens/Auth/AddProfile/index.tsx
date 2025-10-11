@@ -18,7 +18,6 @@ const AddProfile = ({ navigation }: any) => {
   const { width, height } = Dimensions.get('window');
   const isTablet = Math.min(width, height) >= 600;
   const styles = getStyles(colors, isTablet);
-
   const [photos, setPhotos] = useState<string[]>([]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

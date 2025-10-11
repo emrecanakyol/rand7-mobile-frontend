@@ -9,15 +9,11 @@ import CustomBackButton from "../../../components/CBackButton";
 
 const AddProfile2 = ({ navigation, route }: any) => {
     const { colors } = useTheme();
-    const { photos, firstName, lastName, birthDate } = route.params;
     const [gender, setGender] = useState<string | null>(null);
 
     const next = () =>
         navigation.navigate(ADD_PROFILE_3, {
-            photos,
-            firstName,
-            lastName,
-            birthDate,
+            ...route.params,
             gender,
         });
 

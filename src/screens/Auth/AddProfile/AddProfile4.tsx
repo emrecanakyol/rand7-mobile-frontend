@@ -381,10 +381,9 @@ import CustomBackButton from "../../../components/CBackButton";
 import CLoading from "../../../components/CLoading";
 import CText from "../../../components/CText/CText";
 import { GOOGLE_API_KEY } from "../../../utils/constants/key";
-import { useNavigation } from "@react-navigation/native";
+import { ADD_PROFILE_5 } from "../../../navigators/Stack";
 
-const AddProfile4 = ({ route }: any) => {
-    const navigation: any = useNavigation();
+const AddProfile4 = ({ navigation, route }: any) => {
     const { colors } = useTheme();
     const styles = getStyles(colors);
 
@@ -444,6 +443,7 @@ const AddProfile4 = ({ route }: any) => {
         } catch (err) {
             setAddress("Adres bilgisi alınırken hata oluştu.");
         }
+        await new Promise(resolve => setTimeout(resolve, 5000)); // 5 saniye beklet
         setLoading(false);
     };
 
@@ -475,7 +475,7 @@ const AddProfile4 = ({ route }: any) => {
 
     const next = () => {
         if (!coords) return;
-        navigation.navigate("ADD_PROFILE_5", {
+        navigation.navigate(ADD_PROFILE_5, {
             ...route.params,
             location: address,
             latitude: coords.latitude,
@@ -484,6 +484,8 @@ const AddProfile4 = ({ route }: any) => {
             country,
         });
     };
+
+    // console.log(coords?.latitude, coords?.longitude, province, country, address)
 
     return (
         <>
@@ -596,7 +598,7 @@ const getStyles = (colors: any) =>
         nextButton: {
             width: responsive(100),
             alignSelf: "flex-end",
-            marginBottom: responsive(20),
+            marginBottom: responsive(23),
         },
     });
 
