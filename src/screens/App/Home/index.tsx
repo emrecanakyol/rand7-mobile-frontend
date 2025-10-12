@@ -83,14 +83,20 @@ const Home = () => {
             //firestoreye zamanı kaydet
             if (!lastRefresh || lastRefresh < twelveHoursAgo) {
                 shouldReset = true;
-                await currentUserRef.update({
-                    lastDiscoverRefresh: firestore.Timestamp.fromDate(now),
-                });
+                {
+                    shouldReset &&
+                        await currentUserRef.update({
+                            lastDiscoverRefresh: firestore.Timestamp.fromDate(now),
+                        });
+                }
                 console.log("🕒 Discover listesi sıfırlandı (12 saat dolmuş).");
             }
 
             const likedUsers = currentUserData?.likedUsers || [];
             const superLikedUsers = currentUserData?.superLikedUsers || [];
+
+            const likeMatches = userData?.likeMatches || [];
+            const superLikeMatches = userData?.superLikeMatches || [];
 
             // 🔹 Yakındaki kullanıcıları çek
             const snapshot = await firestore().collection("users").get();
@@ -108,6 +114,10 @@ const Home = () => {
                     return false;
                 }
 
+                // ❌ Eşleşmiş kullanıcıları gösterme
+                if (likeMatches.includes(u.userId) || superLikeMatches.includes(u.userId)) {
+                    return false;
+                }
                 // 🔹 Mesafe
                 const distance = getDistanceFromLatLonInKm(
                     userData.latitude,
@@ -120,12 +130,13 @@ const Home = () => {
                 const age = calculateAge(u.birthDate);
                 const minAge = userData?.ageRange?.min || 18;
                 const maxAge = userData?.ageRange?.max || 90;
+                const userLookingFor = userData?.lookingFor?.toLowerCase();
+                const userGender = u?.gender?.toLowerCase();
 
-                // 🔹 Cinsiyet filtresi
                 const matchesGender =
-                    userData?.lookingFor === "any" ||
-                    !userData?.lookingFor ||
-                    userData?.lookingFor?.toLowerCase() === u.gender?.toLowerCase();
+                    userLookingFor === "both" ||
+                    !userLookingFor ||
+                    (userLookingFor === userGender);
 
                 return (
                     distance <= (userData.maxDistance || 150) &&
@@ -205,11 +216,13 @@ const Home = () => {
                 const age = calculateAge(u.birthDate);
                 const minAge = userData?.ageRange?.min || 18;
                 const maxAge = userData?.ageRange?.max || 90;
+                const userLookingFor = userData?.lookingFor?.toLowerCase();
+                const userGender = u?.gender?.toLowerCase();
 
                 const matchesGender =
-                    userData?.lookingFor === "any" ||
-                    !userData?.lookingFor ||
-                    userData?.lookingFor?.toLowerCase() === u.gender?.toLowerCase();
+                    userLookingFor === "both" ||
+                    !userLookingFor ||
+                    (userLookingFor === userGender);
 
                 return (
                     distance <= (userData.maxDistance || 150) &&
@@ -274,7 +287,7 @@ const Home = () => {
             // 🔹 Karşı taraf bana SuperLike atmış mı?
             const theySuperLikedMe = likedUserData.superLikedUsers?.includes(userData.userId);
 
-            // 🔹 Eğer karşı taraf da beni beğendiyse → normal eşleşme
+            // 🔥 Eğer karşı taraf da beni beğendiyse → normal eşleşme
             if (theyLikedMe && !theySuperLikedMe) {
                 // Her iki tarafa da match kaydet
                 await currentUserRef.update({
@@ -284,6 +297,22 @@ const Home = () => {
                 await userRef.update({
                     likeMatches: firestore.FieldValue.arrayUnion(userData.userId),
                 });
+
+                // Eşleşme sonrası geçici listelerden kaldır
+                await Promise.all([
+                    currentUserRef.update({
+                        likers: firestore.FieldValue.arrayRemove(userId),
+                        superLikers: firestore.FieldValue.arrayRemove(userId),
+                        likedUsers: firestore.FieldValue.arrayRemove(userId),
+                        superLikedUsers: firestore.FieldValue.arrayRemove(userId),
+                    }),
+                    userRef.update({
+                        likers: firestore.FieldValue.arrayRemove(userData.userId),
+                        superLikers: firestore.FieldValue.arrayRemove(userData.userId),
+                        likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                        superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                    }),
+                ]);
 
                 navigation.navigate(LIKE_MATCHED, {
                     user1: userData,
@@ -301,6 +330,22 @@ const Home = () => {
                 await userRef.update({
                     superLikeMatches: firestore.FieldValue.arrayUnion(userData.userId),
                 });
+
+                // Eşleşme sonrası geçici listelerden kaldır
+                await Promise.all([
+                    currentUserRef.update({
+                        likers: firestore.FieldValue.arrayRemove(userId),
+                        superLikers: firestore.FieldValue.arrayRemove(userId),
+                        likedUsers: firestore.FieldValue.arrayRemove(userId),
+                        superLikedUsers: firestore.FieldValue.arrayRemove(userId),
+                    }),
+                    userRef.update({
+                        likers: firestore.FieldValue.arrayRemove(userData.userId),
+                        superLikers: firestore.FieldValue.arrayRemove(userData.userId),
+                        likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                        superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                    }),
+                ]);
 
                 navigation.navigate(SUPER_LIKE_MATCHED, {
                     user1: userData,
@@ -341,8 +386,6 @@ const Home = () => {
                 superLikedUsers: firestore.FieldValue.arrayUnion(userId),
             });
 
-            console.log("💙 SuperLike kaydedildi.");
-
             // 🔹 Eğer karşı taraf da beni beğendiyse veya superlike'ladıysa → eşleşme!
             if (theyLikedMe) {
                 // 🔥 Her iki tarafa da match kaydet
@@ -353,6 +396,22 @@ const Home = () => {
                 await userRef.update({
                     superLikeMatches: firestore.FieldValue.arrayUnion(userData.userId),
                 });
+
+                // Eşleşme sonrası geçici listelerden kaldır
+                await Promise.all([
+                    currentUserRef.update({
+                        likers: firestore.FieldValue.arrayRemove(userId),
+                        superLikers: firestore.FieldValue.arrayRemove(userId),
+                        likedUsers: firestore.FieldValue.arrayRemove(userId),
+                        superLikedUsers: firestore.FieldValue.arrayRemove(userId),
+                    }),
+                    userRef.update({
+                        likers: firestore.FieldValue.arrayRemove(userData.userId),
+                        superLikers: firestore.FieldValue.arrayRemove(userData.userId),
+                        likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                        superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                    }),
+                ]);
 
                 navigation.navigate(SUPER_LIKE_MATCHED, {
                     user1: userData,
@@ -398,9 +457,6 @@ const Home = () => {
             <Header
                 userData={userData}
             />
-
-
-
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.inContainer}>
                     {/* Tab Buttons */}

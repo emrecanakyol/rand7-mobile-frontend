@@ -20,9 +20,6 @@ import firestore from '@react-native-firebase/firestore';
 import { getDistanceFromLatLonInKm } from "../../../components/KmLocation";
 import Header from "../../../components/Header";
 
-const { width } = Dimensions.get("window");
-const CARD_WIDTH = width * 0.42;
-
 interface Users {
     photos: string;  // Fotoğraf URL'si
     age: number;     // Kullanıcının yaşı
@@ -46,6 +43,12 @@ const Likes: React.FC = () => {
     const [superLikersUsers, setSuperLikersUsers] = useState<Users[]>([]);
     const [likeMatchesUsers, setLikeMatchesUsers] = useState<Users[]>([]);
     const [superLikeMatchesUsers, setSuperLikeMatchesUsers] = useState<Users[]>([]);
+
+    useFocusEffect(
+        useCallback(() => {
+            dispatch(fetchUserData());
+        }, [])
+    );
 
     // Kullanıcı bilgilerini çekme fonksiyonu
     const fetchLikersUserDetails = async (likersUserIds: string[]) => {
@@ -185,34 +188,18 @@ const Likes: React.FC = () => {
     };
 
     useEffect(() => {
-        if (userData?.likers || userData?.superLikers || userData?.likeMatches || userData?.superLikeMatches) {
+        if (!userData) return;
 
-            const likersUserIds = [
-                ...userData.likers,
-            ];
-            const superLikersUserIds = [
-                ...userData.superLikers,
-            ];
-            const likeMatches = [
-                ...userData.likeMatches,
-            ];
-            const superLikeMatches = [
-                ...userData.superLikeMatches,
-            ];
+        const likersUserIds = userData.likers || [];
+        const superLikersUserIds = userData.superLikers || [];
+        const likeMatches = userData.likeMatches || [];
+        const superLikeMatches = userData.superLikeMatches || [];
 
-            fetchLikersUserDetails(likersUserIds);
-            fetchSuperLikersUserDetails(superLikersUserIds);
-            fetchLikeMatchesDetails(likeMatches);
-            fetchSuperLikeMatchesDetails(superLikeMatches);
-        }
+        if (likersUserIds.length > 0) fetchLikersUserDetails(likersUserIds);
+        if (superLikersUserIds.length > 0) fetchSuperLikersUserDetails(superLikersUserIds);
+        if (likeMatches.length > 0) fetchLikeMatchesDetails(likeMatches);
+        if (superLikeMatches.length > 0) fetchSuperLikeMatchesDetails(superLikeMatches);
     }, [userData]);
-
-
-    useFocusEffect(
-        useCallback(() => {
-            dispatch(fetchUserData());
-        }, [])
-    );
 
     return (
         <View style={styles.container}>
@@ -220,116 +207,121 @@ const Likes: React.FC = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContainer}
             >
-                <Header />
-                {/* Stats */}
-                <Text style={styles.sectionTitle1}>Beğeniler</Text>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.statsContainer}
-                >
-                    {likersUsers.length > 0 || superLikersUsers.length > 0 ? (
-                        [...likersUsers, ...superLikersUsers.map(u => ({ ...u, isSuper: true }))].map(
-                            (user, index) => (
-                                <View key={index} style={styles.statItem}>
-                                    <TouchableOpacity activeOpacity={0.5}>
+                <Header
+                    userData={userData}
+                    twoIcon={false} />
+                <View style={styles.inContainer}>
+
+                    <Text style={styles.sectionTitle1}>Beğeniler</Text>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        style={styles.statsContainer}
+                    >
+                        {likersUsers.length > 0 || superLikersUsers.length > 0 ? (
+                            [...likersUsers, ...superLikersUsers.map(u => ({ ...u, isSuper: true }))].map(
+                                (user, index) => (
+                                    <View key={index} style={styles.statItem}>
+                                        <TouchableOpacity activeOpacity={0.5}>
+                                            <View
+                                                style={[
+                                                    styles.avatarOuter,
+                                                    {
+                                                        borderColor: user.isSuper
+                                                            ? colors.BLUE_COLOR
+                                                            : colors.RED_COLOR
+                                                    },
+                                                ]}
+                                            >
+                                                <Image
+                                                    source={{ uri: user.photos }}
+                                                    style={styles.avatarImage}
+                                                    blurRadius={12}
+                                                />
+                                            </View>
+                                        </TouchableOpacity>
+                                        <Text style={styles.statText}>
+                                            {user.firstName}, {user.age}
+                                        </Text>
+                                    </View>
+                                )
+                            )
+                        ) : (
+                            <Text style={styles.noDataText}>Hiç beğeni yok!</Text>
+                        )}
+                    </ScrollView>
+
+                    {/* Your Matches */}
+                    <Text style={styles.sectionTitle2}>Eşleşmeler</Text>
+
+                    <View style={styles.cardContainer}>
+                        {likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0 ? (
+                            [...likeMatchesUsers, ...superLikeMatchesUsers.map(u => ({ ...u, isSuper: true }))].map(
+                                (user, index) => (
+                                    <TouchableOpacity key={index} activeOpacity={0.5}>
                                         <View
+
                                             style={[
-                                                styles.avatarOuter,
+                                                styles.card,
                                                 {
                                                     borderColor: user.isSuper
                                                         ? colors.BLUE_COLOR
-                                                        : colors.RED_COLOR
+                                                        : colors.RED_COLOR,
+                                                    borderWidth: 2,
                                                 },
                                             ]}
                                         >
-                                            <Image
-                                                source={{ uri: user.photos }}
-                                                style={styles.avatarImage}
-                                                blurRadius={12}
-                                            />
+                                            <Image source={{ uri: user.photos }} style={styles.image} />
+                                            <View style={[
+                                                styles.matchBadge,
+                                                { backgroundColor: user.isSuper ? colors.BLUE_COLOR : colors.RED_COLOR }
+                                            ]}>
+                                                {user.isSuper ? (
+                                                    <Ionicons
+                                                        name="star"
+                                                        size={18}
+                                                        color={colors.WHITE_COLOR}
+                                                        style={{ marginLeft: 5 }}
+                                                    />
+                                                ) : (
+                                                    <Ionicons
+                                                        name="heart"
+                                                        size={18}
+                                                        color={colors.WHITE_COLOR}
+                                                        style={{ marginLeft: 5 }}
+                                                    />
+                                                )}
+
+                                            </View>
+
+                                            {/* Bilgi alanı */}
+                                            <View style={styles.infoContainer}>
+                                                <Text style={styles.likesDistanceText}>
+                                                    {getDistanceFromLatLonInKm(
+                                                        userData.latitude,
+                                                        userData.longitude,
+                                                        user.latitude,
+                                                        user.longitude,
+                                                    ).toFixed(1)} km uzakta
+                                                </Text>
+
+                                                <View style={styles.row}>
+                                                    <Text style={styles.name}>
+                                                        {user.firstName}, {user.age}
+                                                    </Text>
+                                                    {/* Çevrimiçi durumu (örnek, istersen Firestore'dan eklenebilir) */}
+                                                    {/* <View style={styles.onlineDot} /> */}
+                                                </View>
+                                            </View>
                                         </View>
                                     </TouchableOpacity>
-                                    <Text style={styles.statText}>
-                                        {user.firstName}, {user.age}
-                                    </Text>
-                                </View>
+                                )
                             )
-                        )
-                    ) : (
-                        <Text style={styles.noDataText}>Hiç beğeni yok!</Text>
-                    )}
-                </ScrollView>
-
-                {/* Your Matches */}
-                <Text style={styles.sectionTitle2}>Eşleşmeler</Text>
-
-                <View style={styles.cardContainer}>
-                    {likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0 ? (
-                        [...likeMatchesUsers, ...superLikeMatchesUsers.map(u => ({ ...u, isSuper: true }))].map(
-                            (user, index) => (
-                                <View
-                                    key={index}
-                                    style={[
-                                        styles.card,
-                                        {
-                                            borderColor: user.isSuper
-                                                ? colors.BLUE_COLOR // 🔹 Superlike mavi border
-                                                : colors.RED_COLOR, // 🔴 Normal like kırmızı border
-                                            borderWidth: 2,
-                                        },
-                                    ]}
-                                >
-                                    <Image source={{ uri: user.photos }} style={styles.image} />
-                                    <View style={[
-                                        styles.matchBadge,
-                                        { backgroundColor: user.isSuper ? colors.BLUE_COLOR : colors.RED_COLOR }
-                                    ]}>
-                                        {user.isSuper ? (
-                                            <Ionicons
-                                                name="star"
-                                                size={18}
-                                                color={colors.WHITE_COLOR}
-                                                style={{ marginLeft: 5 }}
-                                            />
-                                        ) : (
-                                            <Ionicons
-                                                name="heart"
-                                                size={18}
-                                                color={colors.WHITE_COLOR}
-                                                style={{ marginLeft: 5 }}
-                                            />
-                                        )}
-
-                                    </View>
-
-                                    {/* Bilgi alanı */}
-                                    <View style={styles.infoContainer}>
-                                        <Text style={styles.likesDistanceText}>
-                                            {getDistanceFromLatLonInKm(
-                                                userData.latitude,
-                                                userData.longitude,
-                                                user.latitude,
-                                                user.longitude,
-                                            ).toFixed(1)} km uzakta
-                                        </Text>
-
-                                        <View style={styles.row}>
-                                            <Text style={styles.name}>
-                                                {user.firstName}, {user.age}
-                                            </Text>
-                                            {/* Çevrimiçi durumu (örnek, istersen Firestore'dan eklenebilir) */}
-                                            {/* <View style={styles.onlineDot} /> */}
-                                        </View>
-                                    </View>
-                                </View>
-                            )
-                        )
-                    ) : (
-                        <Text style={styles.noDataText}>Hiç eşleşme yok!</Text>
-                    )}
+                        ) : (
+                            <Text style={styles.noDataText}>Hiç eşleşme yok!</Text>
+                        )}
+                    </View>
                 </View>
-
             </ScrollView>
         </View>
     );
@@ -342,6 +334,9 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     container: {
         flex: 1,
         backgroundColor: colors.BACKGROUND_COLOR,
+    },
+    inContainer: {
+        paddingHorizontal: 24,
     },
     title: {
         fontSize: 22,
@@ -395,14 +390,12 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         fontSize: 20,
         fontWeight: "700",
         color: colors.TEXT_MAIN_COLOR,
-        marginLeft: 20,
         marginTop: 5,
     },
     sectionTitle2: {
         fontSize: 20,
         fontWeight: "700",
         color: colors.TEXT_MAIN_COLOR,
-        marginLeft: 20,
         marginTop: 20,
     },
     scrollContainer: {
@@ -411,13 +404,12 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     cardContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        justifyContent: "space-evenly",
+        justifyContent: "space-between",
         marginTop: 20,
     },
     card: {
-        width: CARD_WIDTH,
+        width: 165,
         height: 240,
-        backgroundColor: "#fff",
         borderRadius: 20,
         marginBottom: 20,
         overflow: "hidden",
@@ -480,6 +472,5 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     noDataText: {
         fontSize: 16,
         color: "#bbb",
-        marginLeft: 20,
     },
 });

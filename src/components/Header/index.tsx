@@ -11,9 +11,10 @@ import FilterModal from './components/FilterModal';
 
 interface HeaderProps {
     userData: any;
+    twoIcon?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ userData }) => {
+const Header: React.FC<HeaderProps> = ({ userData, twoIcon = true }) => {
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
@@ -43,12 +44,13 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                         <Ionicons name="notifications-outline" size={22} />
                     </TouchableOpacity>
 
-                    {/* ✅ Options icon - modal açar */}
-                    <TouchableOpacity
-                        style={styles.notificationButton}
-                        onPress={() => setFilterModalVisible(true)}>
-                        <Ionicons name="options-outline" size={22} />
-                    </TouchableOpacity>
+                    {twoIcon && (
+                        <TouchableOpacity
+                            style={styles.notificationButton}
+                            onPress={() => setFilterModalVisible(true)}>
+                            <Ionicons name="options-outline" size={22} />
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
 
