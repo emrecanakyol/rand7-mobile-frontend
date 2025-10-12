@@ -319,7 +319,7 @@ const Likes: React.FC = () => {
                                                 {user.firstName}, {user.age}
                                             </Text>
                                             {/* Çevrimiçi durumu (örnek, istersen Firestore'dan eklenebilir) */}
-                                            <View style={styles.onlineDot} />
+                                            {/* <View style={styles.onlineDot} /> */}
                                         </View>
                                     </View>
                                 </View>

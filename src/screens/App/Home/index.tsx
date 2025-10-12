@@ -37,7 +37,6 @@ const Home = () => {
         if (loading) {
             return; // Veriler hâlâ yükleniyor, bekle
         } else if (!userData.firstName || !userData.lastName || !userData.photos?.length) {
-            console.log('📝 Profil eksik, kullanıcı profil ekranına yönlendiriliyor...');
             navigation.navigate(ADD_PROFILE);
             return;
         }
@@ -46,13 +45,15 @@ const Home = () => {
     useFocusEffect(
         useCallback(() => {
             dispatch(fetchUserData());
-            checkUserProfile();
-        }, [])
+        }, [dispatch])
     );
 
     useEffect(() => {
-        getFcmToken();
-    }, []);
+        if (!loading && userData) {
+            checkUserProfile();
+            getFcmToken();
+        }
+    }, [loading, userData]);
 
     useEffect(() => {
         const unsubscribe = registerListenerWithFCM(navigation);
@@ -228,34 +229,22 @@ const Home = () => {
         }
     };
 
-    // // Km göre kullanıcı öneriyor.
-    // const getDistanceFromLatLonInKm = (
-    //     lat1: number,
-    //     lon1: number,
-    //     lat2: number,
-    //     lon2: number
-    // ): number => {
-    //     const R = 6371; // Dünya'nın yarıçapı (km)
-    //     const dLat = (lat2 - lat1) * Math.PI / 180;
-    //     const dLon = (lon2 - lon1) * Math.PI / 180;
-    //     const a =
-    //         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    //         Math.cos(lat1 * Math.PI / 180) *
-    //         Math.cos(lat2 * Math.PI / 180) *
-    //         Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    //     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    //     return R * c;
-    // };
-
     useEffect(() => {
-        if (!userData) return;
+        if (loading) return;
+        if (!userData?.userId || !userData?.latitude || !userData?.longitude) return;
 
-        if (activeTab === "discover") {
-            fetchNearbyUsers();
-        } else if (activeTab === "likes") {
-            fetchLikedUsers();
-        }
-    }, [userData, activeTab]);
+        setLoadingData(true);
+
+        const fetchData = async () => {
+            if (activeTab === "discover") {
+                await fetchNearbyUsers();
+            } else {
+                await fetchLikedUsers();
+            }
+        };
+
+        fetchData();
+    }, [loading, userData?.userId, activeTab]);
 
     const handleLike = async (userId: string) => {
         if (!userData?.userId || !userData) return;
@@ -428,7 +417,7 @@ const Home = () => {
                         </TouchableOpacity>
                     </View>
 
-                    {loadingData ? (
+                    {loadingData || loading ? (
                         <View style={styles.lottieContainer}>
                             <LottieView
                                 source={require("../../../assets/lottie/search-person-button.json")}
@@ -688,6 +677,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         height: isTablet ? height / 1.27 : height / 1.52,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: colors.BACKGROUND_COLOR,
     },
     lottie: {
         width: isTablet ? 400 : 200,

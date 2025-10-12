@@ -118,7 +118,7 @@ export default function BottomTabs() {
 
     return (
         <Tab.Navigator
-            initialRouteName={MATCH}
+            initialRouteName={HOME}
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
