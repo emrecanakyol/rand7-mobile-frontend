@@ -16,6 +16,7 @@ import firestore from '@react-native-firebase/firestore';
 import { calculateAge } from '../../../components/CalculateAge';
 import Swiper from 'react-native-deck-swiper';
 import LottieView from 'lottie-react-native';
+import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -73,8 +74,8 @@ const Home = () => {
                 : null;
 
             const now = new Date();
-            const twelveHoursAgo = new Date(now.getTime() - 0 * 60 * 60 * 1000); // Test için 0 yaptık
-            // const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+            const twelveHoursAgo = new Date(now.getTime() - 60 * 1000); // ⏱ Test için 10 saniye
+            // const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000); // 12 saat sonra görüntülensin
 
             let shouldReset = false;
 
@@ -227,24 +228,24 @@ const Home = () => {
         }
     };
 
-    // Km göre kullanıcı öneriyor.
-    const getDistanceFromLatLonInKm = (
-        lat1: number,
-        lon1: number,
-        lat2: number,
-        lon2: number
-    ): number => {
-        const R = 6371; // Dünya'nın yarıçapı (km)
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) *
-            Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    };
+    // // Km göre kullanıcı öneriyor.
+    // const getDistanceFromLatLonInKm = (
+    //     lat1: number,
+    //     lon1: number,
+    //     lat2: number,
+    //     lon2: number
+    // ): number => {
+    //     const R = 6371; // Dünya'nın yarıçapı (km)
+    //     const dLat = (lat2 - lat1) * Math.PI / 180;
+    //     const dLon = (lon2 - lon1) * Math.PI / 180;
+    //     const a =
+    //         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    //         Math.cos(lat1 * Math.PI / 180) *
+    //         Math.cos(lat2 * Math.PI / 180) *
+    //         Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    //     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    //     return R * c;
+    // };
 
     useEffect(() => {
         if (!userData) return;
@@ -286,7 +287,15 @@ const Home = () => {
 
             // 🔹 Eğer karşı taraf da beni beğendiyse → normal eşleşme
             if (theyLikedMe && !theySuperLikedMe) {
-                console.log("💘 Karşılıklı like! Matched ekranına yönlendiriliyor...");
+                // Her iki tarafa da match kaydet
+                await currentUserRef.update({
+                    likeMatches: firestore.FieldValue.arrayUnion(userId),
+                });
+
+                await userRef.update({
+                    likeMatches: firestore.FieldValue.arrayUnion(userData.userId),
+                });
+
                 navigation.navigate(LIKE_MATCHED, {
                     user1: userData,
                     user2: likedUserData,
@@ -295,7 +304,15 @@ const Home = () => {
 
             // 🔹 Eğer karşı taraf bana SuperLike atmışsa → SuperLikeMatched
             else if (theySuperLikedMe) {
-                console.log("💙 SuperLike eşleşmesi! SuperLikeMatched ekranına yönlendiriliyor...");
+                // 🔥 Her iki tarafa da match kaydet
+                await currentUserRef.update({
+                    superLikeMatches: firestore.FieldValue.arrayUnion(userId),
+                });
+
+                await userRef.update({
+                    superLikeMatches: firestore.FieldValue.arrayUnion(userData.userId),
+                });
+
                 navigation.navigate(SUPER_LIKE_MATCHED, {
                     user1: userData,
                     user2: likedUserData,
@@ -339,8 +356,16 @@ const Home = () => {
 
             // 🔹 Eğer karşı taraf da beni beğendiyse veya superlike'ladıysa → eşleşme!
             if (theyLikedMe) {
-                console.log("💫 Karşılıklı beğeni! SuperLikeMatched ekranına yönlendiriliyor...");
-                navigation.navigate("SuperLikeMatched", {
+                // 🔥 Her iki tarafa da match kaydet
+                await currentUserRef.update({
+                    superLikeMatches: firestore.FieldValue.arrayUnion(userId),
+                });
+
+                await userRef.update({
+                    superLikeMatches: firestore.FieldValue.arrayUnion(userData.userId),
+                });
+
+                navigation.navigate(SUPER_LIKE_MATCHED, {
                     user1: userData,
                     user2: superLikedUserData,
                 });
@@ -358,12 +383,12 @@ const Home = () => {
             const currentUserRef = firestore().collection("users").doc(userData.userId);
 
             // 🔹 Karşı tarafın listelerinden beni kaldır
-            await userRef.update({
-                likers: firestore.FieldValue.arrayRemove(userData.userId),
-                superLikers: firestore.FieldValue.arrayRemove(userData.userId),
-                likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
-                superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
-            });
+            // await userRef.update({
+            //     likers: firestore.FieldValue.arrayRemove(userData.userId),
+            //     superLikers: firestore.FieldValue.arrayRemove(userData.userId),
+            //     likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+            //     superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+            // });
 
             // 🔹 Benim listelerimden o kişiyi kaldır
             await currentUserRef.update({
@@ -461,7 +486,7 @@ const Home = () => {
                                             <View style={styles.infoContainer}>
                                                 <View style={styles.userInfo}>
                                                     <Text style={styles.userName}>
-                                                        {u.firstName}, {calculateAge(u.birthDate)}
+                                                        {u.firstName}, {u.age}
                                                     </Text>
                                                     <Text style={styles.userLocation}>
                                                         {u.province}, {u.country}

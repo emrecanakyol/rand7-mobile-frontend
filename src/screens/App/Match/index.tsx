@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -10,27 +10,31 @@ import {
     Dimensions,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { RootState } from "../../../store/Store";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../store/Store";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../utils/colors";
 import Header from "./components/Header";
+import { fetchUserData } from "../../../store/services/userDataService";
+import { useAppSelector } from "../../../store/hooks";
+import firestore from '@react-native-firebase/firestore';
+import { getDistanceFromLatLonInKm } from "../../../components/KmLocation";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width * 0.42;
 
-interface LikeUser {
-    id: string;
-    name: string;
-    age: number;
-    city: string;
-    match: number;
-    distance: string;
-    image: string;
-    online?: boolean;
-};
+interface Users {
+    photos: string;  // Fotoğraf URL'si
+    age: number;     // Kullanıcının yaşı
+    firstName: string; // Kullanıcının adı
+    isSuper?: boolean; // Süper beğeni mi? (opsiyonel)
+    latitude: number;
+    longitude: number;
+}
 
 const Likes: React.FC = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const { userData, loading } = useAppSelector((state) => state.userData);
     const navigation: any = useNavigation();
     const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
     const { t } = useTranslation();
@@ -38,48 +42,177 @@ const Likes: React.FC = () => {
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
+    const [likersUsers, setLikersUsers] = useState<Users[]>([]);
+    const [superLikersUsers, setSuperLikersUsers] = useState<Users[]>([]);
+    const [likeMatchesUsers, setLikeMatchesUsers] = useState<Users[]>([]);
+    const [superLikeMatchesUsers, setSuperLikeMatchesUsers] = useState<Users[]>([]);
 
-    const likedUsers: LikeUser[] = [
-        {
-            id: "1",
-            name: "James",
-            age: 20,
-            city: "HANOVER",
-            match: 100,
-            distance: "1.3 km away",
-            image: "https://randomuser.me/api/portraits/men/1.jpg",
-            online: true,
-        },
-        {
-            id: "2",
-            name: "Eddie",
-            age: 23,
-            city: "DORTMUND",
-            match: 94,
-            distance: "2 km away",
-            image: "https://randomuser.me/api/portraits/men/32.jpg",
-            online: true,
-        },
-        {
-            id: "3",
-            name: "Brandon",
-            age: 20,
-            city: "BERLIN",
-            match: 89,
-            distance: "2.5 km away",
-            image: "https://randomuser.me/api/portraits/men/14.jpg",
-        },
-        {
-            id: "4",
-            name: "Alfredo",
-            age: 20,
-            city: "MUNICH",
-            match: 80,
-            distance: "2.5 km away",
-            image: "https://randomuser.me/api/portraits/men/54.jpg",
-            online: true,
-        },
-    ];
+    // Kullanıcı bilgilerini çekme fonksiyonu
+    const fetchLikersUserDetails = async (likersUserIds: string[]) => {
+        try {
+            // Each userId will be processed to fetch only required fields
+            const userPromises = likersUserIds.map(async (likersUserIds) => {
+                const userDoc = await firestore()
+                    .collection('users')
+                    .doc(likersUserIds)        // Fetch specific user document
+                    .get();             // Get the document
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+
+                    // Return only the required fields (photos, age, firstName)
+                    return {
+                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
+                        age: userData?.age,                                     // Age
+                        firstName: userData?.firstName,                          // First name
+                    };
+                } else {
+                    return null;  // Return null if the document doesn't exist
+                }
+            });
+
+            // Wait for all user data to be fetched
+            const usersData = await Promise.all(userPromises);
+
+            // Filter out null values and update the state
+            setLikersUsers(usersData.filter(user => user !== null) as Users[]);
+        } catch (error) {
+            console.error("Error fetching user details: ", error);
+        }
+    };
+
+    const fetchSuperLikersUserDetails = async (superLikersUserIds: string[]) => {
+        try {
+            // Each userId will be processed to fetch only required fields
+            const userPromises = superLikersUserIds.map(async (superLikersUserIds) => {
+                const userDoc = await firestore()
+                    .collection('users')
+                    .doc(superLikersUserIds)        // Fetch specific user document
+                    .get();             // Get the document
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+
+                    // Return only the required fields (photos, age, firstName)
+                    return {
+                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
+                        age: userData?.age,                                     // Age
+                        firstName: userData?.firstName,                          // First name
+                    };
+                } else {
+                    return null;  // Return null if the document doesn't exist
+                }
+            });
+
+            // Wait for all user data to be fetched
+            const usersData = await Promise.all(userPromises);
+
+            // Filter out null values and update the state
+            setSuperLikersUsers(usersData.filter(user => user !== null) as Users[]);
+        } catch (error) {
+            console.error("Error fetching user details: ", error);
+        }
+    };
+
+    const fetchLikeMatchesDetails = async (likeMatches: string[]) => {
+        try {
+            // Each userId will be processed to fetch only required fields
+            const userPromises = likeMatches.map(async (likeMatches) => {
+                const userDoc = await firestore()
+                    .collection('users')
+                    .doc(likeMatches)        // Fetch specific user document
+                    .get();             // Get the document
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+
+                    // Return only the required fields (photos, age, firstName)
+                    return {
+                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
+                        age: userData?.age,                                     // Age
+                        firstName: userData?.firstName,                          // First name
+                        latitude: userData?.latitude,
+                        longitude: userData?.longitude,
+                    };
+                } else {
+                    return null;  // Return null if the document doesn't exist
+                }
+            });
+
+            // Wait for all user data to be fetched
+            const usersData = await Promise.all(userPromises);
+
+            // Filter out null values and update the state
+            setLikeMatchesUsers(usersData.filter(user => user !== null) as Users[]);
+        } catch (error) {
+            console.error("Error fetching user details: ", error);
+        }
+    };
+
+    const fetchSuperLikeMatchesDetails = async (superLikeMatches: string[]) => {
+        try {
+            // Each userId will be processed to fetch only required fields
+            const userPromises = superLikeMatches.map(async (superLikeMatches) => {
+                const userDoc = await firestore()
+                    .collection('users')
+                    .doc(superLikeMatches)        // Fetch specific user document
+                    .get();             // Get the document
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+
+                    // Return only the required fields (photos, age, firstName)
+                    return {
+                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
+                        age: userData?.age,                                     // Age
+                        firstName: userData?.firstName,                          // First name
+                        latitude: userData?.latitude,
+                        longitude: userData?.longitude,
+                    };
+                } else {
+                    return null;  // Return null if the document doesn't exist
+                }
+            });
+
+            // Wait for all user data to be fetched
+            const usersData = await Promise.all(userPromises);
+
+            // Filter out null values and update the state
+            setSuperLikeMatchesUsers(usersData.filter(user => user !== null) as Users[]);
+        } catch (error) {
+            console.error("Error fetching user details: ", error);
+        }
+    };
+
+    useEffect(() => {
+        if (userData?.likers || userData?.superLikers || userData?.likeMatches || userData?.superLikeMatches) {
+
+            const likersUserIds = [
+                ...userData.likers,
+            ];
+            const superLikersUserIds = [
+                ...userData.superLikers,
+            ];
+            const likeMatches = [
+                ...userData.likeMatches,
+            ];
+            const superLikeMatches = [
+                ...userData.superLikeMatches,
+            ];
+
+            fetchLikersUserDetails(likersUserIds);
+            fetchSuperLikersUserDetails(superLikersUserIds);
+            fetchLikeMatchesDetails(likeMatches);
+            fetchSuperLikeMatchesDetails(superLikeMatches);
+        }
+    }, [userData]);
+
+
+    useFocusEffect(
+        useCallback(() => {
+            dispatch(fetchUserData());
+        }, [])
+    );
 
     return (
         <View style={styles.container}>
@@ -90,44 +223,113 @@ const Likes: React.FC = () => {
                 <Header />
                 {/* Stats */}
                 <Text style={styles.sectionTitle1}>Beğeniler</Text>
-                <View style={styles.statsContainer}>
-                    <View style={styles.statItem}>
-                        <TouchableOpacity activeOpacity={0.9}>
-                            <View style={styles.avatarOuter}>
-                                <Image
-                                    source={{ uri: "https://randomuser.me/api/portraits/men/1.jpg" }}
-                                    style={styles.avatarImage}
-                                    blurRadius={12}
-                                />
-                            </View>
-                        </TouchableOpacity>
-                        <Text style={styles.statText}>Likes</Text>
-                    </View>
-                </View>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.statsContainer}
+                >
+                    {likersUsers.length > 0 || superLikersUsers.length > 0 ? (
+                        [...likersUsers, ...superLikersUsers.map(u => ({ ...u, isSuper: true }))].map(
+                            (user, index) => (
+                                <View key={index} style={styles.statItem}>
+                                    <TouchableOpacity activeOpacity={0.5}>
+                                        <View
+                                            style={[
+                                                styles.avatarOuter,
+                                                {
+                                                    borderColor: user.isSuper
+                                                        ? colors.BLUE_COLOR
+                                                        : colors.RED_COLOR
+                                                },
+                                            ]}
+                                        >
+                                            <Image
+                                                source={{ uri: user.photos }}
+                                                style={styles.avatarImage}
+                                                blurRadius={12}
+                                            />
+                                        </View>
+                                    </TouchableOpacity>
+                                    <Text style={styles.statText}>
+                                        {user.firstName}, {user.age}
+                                    </Text>
+                                </View>
+                            )
+                        )
+                    ) : (
+                        <Text style={styles.noDataText}>Hiç beğeni yok!</Text>
+                    )}
+                </ScrollView>
 
                 {/* Your Matches */}
                 <Text style={styles.sectionTitle2}>Eşleşmeler</Text>
 
                 <View style={styles.cardContainer}>
-                    {likedUsers.map((user) => (
-                        <View key={user.id} style={styles.card}>
-                            <Image source={{ uri: user.image }} style={styles.image} />
-                            <View style={styles.matchBadge}>
-                                <Text style={styles.matchText}>{user.match}% Match</Text>
-                            </View>
-                            <View style={styles.infoContainer}>
-                                <Text style={styles.distance}>{user.distance}</Text>
-                                <View style={styles.row}>
-                                    <Text style={styles.name}>
-                                        {user.name}, {user.age}
-                                    </Text>
-                                    {user.online && <View style={styles.onlineDot} />}
+                    {likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0 ? (
+                        [...likeMatchesUsers, ...superLikeMatchesUsers.map(u => ({ ...u, isSuper: true }))].map(
+                            (user, index) => (
+                                <View
+                                    key={index}
+                                    style={[
+                                        styles.card,
+                                        {
+                                            borderColor: user.isSuper
+                                                ? colors.BLUE_COLOR // 🔹 Superlike mavi border
+                                                : colors.RED_COLOR, // 🔴 Normal like kırmızı border
+                                            borderWidth: 2,
+                                        },
+                                    ]}
+                                >
+                                    <Image source={{ uri: user.photos }} style={styles.image} />
+                                    <View style={[
+                                        styles.matchBadge,
+                                        { backgroundColor: user.isSuper ? colors.BLUE_COLOR : colors.RED_COLOR }
+                                    ]}>
+                                        {user.isSuper ? (
+                                            <Ionicons
+                                                name="star"
+                                                size={18}
+                                                color={colors.WHITE_COLOR}
+                                                style={{ marginLeft: 5 }}
+                                            />
+                                        ) : (
+                                            <Ionicons
+                                                name="heart"
+                                                size={18}
+                                                color={colors.WHITE_COLOR}
+                                                style={{ marginLeft: 5 }}
+                                            />
+                                        )}
+
+                                    </View>
+
+                                    {/* Bilgi alanı */}
+                                    <View style={styles.infoContainer}>
+                                        <Text style={styles.likesDistanceText}>
+                                            {getDistanceFromLatLonInKm(
+                                                userData.latitude,
+                                                userData.longitude,
+                                                user.latitude,
+                                                user.longitude,
+                                            ).toFixed(1)} km uzakta
+                                        </Text>
+
+                                        <View style={styles.row}>
+                                            <Text style={styles.name}>
+                                                {user.firstName}, {user.age}
+                                            </Text>
+                                            {/* Çevrimiçi durumu (örnek, istersen Firestore'dan eklenebilir) */}
+                                            <View style={styles.onlineDot} />
+                                        </View>
+                                    </View>
                                 </View>
-                                <Text style={styles.city}>{user.city}</Text>
-                            </View>
-                        </View>
-                    ))}
+                            )
+                        )
+                    ) : (
+                        <Text style={styles.noDataText}>Hiç eşleşme yok!</Text>
+                    )}
                 </View>
+
             </ScrollView>
         </View>
     );
@@ -248,14 +450,14 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         bottom: 10,
         left: 10,
     },
-    distance: {
-        backgroundColor: "rgba(0,0,0,0.4)",
-        color: "#fff",
-        borderRadius: 10,
+    likesDistanceText: {
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        color: '#fff',
         paddingHorizontal: 8,
-        paddingVertical: 3,
+        paddingVertical: 2,
+        borderRadius: 10,
         fontSize: 12,
-        alignSelf: "flex-start",
+        marginBottom: 5,
     },
     name: {
         color: "#fff",
@@ -275,9 +477,9 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         marginLeft: 6,
         marginTop: 2,
     },
-    city: {
-        color: "#ddd",
-        fontSize: 13,
-        letterSpacing: 1,
+    noDataText: {
+        fontSize: 16,
+        color: "#bbb",
+        marginLeft: 20,
     },
 });
