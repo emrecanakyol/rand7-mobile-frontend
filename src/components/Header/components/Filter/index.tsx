@@ -10,14 +10,21 @@ import {
 } from "react-native";
 import Slider from '@react-native-community/slider';
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
-import CBackButton from "../../../components/CBackButton";
 import { useNavigation } from "@react-navigation/native";
-import { useAppSelector } from "../../../store/hooks";
-import { useTheme } from "../../../utils/colors";
 import { useTranslation } from "react-i18next";
 import firestore from '@react-native-firebase/firestore'
+import { useAppSelector } from "../../../../store/hooks";
+import { useTheme } from "../../../../utils/colors";
+import { AppDispatch } from "../../../../store/Store";
+import { useDispatch } from "react-redux";
+import { fetchUserData } from "../../../../store/services/userDataService";
 
-const Filter = () => {
+interface FilterProps {
+    onClose: () => void;
+}
+
+const Filter: React.FC<FilterProps> = ({ onClose }) => {
+    const dispatch = useDispatch<AppDispatch>();
     const navigation: any = useNavigation();
     const { userData } = useAppSelector((state) => state.userData);
     const { colors } = useTheme();
@@ -30,9 +37,9 @@ const Filter = () => {
     const [ageRange, setAgeRange] = useState(
         userData?.ageRange
             ? [userData.ageRange.min, userData.ageRange.max]
-            : [18, 90] // default
+            : [18, 90]
     );
-    const [showPreference, setShowPreference] = useState(userData.lookingFor); // 👈 Yeni state
+    const [showPreference, setShowPreference] = useState(userData.lookingFor);
 
     const handleApply = async () => {
         try {
@@ -47,9 +54,8 @@ const Filter = () => {
                         max: ageRange[1],
                     },
                 });
-
-            console.log("✅ Filtre ayarları Firestore'a kaydedildi");
-            navigation.goBack(); // İstersen filtreyi kapat
+            await dispatch(fetchUserData());
+            onClose()
         } catch (error) {
             console.error("❌ Firestore güncelleme hatası:", error);
         }
@@ -57,10 +63,6 @@ const Filter = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <CBackButton />
-                <Text style={styles.headerTitle}>Filtre</Text>
-            </View>
 
             {/* Location */}
             <View style={styles.row}>
@@ -109,7 +111,7 @@ const Filter = () => {
                 <MultiSlider
                     values={ageRange}
                     min={18}
-                    max={60}
+                    max={90}
                     step={1}
                     onValuesChange={(v) => setAgeRange(v)}
                     selectedStyle={{ backgroundColor: colors.BLACK_COLOR }}
@@ -125,7 +127,7 @@ const Filter = () => {
                         transform: [{
                             scaleY: Platform.OS === "android" ? 1.2 : 1.1
                         }, {
-                            scaleX: Platform.OS === "android" ? 1.25 : 1.1
+                            scaleX: Platform.OS === "android" ? 1.15 : 1.1
                         }],
                     }}
                 />
@@ -221,7 +223,6 @@ const getStyles = (colors: any, isTablet: boolean) =>
         container: {
             flex: 1,
             backgroundColor: colors.BACKGROUND_COLOR,
-            paddingHorizontal: 20,
         },
         header: {
             flexDirection: "row",

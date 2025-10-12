@@ -4,18 +4,21 @@ import { responsive } from '../../utils/responsive';
 import { useTheme } from '../../utils/colors';
 import CText from '../CText/CText';
 import Entypo from 'react-native-vector-icons/Entypo';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface CustomModalProps {
     visible: boolean;
     onClose: () => void;
     justifyContent?: 'flex-start' | 'center' | 'flex-end';
-    modalTitle: string;
-    width: any;
-    height: any;
+    modalTitle?: string;
+    width?: any;
+    height?: any;
     children?: React.ReactNode;
     borderBottomLeftRadius?: number;
     borderBottomRightRadius?: number;
     animationType?: 'none' | 'slide' | 'fade';
+    paddingTop?: number;
+    closeButton?: boolean;
 }
 
 const CustomModal = ({
@@ -23,12 +26,14 @@ const CustomModal = ({
     onClose,
     justifyContent,
     modalTitle,
-    width,
-    height,
+    width = "100%",
+    height = "100%",
     borderBottomLeftRadius,
     borderBottomRightRadius,
     children,
-    animationType
+    animationType,
+    paddingTop = 60,
+    closeButton = true,
 }: CustomModalProps) => {
     const { colors } = useTheme();
     const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -36,23 +41,30 @@ const CustomModal = ({
     const styles = getStyles(colors, isTablet);
     return (
         <Modal
-            animationType={animationType ?? "fade"}
+            animationType={animationType ?? "slide"}
             transparent={true}
             visible={visible}
             onRequestClose={onClose}
         >
-            <View style={[styles.overlay, { justifyContent }]}>
+            <View
+                style={[
+                    styles.overlay,
+                    { paddingTop },
+                ]}
+            >
                 <View style={[styles.modalContainer, {
                     width,
                     height,
                     borderBottomLeftRadius,
                     borderBottomRightRadius,
                 }]}>
-                    <View style={styles.modalHeader}>
+                    <View style={[styles.modalHeader, { justifyContent: closeButton ? "space-between" : "center" }]}>
                         <CText style={styles.modalTitle}>{modalTitle}</CText>
-                        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                            <Entypo name="cross" size={isTablet ? 30 : 20} color={colors.WHITE_COLOR} />
-                        </TouchableOpacity>
+                        {closeButton && (
+                            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                                <Entypo name="cross" size={isTablet ? 30 : 20} color={colors.WHITE_COLOR} />
+                            </TouchableOpacity>
+                        )}
                     </View>
 
                     {children}
@@ -66,30 +78,26 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     overlay: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
     },
     modalContainer: {
-        padding: responsive(20),
+        padding: 24,
         backgroundColor: colors.BACKGROUND_COLOR,
-        borderTopLeftRadius: responsive(15),
-        borderTopRightRadius: responsive(15),
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
     },
     modalHeader: {
-        marginBottom: responsive(20),
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 10,
+        marginBottom: 20,
     },
     modalTitle: {
-        marginTop: responsive(15),
         fontSize: isTablet ? 36 : 20,
         fontWeight: 'bold',
         color: colors.TEXT_MAIN_COLOR,
-        borderBottomWidth: 0.5,
-        borderColor: colors.GRAY_COLOR,
-        paddingBottom: responsive(25),
     },
     closeButton: {
-        position: 'absolute',
-        top: responsive(12),
-        right: responsive(0),
         backgroundColor: colors.BLACK_COLOR,
         borderRadius: responsive(50),
         padding: responsive(4),

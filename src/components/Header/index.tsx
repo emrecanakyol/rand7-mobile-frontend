@@ -1,16 +1,16 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, SafeAreaView, Platform, Dimensions } from 'react-native';
-import { useTheme } from '../../../../../utils/colors';
-import images from '../../../../../assets/image/images';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import CImage from '../../../../../components/CImage';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../../store/store';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import CImage from '../CImage';
+import images from '../../assets/image/images';
+import { useTheme } from '../../utils/colors';
+import CModal from '../CModal';
+import Filter from './components/Filter';
 
 interface HeaderProps {
-    userData?: any;
+    userData: any;
 }
 
 const Header: React.FC<HeaderProps> = ({ userData }) => {
@@ -20,6 +20,9 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
     const styles = getStyles(colors, isTablet);
     const { t } = useTranslation();
     const navigation: any = useNavigation();
+
+    // ✅ Modal görünürlüğü state
+    const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <View style={styles.container}>
@@ -38,23 +41,29 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                 />
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.notificationButton}>
-                        <Ionicons
-                            name="notifications-outline"
-                            size={22}
-                        />
+                    <TouchableOpacity style={styles.notificationButton}>
+                        <Ionicons name="notifications-outline" size={22} />
                     </TouchableOpacity>
 
+                    {/* ✅ Options icon - modal açar */}
                     <TouchableOpacity
-                        style={styles.notificationButton}>
-                        <Ionicons
-                            name="options-outline"
-                            size={22}
-                        />
+                        style={styles.notificationButton}
+                        onPress={() => setModalVisible(true)}>
+                        <Ionicons name="options-outline" size={22} />
                     </TouchableOpacity>
                 </View>
             </View>
+
+            {/* Modal */}
+            <CModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                paddingTop={Platform.OS === "android" ? 25 : 70}
+                modalTitle='Filtre'
+                closeButton={false}
+            >
+                <Filter onClose={() => setModalVisible(false)} />
+            </CModal>
         </View>
     );
 };
@@ -85,7 +94,6 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         flexDirection: "row",
         gap: 12,
     },
-
 });
 
 export default Header;

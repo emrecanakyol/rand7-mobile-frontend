@@ -14,11 +14,11 @@ import { AppDispatch, RootState } from "../../../store/Store";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../utils/colors";
-import Header from "./components/Header";
 import { fetchUserData } from "../../../store/services/userDataService";
 import { useAppSelector } from "../../../store/hooks";
 import firestore from '@react-native-firebase/firestore';
 import { getDistanceFromLatLonInKm } from "../../../components/KmLocation";
+import Header from "../../../components/Header";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width * 0.42;

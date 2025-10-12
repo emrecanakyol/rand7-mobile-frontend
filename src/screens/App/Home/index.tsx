@@ -7,7 +7,6 @@ import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
-import Header from './components/Header';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import { useAppSelector } from '../../../store/hooks';
@@ -17,6 +16,7 @@ import { calculateAge } from '../../../components/CalculateAge';
 import Swiper from 'react-native-deck-swiper';
 import LottieView from 'lottie-react-native';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
+import Header from '../../../components/Header';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -395,7 +395,11 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <Header userData={userData} />
+            <Header
+                userData={userData}
+            />
+
+
 
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.inContainer}>

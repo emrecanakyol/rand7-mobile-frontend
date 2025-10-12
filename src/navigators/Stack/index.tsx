@@ -26,7 +26,6 @@ import AddProfile6 from '../../screens/Auth/AddProfile/AddProfile6';
 import AddProfile7 from '../../screens/Auth/AddProfile/AddProfile7';
 import AddProfile8 from '../../screens/Auth/AddProfile/AddProfile8';
 import Profile from '../../screens/App/Profile';
-import Filter from '../../screens/App/Filter';
 import LikeMatched from '../../screens/App/LikeMatched';
 import SuperLikeMatched from '../../screens/App/SuperLikeMatched';
 
@@ -58,7 +57,6 @@ export const ADD_PROFILE_5 = "Add Profile 5";
 export const ADD_PROFILE_6 = "Add Profile 6";
 export const ADD_PROFILE_7 = "Add Profile 7";
 export const ADD_PROFILE_8 = "Add Profile 8";
-export const FILTER = "Filter";
 export const LIKE_MATCHED = "LikeMatched";
 export const SUPER_LIKE_MATCHED = "SuperLikeMatched";
 
@@ -91,9 +89,6 @@ export default function StackNavigator() {
                     <Stack.Screen name={ADD_PROFILE_6} component={AddProfile6} />
                     <Stack.Screen name={ADD_PROFILE_7} component={AddProfile7} />
                     <Stack.Screen name={ADD_PROFILE_8} component={AddProfile8} />
-                    <Stack.Screen name={FILTER} component={Filter}
-                        options={{ presentation: "transparentModal" }} // Ekrana yönlendirilirkenki efekti değiştirdim.
-                    />
                     <Stack.Screen name={LIKE_MATCHED} component={LikeMatched}
                         options={{ presentation: "transparentModal" }} // Ekrana yönlendirilirkenki efekti değiştirdim.
                     />

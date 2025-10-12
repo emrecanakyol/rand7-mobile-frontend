@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
 import LottieView from 'lottie-react-native';
 import { CHAT } from '../../../navigators/BottomTabs';
-import Header from './components/Header';
+import Header from '../../../components/Header';
 
 const RandomMatch = () => {
     const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
