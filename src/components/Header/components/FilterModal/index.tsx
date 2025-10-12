@@ -18,6 +18,8 @@ import { useTheme } from "../../../../utils/colors";
 import { AppDispatch } from "../../../../store/Store";
 import { useDispatch } from "react-redux";
 import { fetchUserData } from "../../../../store/services/userDataService";
+import CModal from "../../../CModal";
+import MapModal from "../MapModal";
 
 interface FilterProps {
     onClose: () => void;
@@ -40,22 +42,42 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             : [18, 90]
     );
     const [showPreference, setShowPreference] = useState(userData.lookingFor);
+    const [mapModalVisible, setMapModalVisible] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState<{
+        location: string;
+        latitude: number;
+        longitude: number;
+        province: string;
+        country: string;
+    } | null>(null);
 
     const handleApply = async () => {
         try {
+            const updateData: any = {
+                maxDistance: distance,
+                lookingFor: showPreference,
+                ageRange: {
+                    min: ageRange[0],
+                    max: ageRange[1],
+                },
+            };
+
+            // ✅ Eğer MapModal’dan yeni konum seçilmişse, ekle
+            if (selectedLocation) {
+                updateData.location = selectedLocation.location;
+                updateData.latitude = selectedLocation.latitude;
+                updateData.longitude = selectedLocation.longitude;
+                updateData.province = selectedLocation.province;
+                updateData.country = selectedLocation.country;
+            }
+
             await firestore()
                 .collection('users')
                 .doc(userData.userId)
-                .update({
-                    maxDistance: distance,
-                    lookingFor: showPreference,
-                    ageRange: {
-                        min: ageRange[0],
-                        max: ageRange[1],
-                    },
-                });
+                .update(updateData);
+
             await dispatch(fetchUserData());
-            onClose()
+            onClose();
         } catch (error) {
             console.error("❌ Firestore güncelleme hatası:", error);
         }
@@ -67,9 +89,11 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             {/* Location */}
             <View style={styles.row}>
                 <Text style={styles.label}>Konum</Text>
-                <TouchableOpacity onPress={() => navigation.navigate()}>
+                <TouchableOpacity onPress={() => setMapModalVisible(true)}>
                     <Text style={styles.value}>
-                        {`${userData.province}, ${userData.country}`}
+                        {selectedLocation
+                            ? `${selectedLocation.province}, ${selectedLocation.country}`
+                            : `${userData.province}, ${userData.country}`}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -103,7 +127,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             {/* Age */}
             <View style={styles.section}>
                 <View style={styles.row}>
-                    <Text style={styles.label}>Yaş</Text>
+                    <Text style={styles.label}>Yaş Aralığı</Text>
                     <Text style={styles.value}>
                         {ageRange[0]} – {ageRange[1]}
                     </Text>
@@ -135,7 +159,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
 
             {/* Göster (Show Preference) */}
             <View style={styles.section}>
-                <Text style={styles.label}>Göster</Text>
+                <Text style={styles.label}>Bana Göster</Text>
                 <View style={styles.preferenceContainer}>
                     <TouchableOpacity
                         style={[
@@ -205,13 +229,24 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
 
             {/* Buttons */}
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.resetBtn} onPress={() => navigation.goBack()}>
-                    <Text style={styles.resetText}>Sıfırla</Text>
+                <TouchableOpacity style={styles.resetBtn} onPress={onClose}>
+                    <Text style={styles.resetText}>Kapat</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
                     <Text style={styles.applyText}>Uygula</Text>
                 </TouchableOpacity>
             </View>
+            {/* Modal */}
+            <CModal
+                visible={mapModalVisible}
+                onClose={() => setMapModalVisible(false)}
+                paddingTop={Platform.OS === "android" ? 25 : 70}
+                closeButton={false}
+            >
+                <MapModal
+                    onClose={() => setMapModalVisible(false)}
+                    onLocationSelect={(loc) => setSelectedLocation(loc)} />
+            </CModal>
         </View>
     );
 };
@@ -239,7 +274,7 @@ const getStyles = (colors: any, isTablet: boolean) =>
         label: {
             fontSize: 16,
             fontWeight: "600",
-            color: "#000",
+            color: colors.TEXT_MAIN_COLOR,
         },
         value: {
             color: colors.TEXT_DESCRIPTION_COLOR,
@@ -257,25 +292,29 @@ const getStyles = (colors: any, isTablet: boolean) =>
         preferenceContainer: {
             flexDirection: "row",
             marginTop: 10,
+            justifyContent: "space-between",
         },
         checkbox: {
             borderWidth: 1,
-            borderColor: "#E0E0E0",
+            borderColor: colors.GRAY_COLOR,
             borderRadius: 8,
             paddingVertical: 8,
             paddingHorizontal: 14,
             marginRight: 10,
+            width: 100,
+            alignItems: "center",
         },
         checkedBox: {
             backgroundColor: colors.BLACK_COLOR,
             borderColor: colors.BLACK_COLOR,
         },
         checkboxText: {
-            color: "#888",
+            color: colors.DARK_GRAY_COLOR,
             fontWeight: "500",
+            fontSize: 16,
         },
         checkedText: {
-            color: "#fff",
+            color: colors.WHITE_COLOR,
         },
         buttonContainer: {
             flexDirection: "row",
@@ -292,12 +331,12 @@ const getStyles = (colors: any, isTablet: boolean) =>
             alignItems: "center",
         },
         resetText: {
-            color: "#777",
+            color: colors.DARK_GRAY,
             fontWeight: "600",
         },
         applyBtn: {
             flex: 1,
-            backgroundColor: "#3B0147",
+            backgroundColor: colors.BLACK_COLOR,
             paddingVertical: 14,
             borderRadius: 20,
             alignItems: "center",

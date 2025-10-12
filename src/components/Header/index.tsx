@@ -7,7 +7,7 @@ import CImage from '../CImage';
 import images from '../../assets/image/images';
 import { useTheme } from '../../utils/colors';
 import CModal from '../CModal';
-import Filter from './components/Filter';
+import FilterModal from './components/FilterModal';
 
 interface HeaderProps {
     userData: any;
@@ -20,9 +20,7 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
     const styles = getStyles(colors, isTablet);
     const { t } = useTranslation();
     const navigation: any = useNavigation();
-
-    // ✅ Modal görünürlüğü state
-    const [modalVisible, setModalVisible] = useState(false);
+    const [filterModalVisible, setFilterModalVisible] = useState(false);
 
     return (
         <View style={styles.container}>
@@ -48,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
                     {/* ✅ Options icon - modal açar */}
                     <TouchableOpacity
                         style={styles.notificationButton}
-                        onPress={() => setModalVisible(true)}>
+                        onPress={() => setFilterModalVisible(true)}>
                         <Ionicons name="options-outline" size={22} />
                     </TouchableOpacity>
                 </View>
@@ -56,13 +54,13 @@ const Header: React.FC<HeaderProps> = ({ userData }) => {
 
             {/* Modal */}
             <CModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
+                visible={filterModalVisible}
+                onClose={() => setFilterModalVisible(false)}
                 paddingTop={Platform.OS === "android" ? 25 : 70}
                 modalTitle='Filtre'
                 closeButton={false}
             >
-                <Filter onClose={() => setModalVisible(false)} />
+                <FilterModal onClose={() => setFilterModalVisible(false)} />
             </CModal>
         </View>
     );

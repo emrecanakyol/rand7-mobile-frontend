@@ -55,25 +55,24 @@ const CButton = ({
     );
 };
 
-const getStyles = (colors: any, isTablet: boolean) =>
-    StyleSheet.create({
-        buttonContainer: {
-            marginVertical: responsive(15),
-        },
-        button: {
-            paddingVertical: isTablet ? responsive(10) : responsive(14),
-            paddingHorizontal: responsive(20),
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        buttonText: {
-            fontSize: isTablet ? 22 : 16,
-            fontWeight: 'bold',
-            color: colors.WHITE_COLOR,
-        },
-        disabledButton: {
-            backgroundColor: colors.GRAY_COLOR,
-        },
-    });
+const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
+    buttonContainer: {
+        marginVertical: responsive(15),
+    },
+    button: {
+        paddingVertical: isTablet ? responsive(10) : responsive(14),
+        paddingHorizontal: responsive(20),
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontSize: isTablet ? 22 : 16,
+        fontWeight: 'bold',
+        color: colors.WHITE_COLOR,
+    },
+    disabledButton: {
+        backgroundColor: colors.GRAY_COLOR,
+    },
+});
 
 export default CButton;
