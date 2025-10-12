@@ -25,9 +25,10 @@ import AddProfile5 from '../../screens/Auth/AddProfile/AddProfile5';
 import AddProfile6 from '../../screens/Auth/AddProfile/AddProfile6';
 import AddProfile7 from '../../screens/Auth/AddProfile/AddProfile7';
 import AddProfile8 from '../../screens/Auth/AddProfile/AddProfile8';
-import Profile from '../../screens/App/Profile';
+import MyProfile from '../../screens/App/MyProfile';
 import LikeMatched from '../../screens/App/LikeMatched';
 import SuperLikeMatched from '../../screens/App/SuperLikeMatched';
+import UserProfile from '../../screens/App/UserProfile';
 
 const Stack = createStackNavigator();
 
@@ -48,7 +49,8 @@ export const ADD_HELP = "Add Help";
 export const SUBSCRIPTONS = "Subscriptions";
 export const DELETE_ACCOUNT = "Delete Account";
 export const ADD_SUBSCRIPTONS = "Add Subscriptions";
-export const PROFILE = "Profile";
+export const MYPROFILE = "MyProfile";
+export const USER_PROFILE = "User Profile";
 export const ADD_PROFILE = "Add Profile";
 export const ADD_PROFILE_2 = "Add Profile 2";
 export const ADD_PROFILE_3 = "Add Profile 3";
@@ -80,7 +82,8 @@ export default function StackNavigator() {
                     <Stack.Screen name={DELETE_ACCOUNT} component={DeleteAccount} />
                     <Stack.Screen name={RESET_PASSWORD} component={ResetPassword} />
                     <Stack.Screen name={ADD_SUBSCRIPTONS} component={AddSubscriptions} />
-                    <Stack.Screen name={PROFILE} component={Profile} />
+                    <Stack.Screen name={MYPROFILE} component={MyProfile} />
+                    <Stack.Screen name={USER_PROFILE} component={UserProfile} />
                     <Stack.Screen name={ADD_PROFILE} component={AddProfile} />
                     <Stack.Screen name={ADD_PROFILE_2} component={AddProfile2} />
                     <Stack.Screen name={ADD_PROFILE_3} component={AddProfile3} />
@@ -89,12 +92,8 @@ export default function StackNavigator() {
                     <Stack.Screen name={ADD_PROFILE_6} component={AddProfile6} />
                     <Stack.Screen name={ADD_PROFILE_7} component={AddProfile7} />
                     <Stack.Screen name={ADD_PROFILE_8} component={AddProfile8} />
-                    <Stack.Screen name={LIKE_MATCHED} component={LikeMatched}
-                        options={{ presentation: "transparentModal" }} // Ekrana yönlendirilirkenki efekti değiştirdim.
-                    />
-                    <Stack.Screen name={SUPER_LIKE_MATCHED} component={SuperLikeMatched}
-                        options={{ presentation: "transparentModal" }} // Ekrana yönlendirilirkenki efekti değiştirdim.
-                    />
+                    <Stack.Screen name={LIKE_MATCHED} component={LikeMatched} />
+                    <Stack.Screen name={SUPER_LIKE_MATCHED} component={SuperLikeMatched} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator

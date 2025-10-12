@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, ScrollView, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 import { useTheme } from '../../../utils/colors';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { ADD_PROFILE, LIKE_MATCHED, SUPER_LIKE_MATCHED } from '../../../navigators/Stack';
+import { ADD_PROFILE, LIKE_MATCHED, SUPER_LIKE_MATCHED, USER_PROFILE } from '../../../navigators/Stack';
 import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -146,7 +146,6 @@ const Home = () => {
                 );
             });
 
-            console.log("📍 Yakındaki kullanıcılar:", filtered.length);
             setNearbyUsers(filtered);
         } catch (err) {
             console.error("❌ Kullanıcıları çekerken hata:", err);
@@ -232,7 +231,6 @@ const Home = () => {
                 );
             });
 
-            console.log("❤️ + 💫 Seni beğenen kullanıcılar:", filtered.length);
             setNearbyUsers(filtered);
         } catch (err) {
             console.error("❌ Beğenen kullanıcıları çekerken hata:", err);
@@ -512,67 +510,71 @@ const Home = () => {
                                     }
 
                                     return (
-                                        <View style={styles.cardContainer}>
-                                            <Image
-                                                source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
-                                                style={styles.profileImage}
-                                            />
-                                            <LinearGradient
-                                                colors={['transparent', 'rgba(0,0,0,0.7)']}
-                                                style={styles.gradientOverlay}
-                                            />
-                                            <View style={styles.distanceContainer}>
-                                                <Text style={styles.distanceText}>
-                                                    {getDistanceFromLatLonInKm(
-                                                        userData.latitude,
-                                                        userData.longitude,
-                                                        u.latitude,
-                                                        u.longitude
-                                                    ).toFixed(1)} km
-                                                </Text>
-                                            </View>
-
-                                            <View style={styles.infoContainer}>
-                                                <View style={styles.userInfo}>
-                                                    <Text style={styles.userName}>
-                                                        {u.firstName}, {u.age}
-                                                    </Text>
-                                                    <Text style={styles.userLocation}>
-                                                        {u.province}, {u.country}
+                                        <TouchableWithoutFeedback
+                                            onPress={() => navigation.navigate(USER_PROFILE, { user: u })}
+                                        >
+                                            <View style={styles.cardContainer}>
+                                                <Image
+                                                    source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                                    style={styles.profileImage}
+                                                />
+                                                <LinearGradient
+                                                    colors={['transparent', 'rgba(0,0,0,0.7)']}
+                                                    style={styles.gradientOverlay}
+                                                />
+                                                <View style={styles.distanceContainer}>
+                                                    <Text style={styles.distanceText}>
+                                                        {getDistanceFromLatLonInKm(
+                                                            userData.latitude,
+                                                            userData.longitude,
+                                                            u.latitude,
+                                                            u.longitude
+                                                        ).toFixed(1)} km
                                                     </Text>
                                                 </View>
 
-                                                <View style={styles.actionButtons}>
-                                                    <TouchableOpacity
-                                                        style={styles.dislikeButton}
-                                                        onPress={() => {
-                                                            handleDislike(u.userId);
-                                                            swiperRef.current?.swipeLeft();
-                                                        }}
-                                                    >
-                                                        <Ionicons name="close" size={28} color="#000" />
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        style={styles.starButton}
-                                                        onPress={() => {
-                                                            handleSuperLike(u.userId);
-                                                            swiperRef.current?.swipeRight();
-                                                        }}
-                                                    >
-                                                        <Ionicons name="star" size={26} color="#fff" />
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity
-                                                        style={styles.likeButton}
-                                                        onPress={() => {
-                                                            handleLike(u.userId);
-                                                            swiperRef.current?.swipeRight();
-                                                        }}
-                                                    >
-                                                        <Ionicons name="heart" size={28} color="#fff" />
-                                                    </TouchableOpacity>
+                                                <View style={styles.infoContainer}>
+                                                    <View style={styles.userInfo}>
+                                                        <Text style={styles.userName}>
+                                                            {u.firstName}, {u.age}
+                                                        </Text>
+                                                        <Text style={styles.userLocation}>
+                                                            {u.province}, {u.country}
+                                                        </Text>
+                                                    </View>
+
+                                                    <View style={styles.actionButtons}>
+                                                        <TouchableOpacity
+                                                            style={styles.dislikeButton}
+                                                            onPress={() => {
+                                                                handleDislike(u.userId);
+                                                                swiperRef.current?.swipeLeft();
+                                                            }}
+                                                        >
+                                                            <Ionicons name="close" size={28} color="#000" />
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity
+                                                            style={styles.starButton}
+                                                            onPress={() => {
+                                                                handleSuperLike(u.userId);
+                                                                swiperRef.current?.swipeRight();
+                                                            }}
+                                                        >
+                                                            <Ionicons name="star" size={26} color="#fff" />
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity
+                                                            style={styles.likeButton}
+                                                            onPress={() => {
+                                                                handleLike(u.userId);
+                                                                swiperRef.current?.swipeRight();
+                                                            }}
+                                                        >
+                                                            <Ionicons name="heart" size={28} color="#fff" />
+                                                        </TouchableOpacity>
+                                                    </View>
                                                 </View>
                                             </View>
-                                        </View>
+                                        </TouchableWithoutFeedback>
                                     );
                                 }}
                                 onSwipedAll={() => {
@@ -599,67 +601,71 @@ const Home = () => {
                             {nearbyUsers.length > 0 ? (
                                 <View style={styles.matchesGrid}>
                                     {nearbyUsers.map((u, index) => (
-                                        <View
+                                        <TouchableWithoutFeedback
                                             key={index}
-                                            style={[
-                                                styles.matchCard,
-                                                u.likeType === "superLike"
-                                                    ? { borderWidth: 2, borderColor: colors.BLUE_COLOR }
-                                                    : u.likeType === "like"
-                                                        ? { borderWidth: 2, borderColor: colors.RED_COLOR }
-                                                        : null,
-                                            ]}
+                                            onPress={() => navigation.navigate(USER_PROFILE, { user: u })}
                                         >
-                                            <Image
-                                                source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
-                                                style={styles.matchImage}
-                                            />
-                                            <TouchableOpacity
-                                                style={styles.closeIcon}
-                                                onPress={() => {
-                                                    handleDislike(u.userId);
-                                                }}
+                                            <View
+                                                style={[
+                                                    styles.matchCard,
+                                                    u.likeType === "superLike"
+                                                        ? { borderWidth: 2, borderColor: colors.BLUE_COLOR }
+                                                        : u.likeType === "like"
+                                                            ? { borderWidth: 2, borderColor: colors.RED_COLOR }
+                                                            : null,
+                                                ]}
                                             >
-                                                <Ionicons name="close-circle" size={22} color={colors.WHITE_COLOR} />
-                                            </TouchableOpacity>
-                                            <View style={[
-                                                styles.matchBadge,
-                                                u.likeType === "superLike"
-                                                    ? { backgroundColor: colors.BLUE_COLOR }
-                                                    : u.likeType === "like"
-                                                        ? { backgroundColor: colors.RED_COLOR }
-                                                        : null,
-                                            ]}>
-                                                {u.likeType === "superLike" && (
-                                                    <Ionicons
-                                                        name="star"
-                                                        size={18}
-                                                        color={colors.WHITE_COLOR}
-                                                        style={{ marginLeft: 5 }}
-                                                    />
-                                                )}
+                                                <Image
+                                                    source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                                    style={styles.matchImage}
+                                                />
+                                                <TouchableOpacity
+                                                    style={styles.closeIcon}
+                                                    onPress={() => {
+                                                        handleDislike(u.userId);
+                                                    }}
+                                                >
+                                                    <Ionicons name="close-circle" size={22} color={colors.WHITE_COLOR} />
+                                                </TouchableOpacity>
+                                                <View style={[
+                                                    styles.matchBadge,
+                                                    u.likeType === "superLike"
+                                                        ? { backgroundColor: colors.BLUE_COLOR }
+                                                        : u.likeType === "like"
+                                                            ? { backgroundColor: colors.RED_COLOR }
+                                                            : null,
+                                                ]}>
+                                                    {u.likeType === "superLike" && (
+                                                        <Ionicons
+                                                            name="star"
+                                                            size={18}
+                                                            color={colors.WHITE_COLOR}
+                                                            style={{ marginLeft: 5 }}
+                                                        />
+                                                    )}
 
-                                                {u.likeType === "like" && (
-                                                    <Ionicons
-                                                        name="heart"
-                                                        size={18}
-                                                        color={colors.WHITE_COLOR}
-                                                        style={{ marginLeft: 5 }}
-                                                    />
-                                                )}
+                                                    {u.likeType === "like" && (
+                                                        <Ionicons
+                                                            name="heart"
+                                                            size={18}
+                                                            color={colors.WHITE_COLOR}
+                                                            style={{ marginLeft: 5 }}
+                                                        />
+                                                    )}
+                                                </View>
+                                                <View style={styles.matchInfo}>
+                                                    <Text style={styles.likesDistanceText}>
+                                                        {getDistanceFromLatLonInKm(
+                                                            userData.latitude,
+                                                            userData.longitude,
+                                                            u.latitude,
+                                                            u.longitude
+                                                        ).toFixed(1)} km uzakta
+                                                    </Text>
+                                                    <Text style={styles.likesUserName}>{u.firstName}, {calculateAge(u.birthDate)}</Text>
+                                                </View>
                                             </View>
-                                            <View style={styles.matchInfo}>
-                                                <Text style={styles.likesDistanceText}>
-                                                    {getDistanceFromLatLonInKm(
-                                                        userData.latitude,
-                                                        userData.longitude,
-                                                        u.latitude,
-                                                        u.longitude
-                                                    ).toFixed(1)} km uzakta
-                                                </Text>
-                                                <Text style={styles.likesUserName}>{u.firstName}, {calculateAge(u.birthDate)}</Text>
-                                            </View>
-                                        </View>
+                                        </TouchableWithoutFeedback>
                                     ))}
                                 </View>
                             ) : (

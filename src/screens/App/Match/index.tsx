@@ -21,13 +21,13 @@ import { getDistanceFromLatLonInKm } from "../../../components/KmLocation";
 import Header from "../../../components/Header";
 
 interface Users {
-    photos: string;  // Fotoğraf URL'si
-    age: number;     // Kullanıcının yaşı
-    firstName: string; // Kullanıcının adı
-    isSuper?: boolean; // Süper beğeni mi? (opsiyonel)
+    photos: string;
+    age: number;
+    firstName: string;
+    isSuper?: boolean;
     latitude: number;
     longitude: number;
-}
+};
 
 const Likes: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -346,11 +346,9 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     statsContainer: {
         flexDirection: "row",
         marginTop: 20,
-        marginLeft: 5,
     },
     statItem: {
         alignItems: "center",
-        paddingLeft: 15,
     },
     avatarOuter: {
         width: 86,
