@@ -29,6 +29,7 @@ import MyProfile from '../../screens/App/MyProfile';
 import LikeMatched from '../../screens/App/LikeMatched';
 import SuperLikeMatched from '../../screens/App/SuperLikeMatched';
 import UserProfile from '../../screens/App/UserProfile';
+import Chat from '../../screens/App/Chat/Chat';
 
 const Stack = createStackNavigator();
 
@@ -61,6 +62,7 @@ export const ADD_PROFILE_7 = "Add Profile 7";
 export const ADD_PROFILE_8 = "Add Profile 8";
 export const LIKE_MATCHED = "LikeMatched";
 export const SUPER_LIKE_MATCHED = "SuperLikeMatched";
+export const CHAT_STACK = "Chat";
 
 export default function StackNavigator() {
     const user = useSelector((state: any) => state?.auth?.user);
@@ -94,6 +96,7 @@ export default function StackNavigator() {
                     <Stack.Screen name={ADD_PROFILE_8} component={AddProfile8} />
                     <Stack.Screen name={LIKE_MATCHED} component={LikeMatched} />
                     <Stack.Screen name={SUPER_LIKE_MATCHED} component={SuperLikeMatched} />
+                    <Stack.Screen name={CHAT_STACK} component={Chat} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator

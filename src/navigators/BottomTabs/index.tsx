@@ -4,7 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Home from '../../screens/App/Home';
-import Chat from '../../screens/App/Chat';
+import ChatMessages from '../../screens/App/Chat/Messages';
 import RandomMatch from '../../screens/App/RandomMatch';
 import Account from '../../screens/App/Account';
 import { useTheme } from '../../utils/colors';
@@ -15,7 +15,7 @@ const Tab = createBottomTabNavigator();
 export const HOME = "Home";
 export const RANDOM_MATCH = "RandomMatch";
 export const MATCH = "Match";
-export const CHAT = "Chat";
+export const CHAT_MESSAGES = "ChatMessages";
 export const ACCOUNT = "Account";
 
 function AnimatedTabBar({ state, descriptors, navigation }: any) {
@@ -103,7 +103,7 @@ function getIconName(routeName: string, focused: boolean) {
             return focused ? 'compass' : 'compass-outline';
         case MATCH:
             return focused ? 'sparkles' : 'sparkles-outline';
-        case CHAT:
+        case CHAT_MESSAGES:
             return focused ? 'chatbubble' : 'chatbubble-outline';
         case ACCOUNT:
             return focused ? 'person' : 'person-outline';
@@ -118,7 +118,7 @@ export default function BottomTabs() {
 
     return (
         <Tab.Navigator
-            initialRouteName={HOME}
+            initialRouteName={CHAT_MESSAGES}
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
@@ -128,7 +128,7 @@ export default function BottomTabs() {
             <Tab.Screen name={HOME} component={Home} />
             <Tab.Screen name={MATCH} component={Match} />
             <Tab.Screen name={RANDOM_MATCH} component={RandomMatch} />
-            <Tab.Screen name={CHAT} component={Chat} />
+            <Tab.Screen name={CHAT_MESSAGES} component={ChatMessages} />
             <Tab.Screen name={ACCOUNT} component={Account} />
         </Tab.Navigator>
     );
@@ -137,19 +137,8 @@ export default function BottomTabs() {
 const styles = StyleSheet.create({
     tabBar: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
         height: 85,
-        paddingBottom: 20,
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        shadowColor: '#000',
-        shadowOpacity: 0.3,
-        shadowOffset: { width: 0, height: 5 },
-        shadowRadius: 8,
-        elevation: 10,
+        paddingBottom: 25,
     },
     tabButton: {
         flex: 1,

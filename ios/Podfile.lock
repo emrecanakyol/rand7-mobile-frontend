@@ -3335,6 +3335,63 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - react-native-keyboard-controller (1.19.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-keyboard-controller/common (= 1.19.1)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - react-native-keyboard-controller/common (1.19.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-maps (1.26.14):
     - react-native-maps/Maps (= 1.26.14)
   - react-native-maps/Generated (1.26.14):
@@ -4306,7 +4363,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (3.19.1):
+  - RNReanimated (3.19.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4333,11 +4390,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.19.1)
-    - RNReanimated/worklets (= 3.19.1)
+    - RNReanimated/reanimated (= 3.19.3)
+    - RNReanimated/worklets (= 3.19.3)
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated (3.19.1):
+  - RNReanimated/reanimated (3.19.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4364,10 +4421,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.19.1)
+    - RNReanimated/reanimated/apple (= 3.19.3)
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (3.19.1):
+  - RNReanimated/reanimated/apple (3.19.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4396,7 +4453,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated/worklets (3.19.1):
+  - RNReanimated/worklets (3.19.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4423,10 +4480,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 3.19.1)
+    - RNReanimated/worklets/apple (= 3.19.3)
     - SocketRocket
     - Yoga
-  - RNReanimated/worklets/apple (3.19.1):
+  - RNReanimated/worklets/apple (3.19.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4658,6 +4715,7 @@ DEPENDENCIES:
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
+  - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
@@ -4845,6 +4903,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/geolocation"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
+  react-native-keyboard-controller:
+    :path: "../node_modules/react-native-keyboard-controller"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-safe-area-context:
@@ -5032,6 +5092,7 @@ SPEC CHECKSUMS:
   react-native-date-picker: 64ccae6c3a8104a168cef950fea8e1fe616cda82
   react-native-geolocation: 49d39b53dfeb6c22ff1ad69e71ac9c7981affdaa
   react-native-image-picker: 6051cfd030121b880a58f1cc0e5e33e9887804e4
+  react-native-keyboard-controller: e4ff19011e66fa0b671c0887a664c007c8c3546d
   react-native-maps: 04f4ac68991a959189fffac5821a17cf03d8d2ef
   react-native-safe-area-context: ee1e8e2a7abf737a8d4d9d1a5686a7f2e7466236
   react-native-slider: 6201419b3e3f7c6b7cf2068e0c01274fa86a1da5
@@ -5082,7 +5143,7 @@ SPEC CHECKSUMS:
   RNLocalize: d8ccb568b40c72c767714db3808ce66a1ecf444a
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNPermissions: 0422b437bc6f225e3f0d9e59719e6241a340b338
-  RNReanimated: 9a194cc49afc2ae6c6b2c3763639c6d141ce85c7
+  RNReanimated: 11699d133e760aed8cb48304120501fbeacb978c
   RNScreens: 2e9c41cd099b1ca50136af8d57c3594214d0086a
   RNSVG: 08e4ffbf2e7e5b9f46dcc4b46b1326d1025cad52
   RNVectorIcons: e355dd0998d6b9020e560922a66614eb9636501b
