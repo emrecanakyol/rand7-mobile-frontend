@@ -9,7 +9,7 @@ import {
     ScrollView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { EDIT_PROFILE, ONEBOARDINGONE, PROFILE } from '../../../navigators/Stack';
+import { EDIT_PROFILE, MYPROFILE, ONEBOARDINGONE } from '../../../navigators/Stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../utils/colors';
 import { useDispatch } from 'react-redux';
@@ -43,7 +43,7 @@ const SettingsScreen = () => {
             <View style={styles.container}>
                 {/* 👤 Profil Bölümü */}
                 <View style={styles.profileSection}>
-                    <TouchableOpacity onPress={() => navigation.navigate(PROFILE)}>
+                    <TouchableOpacity onPress={() => navigation.navigate(MYPROFILE)}>
                         <View>
                             <CImage
                                 imgSource={{ uri: userData?.photos?.[0] }}

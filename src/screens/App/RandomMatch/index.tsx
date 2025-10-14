@@ -10,7 +10,7 @@ import Header from '../../../components/Header';
 import { useAppSelector } from '../../../store/hooks';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MatchSearchingLoading from './components/MatchSearchingLoading';
-import { CHAT_STACK } from '../../../navigators/Stack';
+import { ANONIM_CHAT } from '../../../navigators/Stack';
 
 const RandomMatch = () => {
     const { userData } = useAppSelector((state) => state.userData);
@@ -21,7 +21,6 @@ const RandomMatch = () => {
     const navigation: any = useNavigation();
     const { t } = useTranslation();
     const [matchLoading, setMatchLoading] = useState(false);
-    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     // Rastgele saniye bekletmek için fonksiyon
     const getRandomDelay = () => {
@@ -34,32 +33,36 @@ const RandomMatch = () => {
     const handlePress = async () => {
         setMatchLoading(true);
         try {
+            const meAnnonId = userData?.annonId;                // 👈 kendi annonId
+            if (!meAnnonId) throw new Error('Me annonId yok');
+
+            // Tüm kullanıcıları çek
             const usersSnapshot = await firestore().collection('users').get();
-            const annonIds: string[] = [];
+            const otherAnnonIds: string[] = [];
 
             usersSnapshot.forEach(doc => {
-                const data = doc.data();
-                if (data.annonId) {
-                    annonIds.push(data.annonId);
+                const d = doc.data() as any;
+                if (d?.annonId && d.annonId !== meAnnonId) {
+                    otherAnnonIds.push(d.annonId);
                 }
             });
 
-            if (annonIds.length < 2) {
-                console.log('Yeterli sayıda annonId bulunamadı.');
+            if (otherAnnonIds.length === 0) {
+                console.log('Eşleşecek başka annonId yok.');
                 return;
             }
 
-            // Rastgele 2 farklı annonId seç
-            const shuffled = annonIds.sort(() => 0.5 - Math.random());
-            const selected = shuffled.slice(0, 2);
+            // Rastgele 1 kişi seç
+            const picked = otherAnnonIds[Math.floor(Math.random() * otherAnnonIds.length)];
 
-            // console.log('Rastgele seçilen annonId\'ler:', selected);
-            await new Promise(resolve => setTimeout(resolve, getRandomDelay())); // x saniye bekle
-            setSelectedIds(selected);
-            // setModalVisible(true);
-            navigation.navigate(CHAT_STACK, { annonIds: selectedIds });
-        } catch (error) {
-            console.log('AnnonId çekilirken hata:', error);
+            // İsteğe bağlı bekletme
+            await new Promise(r => setTimeout(r, getRandomDelay()));
+            navigation.navigate(ANONIM_CHAT, {
+                annonId: meAnnonId,
+                other2Id: picked
+            });
+        } catch (e) {
+            console.log('Annon match error:', e);
         } finally {
             setMatchLoading(false);
         }

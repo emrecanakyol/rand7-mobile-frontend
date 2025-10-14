@@ -15,14 +15,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import firestore from '@react-native-firebase/firestore';
 import { useTheme } from '../../../utils/colors';
 import { useAppSelector } from '../../../store/hooks';
-import { CHAT_STACK } from '../../../navigators/Stack';
+import { CHAT } from '../../../navigators/Stack';
 
 type RowItem = {
     id: string;
     userId: string;
     username: string;
     avatar?: string;
-    preview?: string;          // => lastMessage
+    preview?: string;
     online?: boolean;
     lastMessageAt?: Date;
     unreadCount?: number;
@@ -118,9 +118,10 @@ export default function Messages() {
             item={item}
             colors={colors}
             onPress={() =>
-                // Eğer Chat ekranı nested ise:
-                // navigation.navigate('ChatStack', { screen: 'Chat', params: { userId: meId, user2Id: item.userId }});
-                navigation.navigate('Chat', { userId: meId, user2Id: item.userId }) // ✅ direkt ekran adına git
+                navigation.navigate(CHAT, {
+                    userId: meId,
+                    user2Id: item.userId
+                })
             }
         />
     );

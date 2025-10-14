@@ -8,6 +8,7 @@ import images from '../../assets/image/images';
 import { useTheme } from '../../utils/colors';
 import CModal from '../CModal';
 import FilterModal from './components/FilterModal';
+import { MYPROFILE } from '../../navigators/Stack';
 
 interface HeaderProps {
     userData: any;
@@ -26,18 +27,20 @@ const Header: React.FC<HeaderProps> = ({ userData, twoIcon = true }) => {
     return (
         <View style={styles.container}>
             <View style={styles.inContainer}>
-                <CImage
-                    disablePress={true}
-                    imgSource={
-                        userData?.photos && userData?.photos.length > 0
-                            ? { uri: userData?.photos[userData?.photos.length - 1] }
-                            : images.defaultProfilePhoto
-                    }
-                    width={45}
-                    height={45}
-                    borderRadius={100}
-                    imageBorderRadius={100}
-                />
+                <TouchableOpacity
+                    onPress={() => navigation.navigate(MYPROFILE)}>
+                    <CImage
+                        disablePress={true}
+                        imgSource={
+                            userData?.photos && userData?.photos.length > 0
+                                ? { uri: userData?.photos[userData?.photos.length - 1] }
+                                : images.defaultProfilePhoto
+                        }
+                        width={45}
+                        height={45}
+                        imageBorderRadius={3}
+                    />
+                </TouchableOpacity>
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.notificationButton}>

@@ -4,18 +4,18 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Home from '../../screens/App/Home';
-import ChatMessages from '../../screens/App/Chat/Messages';
 import RandomMatch from '../../screens/App/RandomMatch';
 import Account from '../../screens/App/Account';
 import { useTheme } from '../../utils/colors';
 import Match from '../../screens/App/Match';
+import Messages from '../../screens/App/Messages';
 
 const Tab = createBottomTabNavigator();
 
 export const HOME = "Home";
 export const RANDOM_MATCH = "RandomMatch";
 export const MATCH = "Match";
-export const CHAT_MESSAGES = "ChatMessages";
+export const MESSAGES = "Messages";
 export const ACCOUNT = "Account";
 
 function AnimatedTabBar({ state, descriptors, navigation }: any) {
@@ -103,7 +103,7 @@ function getIconName(routeName: string, focused: boolean) {
             return focused ? 'compass' : 'compass-outline';
         case MATCH:
             return focused ? 'sparkles' : 'sparkles-outline';
-        case CHAT_MESSAGES:
+        case MESSAGES:
             return focused ? 'chatbubble' : 'chatbubble-outline';
         case ACCOUNT:
             return focused ? 'person' : 'person-outline';
@@ -118,7 +118,7 @@ export default function BottomTabs() {
 
     return (
         <Tab.Navigator
-            initialRouteName={CHAT_MESSAGES}
+            initialRouteName={MESSAGES}
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
@@ -128,7 +128,7 @@ export default function BottomTabs() {
             <Tab.Screen name={HOME} component={Home} />
             <Tab.Screen name={MATCH} component={Match} />
             <Tab.Screen name={RANDOM_MATCH} component={RandomMatch} />
-            <Tab.Screen name={CHAT_MESSAGES} component={ChatMessages} />
+            <Tab.Screen name={MESSAGES} component={Messages} />
             <Tab.Screen name={ACCOUNT} component={Account} />
         </Tab.Navigator>
     );

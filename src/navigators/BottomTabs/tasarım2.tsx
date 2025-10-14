@@ -4,7 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Home from '../../screens/App/Home';
-import Chat from '../../screens/App/Chat';
+import Chat from '../../screens/App/Messages';
 import RandomMatch from '../../screens/App/RandomMatch';
 import Settings from '../../screens/App/Settings';
 import { responsive } from '../../utils/responsive';
