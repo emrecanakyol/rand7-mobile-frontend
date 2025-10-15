@@ -9,7 +9,7 @@ import {
     ScrollView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { EDIT_PROFILE, MYPROFILE, ONEBOARDINGONE } from '../../../navigators/Stack';
+import { EDIT_PROFILE, HELP, MYPROFILE, ONEBOARDINGONE, SETTINGS } from '../../../navigators/Stack';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../utils/colors';
 import { useDispatch } from 'react-redux';
@@ -58,7 +58,7 @@ const SettingsScreen = () => {
                         </View>
                     </TouchableOpacity>
                     <Text style={styles.userName}>{userData.firstName}, {calculateAge(userData.birthDate)}</Text>
-                    <Text style={styles.userLocation}>{userData.city}, {userData.country}</Text>
+                    <Text style={styles.userLocation}>{userData.province}, {userData.country}</Text>
                 </View>
 
                 {/* 📈 Profil Tamamlama Kartı */}
@@ -77,8 +77,10 @@ const SettingsScreen = () => {
 
                 {/* 🧭 Menü Seçenekleri */}
                 <View style={styles.menuContainer}>
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Ionicons name="person-outline" size={22} color="#E56BFA" />
+                    <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => navigation.navigate(HELP)}>
+                        <Ionicons name="person-outline" size={22} color={colors.BLUE_COLOR} />
                         <Text style={styles.menuText}>Yardım / Destek</Text>
                         <Ionicons
                             name="chevron-forward-outline"
@@ -87,9 +89,9 @@ const SettingsScreen = () => {
                             style={{ marginLeft: 'auto' }}
                         />
                     </TouchableOpacity>
-
+                    {/* 
                     <TouchableOpacity style={styles.menuItem}>
-                        <Ionicons name="language-outline" size={22} color="#E56BFA" />
+                        <Ionicons name="language-outline" size={22} color={colors.BLUE_COLOR} />
                         <Text style={styles.menuText}>Language</Text>
                         <Text style={styles.menuSubText}>English</Text>
                         <Ionicons
@@ -98,10 +100,12 @@ const SettingsScreen = () => {
                             color="#999"
                             style={{ marginLeft: 6 }}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Ionicons name="settings-outline" size={22} color="#E56BFA" />
+                    <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => navigation.navigate(SETTINGS)}>
+                        <Ionicons name="settings-outline" size={22} color={colors.BLUE_COLOR} />
                         <Text style={styles.menuText}>Settings</Text>
                         <Ionicons
                             name="chevron-forward-outline"
@@ -111,7 +115,7 @@ const SettingsScreen = () => {
                         />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.menuItem} onPress={out}>
-                        <Ionicons name="close-outline" size={22} color="#E56BFA" />
+                        <Ionicons name="close-outline" size={22} color={colors.BLUE_COLOR} />
                         <Text style={styles.menuText}>Çıkış yap</Text>
                         <Ionicons
                             name="chevron-forward-outline"
@@ -168,7 +172,8 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     progressCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F6E1FB',
+        // backgroundColor: '#F6E1FB',
+        backgroundColor: colors.LIGHT_GRAY,
         borderRadius: 16,
         // padding: 16,
         paddingHorizontal: 16,
@@ -181,7 +186,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         marginTop: 4,
     },
     editButton: {
-        backgroundColor: '#2C004D',
+        backgroundColor: colors.BLACK_COLOR,
         borderRadius: 20,
         paddingHorizontal: 16,
         paddingVertical: 8,

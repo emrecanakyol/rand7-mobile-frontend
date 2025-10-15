@@ -156,8 +156,13 @@ const AddProfile = ({ navigation }: any) => {
 };
 
 const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.BACKGROUND_COLOR },
-  inContainer: { padding: responsive(20) },
+  container: {
+    flex: 1,
+    backgroundColor: colors.BACKGROUND_COLOR
+  },
+  inContainer: {
+    padding: responsive(20)
+  },
   label: {
     fontWeight: '600',
     color: colors.TEXT_MAIN_COLOR,

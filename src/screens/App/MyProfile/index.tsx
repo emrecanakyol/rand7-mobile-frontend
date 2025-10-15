@@ -13,7 +13,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '../../../utils/colors';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store/Store';
@@ -50,7 +50,7 @@ const Profile = () => {
         <View style={styles.container}>
             {/* ⚙️ Ayarlar Butonu */}
             <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.goBack()}>
-                <Ionicons name="close-outline" size={26} color="#fff" />
+                <Entypo name="chevron-left" size={20} color="#fff" />
             </TouchableOpacity>
 
             {/* 📸 Dikey Kaydırılabilir Fotoğraflar */}
@@ -98,7 +98,7 @@ const Profile = () => {
                 {/* 👤 Kullanıcı Bilgisi */}
                 <View style={styles.userInfoContainer}>
                     <Text style={styles.userName}>{userData.firstName}, {calculateAge(userData.birthDate)}</Text>
-                    <Text style={styles.userLocation}>{userData.city}, {userData.country}</Text>
+                    <Text style={styles.userLocation}>{userData.province}, {userData.country}</Text>
                 </View>
             </View>
 
@@ -175,7 +175,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             left: 20,
             backgroundColor: 'rgba(0,0,0,0.4)',
             borderRadius: 30,
-            padding: 8,
+            padding: 5,
             zIndex: 10,
         },
         userInfoContainer: {

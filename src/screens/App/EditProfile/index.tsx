@@ -8,11 +8,23 @@ import {
   Image,
   TextInput,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import CPhotosAdd from '../../../components/CPhotosAdd';
+import { responsive } from '../../../utils/responsive';
+import { useTheme } from '../../../utils/colors';
+import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../../../store/hooks';
 
 const EditProfileScreen = () => {
+  const { userData } = useAppSelector((state) => state.userData);
   const navigation: any = useNavigation();
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  const { width, height } = Dimensions.get('window');
+  const isTablet = Math.min(width, height) >= 600;
+  const styles = getStyles(colors, isTablet);
   const [about, setAbout] = useState(
     "A good listener. I love having a good talk to know each other’s side 😍."
   );
@@ -40,30 +52,54 @@ const EditProfileScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        {/* 📸 Fotoğraf Grid */}
+
         <View style={styles.photoGrid}>
-          <View style={styles.mainPhotoContainer}>
-            <Image
-              source={{
-                uri: 'https://images.unsplash.com/photo-1517841905240-472988babdf9',
-              }}
-              style={styles.mainPhoto}
-            />
-            <TouchableOpacity style={styles.changePhotoButton}>
-              <Ionicons name="camera-outline" size={16} color="#fff" />
-              <Text style={styles.changePhotoText}>Change Photo</Text>
-            </TouchableOpacity>
+
+          <View style={styles.leftColumn}>
+            {/* Sol taraf: büyük fotoğraf */}
+            <View style={styles.addIconContainer}>
+              <CPhotosAdd
+                key={0}
+                index={0}
+                photos={userData.photos}
+                setPhotos={setPhotos}
+                width={isTablet ? responsive(270) : responsive(250)}
+                height={isTablet ? responsive(250) : responsive(250)}
+                resizeMode="cover"
+              />
+            </View>
+
+            {/* Altında yatay 2 küçük kutu */}
+            <View style={styles.bottomRow}>
+              {[3, 4].map((index) => (
+                <View key={index} style={styles.addIconContainer}>
+                  <CPhotosAdd
+                    key={index}
+                    index={index}
+                    photos={userData.photos}
+                    setPhotos={setPhotos}
+                    width={isTablet ? responsive(110) : responsive(120)}
+                    height={isTablet ? responsive(110) : responsive(120)}
+                  />
+                </View>
+              ))}
+            </View>
           </View>
 
-          <View style={styles.sidePhotos}>
-            {Array(4)
-              .fill(0)
-              .map((_, i) => (
-                <TouchableOpacity key={i} style={styles.addPhotoBox}>
-                  <Ionicons name="add" size={20} color="#E56BFA" />
-                  <Text style={styles.addText}>Add</Text>
-                </TouchableOpacity>
-              ))}
+          {/* Sağ taraf: 3 küçük kutu dikey */}
+          <View style={styles.rightColumn}>
+            {[1, 2, 5].map((index) => (
+              <View key={index} style={styles.addIconContainer}>
+                <CPhotosAdd
+                  key={index}
+                  index={index}
+                  photos={userData.photos}
+                  setPhotos={setPhotos}
+                  width={isTablet ? responsive(110) : responsive(120)}
+                  height={isTablet ? responsive(110) : responsive(120)}
+                />
+              </View>
+            ))}
           </View>
         </View>
 
@@ -141,7 +177,7 @@ const EditProfileScreen = () => {
 
 export default EditProfileScreen;
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
@@ -159,51 +195,36 @@ const styles = StyleSheet.create({
     color: '#1C1C1C',
   },
   photoGrid: {
-    flexDirection: 'row',
-    marginTop: 30,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: responsive(25),
   },
-  mainPhotoContainer: {
-    flex: 1.2,
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginRight: 10,
-  },
-  mainPhoto: {
-    width: '100%',
-    height: 200,
-    borderRadius: 16,
-  },
-  changePhotoButton: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  changePhotoText: {
-    color: '#fff',
-    marginLeft: 5,
-    fontSize: 12,
-  },
-  sidePhotos: {
+  leftColumn: {
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    alignContent: 'space-between',
   },
-  addPhotoBox: {
-    width: '48%',
-    height: 90,
-    borderRadius: 14,
-    backgroundColor: '#F9F3FB',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
+  rightColumn: {
+    justifyContent: "space-between",
+    marginLeft: responsive(10),
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: responsive(10),
+  },
+  mainPhotoImage: {
+    borderRadius: 16,
+  },
+  addIconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  btnContainer: {
+    marginTop: responsive(20),
+    marginBottom: responsive(330),
+    alignItems: "flex-end"
+  },
+  btnStyle: {
+    width: responsive(80),
   },
   addText: {
     color: '#E56BFA',

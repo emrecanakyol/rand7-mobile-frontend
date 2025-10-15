@@ -97,7 +97,7 @@ const HelpSupport = () => {
     <View style={styles.container}>
       <DetailHeaders
         title={t('help_support_title') /* "Help / Support" */}
-        showRightIcon
+        showRightIcon={true}
         rightIconOnPress={() => navigation.navigate(ADD_HELP)}
         rightIconName={"add"}
       />

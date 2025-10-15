@@ -31,6 +31,8 @@ import SuperLikeMatched from '../../screens/App/SuperLikeMatched';
 import UserProfile from '../../screens/App/UserProfile';
 import Chat from '../../screens/App/Messages/Chat';
 import AnonimChat from '../../screens/App/RandomMatch/components/AnonimChat';
+import Help from '../../screens/App/Help';
+import Settings from '../../screens/App/Settings';
 
 const Stack = createStackNavigator();
 
@@ -44,9 +46,11 @@ export const PHONE_LOGIN = "Phone Login";
 export const REGISTER = "Register";
 export const RESET_PASSWORD = "Reset Password";
 export const PHONE_VERIFICATION = "Phone Verification";
+export const SETTINGS = "Settings";
 export const HOME = "Home";
 export const GROUP_DETAIL = "Group Detail";
 export const EDIT_PROFILE = "Edit Profile";
+export const HELP = "Help";
 export const ADD_HELP = "Add Help";
 export const SUBSCRIPTONS = "Subscriptions";
 export const DELETE_ACCOUNT = "Delete Account";
@@ -81,6 +85,8 @@ export default function StackNavigator() {
                     <Stack.Screen name={HOME} component={Home} />
                     <Stack.Screen name={GROUP_DETAIL} component={GroupDetail} />
                     <Stack.Screen name={EDIT_PROFILE} component={EditProfile} />
+                    <Stack.Screen name={SETTINGS} component={Settings} />
+                    <Stack.Screen name={HELP} component={Help} />
                     <Stack.Screen name={ADD_HELP} component={AddHelp} />
                     <Stack.Screen name={SUBSCRIPTONS} component={Subscriptions} />
                     <Stack.Screen name={DELETE_ACCOUNT} component={DeleteAccount} />
