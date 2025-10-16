@@ -97,8 +97,9 @@ const ResetPassword = () => {
                         onPress={handleResetPassword}
                         cooldownKey="resetPasswordCooldownEndTime"
                         cooldownSeconds={900}
-                        backgroundColor={colors.BLACK_COLOR}
+                        backgroundColor={colors.PURPLE_COLOR}
                         textColor={colors.WHITE_COLOR}
+                        borderRadius={28}
                         loading={loading}
                         disabled={loading || isButtonDisabled}
                         setShowFooterText={setShowFooterText} // Sayacın bitişinden haberdar ol

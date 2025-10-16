@@ -16,6 +16,7 @@ interface CDropdownProps {
     itemTextStyle?: TextStyle;
     activeColor?: string;
     disabled?: boolean;
+    dropdownContainerStyle?: any;
 }
 
 const CDropdown: React.FC<CDropdownProps> = ({
@@ -30,6 +31,7 @@ const CDropdown: React.FC<CDropdownProps> = ({
     itemTextStyle,
     activeColor,
     disabled,
+    dropdownContainerStyle,
 }) => {
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
@@ -42,7 +44,7 @@ const CDropdown: React.FC<CDropdownProps> = ({
                 style={[styles.dropdown, dropdownStyle, disabled ? { opacity: 0.6 } : null]}
                 placeholderStyle={[styles.placeholderStyle, placeholderStyle]}
                 selectedTextStyle={[styles.selectedTextStyle, selectedTextStyle]}
-                containerStyle={styles.dropdownContainerStyle}
+                containerStyle={[styles.dropdownContainerStyle, dropdownContainerStyle]}
                 itemTextStyle={[styles.itemTextStyle, itemTextStyle]}
                 activeColor={activeColor || colors.BACKGROUND_COLOR}
                 data={data}
@@ -88,7 +90,6 @@ const getStyles = (colors: any, isTablet: boolean) =>
             fontSize: isTablet ? 22 : 16,
             color: colors.TEXT_MAIN_COLOR,
             fontWeight: "400"
-
         },
     });
 

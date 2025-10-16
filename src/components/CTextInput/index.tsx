@@ -137,13 +137,13 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         borderWidth: 0.5,
         borderColor: colors.GRAY_COLOR,
         backgroundColor: colors.EXTRA_LIGHT_GRAY,
-        borderRadius: responsive(14),
+        borderRadius: responsive(28),
         paddingRight: responsive(3),
     },
     input: {
         flex: 1,
         height: isTablet ? responsive(35) : responsive(50),
-        paddingLeft: responsive(10),
+        paddingLeft: responsive(14),
         fontSize: isTablet ? 22 : 16,
         color: colors.BLACK_COLOR,
     },
@@ -153,7 +153,7 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         textAlignVertical: 'top',
     },
     iconContainer: {
-        padding: responsive(10),
+        padding: responsive(14),
     },
     error: {
         color: colors.RED_COLOR,

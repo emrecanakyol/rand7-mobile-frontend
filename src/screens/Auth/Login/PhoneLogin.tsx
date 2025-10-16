@@ -58,10 +58,11 @@ const PhoneLogin = ({ navigation }: any) => {
                     <CButton
                         title={t('send_code')}
                         onPress={handlePhoneSignIn}
-                        backgroundColor={colors.BLACK_COLOR}
-                        textColor={colors.WHITE_COLOR}
                         loading={loading}
                         disabled={loading}
+                        style={{
+                            marginTop: 20,
+                        }}
                     />
 
                     <View style={styles.divider} />
@@ -109,8 +110,8 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 1,
         borderColor: colors.BLACK_COLOR,
-        padding: responsive(12),
-        borderRadius: responsive(10),
+        padding: responsive(14),
+        borderRadius: responsive(28),
         alignItems: "center",
         width: responsive(350),
         gap: responsive(5),

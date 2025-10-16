@@ -13,14 +13,14 @@ interface CButtonProps {
     style?: object;
     loading?: any;
     disabled?: any;
-}
+};
 
 const CButton = ({
     title,
     onPress,
     backgroundColor,
     textColor,
-    borderRadius = responsive(14),
+    borderRadius = responsive(28),
     style = {},
     loading,
     disabled,
@@ -31,7 +31,7 @@ const CButton = ({
     const styles = getStyles(colors, isTablet);
 
     // Varsayılan renkleri burada ayarla
-    const btnBgColor = backgroundColor ?? colors.BLACK_COLOR;
+    const btnBgColor = backgroundColor ?? colors.PURPLE_COLOR;
     const btnTextColor = textColor ?? colors.WHITE_COLOR;
 
     return (
@@ -57,10 +57,10 @@ const CButton = ({
 
 const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     buttonContainer: {
-        marginVertical: responsive(15),
+        marginVertical: responsive(5),
     },
     button: {
-        paddingVertical: isTablet ? responsive(10) : responsive(14),
+        paddingVertical: isTablet ? responsive(10) : responsive(16),
         paddingHorizontal: responsive(20),
         justifyContent: 'center',
         alignItems: 'center',

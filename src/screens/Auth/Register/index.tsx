@@ -7,10 +7,8 @@ import { responsive } from '../../../utils/responsive';
 import { useTheme } from '../../../utils/colors';
 import CButton from '../../../components/CButton';
 import { EMAIL_LOGIN } from '../../../navigators/Stack';
-import CBackButton from '../../../components/CBackButton';
 import CText from '../../../components/CText/CText';
 import { useTranslation } from 'react-i18next';
-import DeviceInfo from 'react-native-device-info';
 
 const Register = ({ navigation }: any) => {
     const { colors } = useTheme();
@@ -50,8 +48,6 @@ const Register = ({ navigation }: any) => {
             style={styles.container}
         >
             <ScrollView contentContainerStyle={styles.container}>
-                <CBackButton />
-
                 <View style={styles.innerContainer}>
                     <CText style={styles.header}>{t('sign_up')}</CText>
 
@@ -86,8 +82,6 @@ const Register = ({ navigation }: any) => {
                     <CButton
                         title={t('register')}
                         onPress={handleRegister}
-                        backgroundColor={colors.BLACK_COLOR}
-                        textColor={colors.WHITE_COLOR}
                         loading={loading}
                         disabled={loading}
                     />
@@ -109,7 +103,6 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         flex: 1,
         backgroundColor: colors.BACKGROUND_COLOR,
         padding: responsive(20),
-        paddingTop: responsive(30),
     },
     innerContainer: {
         flexGrow: 1,

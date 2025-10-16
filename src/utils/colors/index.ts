@@ -11,6 +11,7 @@ export const useTheme = () => {
         STROKE_COLOR: isDarkMode ? '#333' : '#E8E8E8',
         WHITE_COLOR: isDarkMode ? "#0B0E11" : '#FFF',
         BLACK_COLOR: isDarkMode ? "#FFF" : "#0B0E11",
+        PURPLE_COLOR: isDarkMode ? "#FFF" : '#3A1F4F',
 
         GREEN_COLOR: "#8F985F",
         RED_COLOR: "#E82251",
@@ -22,6 +23,9 @@ export const useTheme = () => {
         BLUE_COLOR: "#0e82ff",
         ORANGE_COLOR: "#FF9103",
         ORANGE_COLOR2: '#FFA726',
+        LIGHT_PURPLE_COLOR: '#E9C3FF',
+        PINK_COLOR: '#FFD8E8',
+        LIGHT_PINK: '#F4EAF6',
     };
 
     return { colors, isDarkMode };

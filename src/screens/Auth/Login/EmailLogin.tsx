@@ -11,6 +11,7 @@ import { useTheme } from '../../../utils/colors';
 import CButton from '../../../components/CButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CText from '../../../components/CText/CText';
+import CBackButton from '../../../components/CBackButton';
 
 const EmailLogin = ({ navigation }: any) => {
     const { colors } = useTheme();
@@ -75,8 +76,6 @@ const EmailLogin = ({ navigation }: any) => {
                     <CButton
                         title={t('login_button')}
                         onPress={handleLogin}
-                        backgroundColor={colors.BLACK_COLOR}
-                        textColor={colors.WHITE_COLOR}
                         loading={loading}
                         disabled={loading}
                     />
@@ -152,8 +151,8 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         alignItems: "center",
         borderWidth: 1,
         borderColor: colors.BLACK_COLOR,
-        padding: responsive(12),
-        borderRadius: responsive(7),
+        padding: responsive(14),
+        borderRadius: responsive(28),
         width: responsive(350),
         gap: responsive(7)
     },

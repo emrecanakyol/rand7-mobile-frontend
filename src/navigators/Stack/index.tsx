@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux';
 import EmailLogin from '../../screens/Auth/Login/EmailLogin';
 import GroupDetail from '../../screens/App/GroupDetail';
 import OnBoardingOne from '../../screens/Auth/OnBoardings/OnBoardingOne';
-import OnBoardingTwo from '../../screens/Auth/OnBoardings/OnBoardingTwo';
-import OnBoardingThree from '../../screens/Auth/OnBoardings/OnBoardingThree';
 import Register from '../../screens/Auth/Register';
 import ResetPassword from '../../screens/Auth/ResetPassword';
 import PhoneLogin from '../../screens/Auth/Login/PhoneLogin';
@@ -39,8 +37,6 @@ const Stack = createStackNavigator();
 export const BOOTOMTABS = "BottomTabs";
 export const DRAWER = "Drawer";
 export const ONEBOARDINGONE = "OnBoardingOne";
-export const ONEBOARDINGTWO = "OnBoardingTwo";
-export const ONEBOARDINGOTHREE = "OnBoardingThree";
 export const EMAIL_LOGIN = "Email Login";
 export const PHONE_LOGIN = "Phone Login";
 export const REGISTER = "Register";
@@ -114,8 +110,6 @@ export default function StackNavigator() {
                         headerShown: false,
                     }}>
                     <Stack.Screen name={ONEBOARDINGONE} component={OnBoardingOne} />
-                    <Stack.Screen name={ONEBOARDINGTWO} component={OnBoardingTwo} />
-                    <Stack.Screen name={ONEBOARDINGOTHREE} component={OnBoardingThree} />
                     <Stack.Screen name={EMAIL_LOGIN} component={EmailLogin} />
                     <Stack.Screen name={PHONE_LOGIN} component={PhoneLogin} />
                     <Stack.Screen name={REGISTER} component={Register} />
