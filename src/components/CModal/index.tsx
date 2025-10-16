@@ -49,7 +49,10 @@ const CustomModal = ({
             <View
                 style={[
                     styles.overlay,
-                    { paddingTop },
+                    {
+                        paddingTop,
+                        justifyContent
+                    },
                 ]}
             >
                 <View style={[styles.modalContainer, {

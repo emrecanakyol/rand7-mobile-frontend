@@ -88,7 +88,7 @@ const UserProfile = ({ route }: any) => {
                 {/* 👤 Kullanıcı Bilgisi */}
                 <View style={styles.userInfoContainer}>
                     <Text style={styles.userName}>{user?.firstName}, {user?.age}</Text>
-                    <Text style={styles.userLocation}>{user.city}, {user.country}</Text>
+                    <Text style={styles.userLocation}>{user.province}, {user.country}</Text>
                 </View>
             </View>
 

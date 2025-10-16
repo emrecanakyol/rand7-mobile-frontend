@@ -8,7 +8,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAppSelector } from '../../../../../store/hooks';
 import CLoading from '../../../../../components/CLoading';
-import CImage from '../../../../../components/CImage';
+import CModal from '../../../../../components/CModal';
+import CText from '../../../../../components/CText/CText';
+import { CHAT } from '../../../../../navigators/Stack';
 
 type RootStackParamList = {
     Anonim: {
@@ -26,6 +28,8 @@ const msgsCol = (a: string, b: string) =>
 export default function AnonimChat() {
     const route = useRoute<RouteProp<RootStackParamList, 'Anonim'>>();
     const { annonId, other2Id } = route.params ?? {};
+    // tekrar tekrar yönlenmeyi önlemek için
+    const didNavigateRef = useRef(false);
 
     const insets = useSafeAreaInsets();
 
@@ -44,6 +48,15 @@ export default function AnonimChat() {
     const [loading, setLoading] = useState(true);
     const [otherName, setOtherName] = useState<string>('');
     const [otherAvatar, setOtherAvatar] = useState<string | undefined>(undefined);
+    const [iLiked, setILiked] = useState<boolean>(false);
+    const [matched, setMatched] = useState<boolean>(false);
+
+    // --- EK: geri sayım ---
+    const TOTAL_SEC = 10; // 7 dakika
+    const [left, setLeft] = useState(TOTAL_SEC);
+    const [timeoutModal, setTimeoutModal] = useState(false);
+    const mm = String(Math.floor(left / 60)).padStart(2, '0');
+    const ss = String(left % 60).padStart(2, '0');
 
     // annonId -> userId resolve
     useEffect(() => {
@@ -93,7 +106,9 @@ export default function AnonimChat() {
         if (!meId || !otherId) return;
 
         setLoading(true);
-        const unsubscribe = msgsCol(meId, otherId)
+
+        // Mesaj listener
+        const unsubMsgs = msgsCol(meId, otherId)
             .orderBy('createdAt', 'desc')
             .limit(40)
             .onSnapshot(
@@ -105,7 +120,7 @@ export default function AnonimChat() {
                             _id: d._id || doc.id,
                             text: d.text || '',
                             createdAt: d.createdAt?.toDate ? d.createdAt.toDate() : new Date(),
-                            user: d.user, // {_id, name?, avatar?}
+                            user: d.user,
                         });
                     });
                     setMessages(list);
@@ -117,16 +132,24 @@ export default function AnonimChat() {
                 }
             );
 
-        // ✅ SOHBET AÇILIR AÇILMAZ unreadCount = 0
-        chatPath(meId, otherId).set(
-            {
-                unreadCount: 0,
-            },
-            { merge: true }
-        );
+        // Chat doc listener (beğeni/eşleşme)
+        const unsubChat = chatPath(meId, otherId).onSnapshot((doc) => {
+            const d = doc.data() as any;
+            const a = !!d?.iLiked;
+            const b = !!d?.iLiked;
+            setILiked(a);
+            setMatched(!!d?.matched || (a && b));
+        });
 
-        return () => unsubscribe();
+        // unread sıfırla
+        chatPath(meId, otherId).set({ unreadCount: 0 }, { merge: true });
+
+        return () => {
+            unsubMsgs();
+            unsubChat();
+        };
     }, [meId, otherId]);
+
 
     // -------- Mesaj gönder (fan-out: her iki kullanıcı path’ine de yaz)
     const onSend = useCallback(async (newMessages: IMessage[] = []) => {
@@ -200,13 +223,69 @@ export default function AnonimChat() {
         [meId, meName]
     );
 
-    if (loading) {
-        return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator />
-            </View>
-        );
-    }
+    const handleLike = useCallback(async () => {
+        if (!meId || !otherId || iLiked) return;
+
+        const batch = firestore().batch();
+
+        // benim doc: iLiked
+        batch.set(chatPath(meId, otherId), { iLiked: true }, { merge: true });
+
+        // karşı taraf zaten beğendiyse: match
+        if (iLiked) {
+            batch.set(chatPath(meId, otherId), { matched: true }, { merge: true });
+            batch.set(chatPath(otherId, meId), { matched: true }, { merge: true });
+        }
+
+        try { await batch.commit(); } catch (e) {
+            console.log('like error', e); Alert.alert('Hata', 'Beğeni kaydedilemedi.');
+        }
+    }, [meId, otherId, iLiked]);
+
+    const handleDisLike = useCallback(async () => {
+        if (!meId || !otherId || iLiked) return;
+
+        const batch = firestore().batch();
+
+        // benim doc: iLiked
+        batch.set(chatPath(meId, otherId), { iLiked: false }, { merge: true });
+
+        try { await batch.commit(); } catch (e) {
+            console.log('like error', e); Alert.alert('Hata', 'Beğeni kaydedilemedi.');
+        }
+    }, [meId, otherId, iLiked]);
+
+
+    // --- EK: geri sayım (component içinde) ---
+    useEffect(() => {
+        const t = setInterval(() => {
+            setLeft((s) => {
+                if (s <= 1) {
+                    clearInterval(t);
+                    setTimeoutModal(true);
+                    return 0;
+                }
+                return s - 1;
+            });
+        }, 1000);
+        return () => clearInterval(t);
+    }, []);
+
+    useEffect(() => {
+        if (!matched) return;
+        if (!meId || !otherId) return;
+        if (didNavigateRef.current) return;
+
+        didNavigateRef.current = true;   // sadece 1 kez çalışsın
+        setTimeoutModal(false);          // modali kapat
+
+        // CHAT ekranına geç (replace/navigate senin tercihine göre)
+        navigation.replace(CHAT, {
+            userId: meId,
+            user2Id: otherId,
+        });
+    }, [matched, meId, otherId, otherName, otherAvatar, navigation]);
+
 
     return (
         <View style={{ flex: 1, backgroundColor: '#FFF' }}>
@@ -257,6 +336,14 @@ export default function AnonimChat() {
                                 <Ionicons name="ellipsis-vertical" size={20} color="#111" />
                             </TouchableOpacity>
                         </View>
+                    </View>
+
+                    {/* ÜSTTE GERİ SAYIM BARI */}
+                    <View style={{ minHeight: 24, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }}>
+                        <View style={{ height: 4, flex: 1, backgroundColor: '#EEE', borderRadius: 2, overflow: 'hidden' }}>
+                            <View style={{ height: '100%', width: `${(left / TOTAL_SEC) * 100}%`, backgroundColor: '#FF3B30' }} />
+                        </View>
+                        <CText style={{ fontSize: 12, color: '#000', marginLeft: 8 }}>{mm}:{ss}</CText>
                     </View>
 
                     <GiftedChat
@@ -363,6 +450,114 @@ export default function AnonimChat() {
                     />
                 </>
             )}
+
+            <CModal
+                visible={timeoutModal}
+                onClose={() => setTimeoutModal(false)}
+                justifyContent="center"
+                height="auto"
+                width="auto"
+                borderBottomLeftRadius={30}
+                borderBottomRightRadius={30}
+                closeButton={false}
+                paddingTop={0}
+            >
+                <View
+                    style={{
+                        alignItems: 'center',
+                        paddingVertical: 24,
+                        paddingHorizontal: 20,
+                        backgroundColor: '#FFF',
+                        borderRadius: 24,
+                        maxWidth: 330,
+                        marginBottom: 50
+                    }}
+                >
+                    {/* 07:00 */}
+                    <Text
+                        style={{
+                            fontSize: 36,
+                            fontWeight: '800',
+                            color: '#111',
+                            letterSpacing: 2,
+                        }}
+                    >
+                        07:00
+                    </Text>
+
+                    {/* Soru */}
+                    <Text
+                        style={{
+                            marginTop: 14,
+                            fontSize: 16,
+                            fontWeight: '700',
+                            color: '#111',
+                            textAlign: "center",
+                        }}
+                    >
+                        Zaman doldu!
+                    </Text>
+                    <Text
+                        style={{
+                            marginTop: 14,
+                            fontSize: 14,
+                            fontWeight: '400',
+                            color: "#808080",
+                            textAlign: "center",
+                        }}
+                    >
+                        Gizemli hikâyeyi açmak için tek dokunuş yeter.
+                    </Text>
+
+                    {/* Butonlar */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 28, marginTop: 26 }}>
+                        {/* SOL: X (beyaz daire, siyah ikon) */}
+                        <TouchableOpacity
+                            onPress={handleDisLike}
+                            activeOpacity={0.8}
+                            style={{
+                                width: 56, height: 56, borderRadius: 48,
+                                backgroundColor: '#FFFFFF',
+                                alignItems: 'center', justifyContent: 'center',
+                                // hafif gölge
+                                shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
+                                elevation: 3,
+                            }}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                            <Ionicons name="close" size={30} color="#111" />
+                        </TouchableOpacity>
+
+                        {/* SAĞ: Kalp (mor daire, beyaz ikon) */}
+                        <TouchableOpacity
+                            onPress={handleLike}
+                            activeOpacity={0.8}
+                            style={{
+                                width: 56, height: 56, borderRadius: 48,
+                                backgroundColor: "#E82251", // mor
+                                alignItems: 'center', justifyContent: 'center',
+                            }}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                            <Ionicons name="heart" size={30} color="#FFF" />
+                        </TouchableOpacity>
+
+                    </View>
+                    {iLiked && !matched && (
+                        <Text style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+                            Karşı tarafın beğenmesini bekliyoruz…
+                        </Text>
+                    )}
+                    {matched && (
+                        <Text style={{ marginTop: 8, fontSize: 12, color: '#0a0' }}>
+                            Eşleştiniz! Sohbetiniz kalıcı oldu.
+                        </Text>
+                    )}
+                </View>
+            </CModal>
+
+
+
         </View>
 
     );
