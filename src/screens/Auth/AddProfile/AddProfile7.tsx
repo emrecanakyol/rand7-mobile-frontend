@@ -6,51 +6,7 @@ import CText from "../../../components/CText/CText";
 import CButton from "../../../components/CButton";
 import { ADD_PROFILE_8 } from "../../../navigators/Stack";
 import CustomBackButton from "../../../components/CBackButton";
-
-// 🎨 Kategorilere göre hobiler
-const categorizedHobbies = {
-    "🎨 Sanat & Yaratıcılık": [
-        "🎵 Müzik",
-        "🎨 Resim",
-        "✍️ Yazmak",
-        "💃 Dans",
-        "📸 Fotoğraf",
-        "🎬 Film",
-        "🏛 Mimari",
-    ],
-    "⚽ Spor & Aktivite": [
-        "⚽ Futbol",
-        "🏀 Basketbol",
-        "🏋️ Fitness",
-        "🚴 Bisiklet",
-        "🏊 Yüzme",
-        "⛷️ Kayak",
-        "🧘 Yoga",
-        "🚶 Doğa yürüyüşü",
-    ],
-    "🌍 Yaşam & Kültür": [
-        "💬 Dil öğrenmek",
-        "📚 Kitap okumak",
-        "✈️ Seyahat",
-        "🍳 Yemek yapmak",
-        "☕ Kahve kültürü",
-        "🎭 Tiyatro",
-    ],
-    "💻 Teknoloji & Oyun": [
-        "🎮 Oyun",
-        "💻 Kodlama",
-        "🤖 Yapay zeka",
-        "🧩 Bulmacalar",
-        "📱 Sosyal medya",
-    ],
-    "🧡 Sosyal & Günlük": [
-        "🙂 Yeni insanlar tanımak",
-        "🐼 Hayvanlar",
-        "👗 Moda",
-        "🌿 Doğa",
-        "💪 Spor & Fitness",
-    ],
-};
+import { categorizedHobbies } from "../../../constants/constant";
 
 const AddProfile7 = ({ navigation, route }: any) => {
     const { colors } = useTheme();

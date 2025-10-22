@@ -47,7 +47,6 @@ const AddProfile = ({ navigation }: any) => {
             {/* Sol taraf: büyük fotoğraf */}
             <View style={styles.addIconContainer}>
               <CPhotosAdd
-                key={0}
                 index={0}
                 photos={photos}
                 setPhotos={setPhotos}

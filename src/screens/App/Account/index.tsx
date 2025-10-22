@@ -127,7 +127,7 @@ const SettingsScreen = () => {
                 </View>
 
                 {/* ⭐ Premium Kartı */}
-                <View style={styles.premiumCard}>
+                {/* <View style={styles.premiumCard}>
                     <View style={styles.starCircle}>
                         <Ionicons name="star" size={24} color="#fff" />
                     </View>
@@ -138,7 +138,7 @@ const SettingsScreen = () => {
                     <TouchableOpacity>
                         <Text style={styles.premiumLink}>Upgrade to Premium</Text>
                     </TouchableOpacity>
-                </View>
+                </View> */}
             </View>
         </ScrollView>
 

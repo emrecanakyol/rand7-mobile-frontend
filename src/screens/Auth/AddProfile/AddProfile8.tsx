@@ -37,8 +37,6 @@ const AddProfile8 = ({ navigation, route }: any) => {
         country,
     } = route.params;
 
-    console.log(route.params)
-
     const uploadPhotos = async () => {
         const userId = auth().currentUser?.uid;
         if (!userId) {

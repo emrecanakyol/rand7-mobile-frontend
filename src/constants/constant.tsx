@@ -1,0 +1,43 @@
+export const categorizedHobbies = {
+    "🎨 Sanat & Yaratıcılık": [
+        "🎵 Müzik",
+        "🎨 Resim",
+        "✍️ Yazmak",
+        "💃 Dans",
+        "📸 Fotoğraf",
+        "🎬 Film",
+        "🏛 Mimari",
+    ],
+    "⚽ Spor & Aktivite": [
+        "⚽ Futbol",
+        "🏀 Basketbol",
+        "🏋️ Fitness",
+        "🚴 Bisiklet",
+        "🏊 Yüzme",
+        "⛷️ Kayak",
+        "🧘 Yoga",
+        "🚶 Doğa yürüyüşü",
+    ],
+    "🌍 Yaşam & Kültür": [
+        "💬 Dil öğrenmek",
+        "📚 Kitap okumak",
+        "✈️ Seyahat",
+        "🍳 Yemek yapmak",
+        "☕ Kahve kültürü",
+        "🎭 Tiyatro",
+    ],
+    "💻 Teknoloji & Oyun": [
+        "🎮 Oyun",
+        "💻 Kodlama",
+        "🤖 Yapay zeka",
+        "🧩 Bulmacalar",
+        "📱 Sosyal medya",
+    ],
+    "🧡 Sosyal & Günlük": [
+        "🙂 Yeni insanlar tanımak",
+        "🐼 Hayvanlar",
+        "👗 Moda",
+        "🌿 Doğa",
+        "💪 Spor & Fitness",
+    ],
+};

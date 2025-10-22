@@ -468,6 +468,7 @@ const AddGroupDetail: React.FC<AddGroupDetailProps> = ({ visible, onClose, group
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ flexDirection: "row", gap: responsive(10) }}>
                     <CPhotosAdd
+                        index={0}
                         width={isTablet ? responsive(65) : responsive(85)}
                         height={isTablet ? responsive(65) : responsive(85)}
                         imageBorderRadius={5}
