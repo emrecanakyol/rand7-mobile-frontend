@@ -9,7 +9,7 @@ import CButton from "../../../CButton";
 import CText from "../../../CText/CText";
 import firestore from '@react-native-firebase/firestore'
 import CLoading from "../../../CLoading";
-import { GOOGLE_API_KEY } from "../../../../utils/constants/key";
+import { GOOGLE_API_KEY } from "../../../../constants/key";
 import { useAppSelector } from "../../../../store/hooks";
 import { AppDispatch } from "../../../../store/Store";
 import { useDispatch } from "react-redux";

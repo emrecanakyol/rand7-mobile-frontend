@@ -19,17 +19,12 @@ import { useAppSelector } from "../../../store/hooks";
 import firestore from '@react-native-firebase/firestore';
 import { getDistanceFromLatLonInKm } from "../../../components/KmLocation";
 import Header from "../../../components/Header";
+import { USER_PROFILE } from "../../../navigators/Stack";
+import CImage from "../../../components/CImage";
+import CText from "../../../components/CText/CText";
+import CLoading from "../../../components/CLoading";
 
-interface Users {
-    photos: string;
-    age: number;
-    firstName: string;
-    isSuper?: boolean;
-    latitude: number;
-    longitude: number;
-};
-
-const Likes: React.FC = () => {
+const Match: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { userData, loading } = useAppSelector((state) => state.userData);
     const navigation: any = useNavigation();
@@ -39,46 +34,38 @@ const Likes: React.FC = () => {
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
-    const [likersUsers, setLikersUsers] = useState<Users[]>([]);
-    const [superLikersUsers, setSuperLikersUsers] = useState<Users[]>([]);
-    const [likeMatchesUsers, setLikeMatchesUsers] = useState<Users[]>([]);
-    const [superLikeMatchesUsers, setSuperLikeMatchesUsers] = useState<Users[]>([]);
+    const [likersUsers, setLikersUsers] = useState<any[]>([]);
+    const [superLikersUsers, setSuperLikersUsers] = useState<any[]>([]);
+    const [likeMatchesUsers, setLikeMatchesUsers] = useState<any[]>([]);
+    const [superLikeMatchesUsers, setSuperLikeMatchesUsers] = useState<any[]>([]);
 
     useFocusEffect(
         useCallback(() => {
+            // ✅ Ekran her odaklandığında önce state’leri temizle
+            setLikersUsers([]);
+            setSuperLikersUsers([]);
+            setLikeMatchesUsers([]);
+            setSuperLikeMatchesUsers([]);
+
+            // ✅ Sonra kullanıcı verisini tazele
             dispatch(fetchUserData());
-        }, [])
+
+        }, [dispatch])
     );
 
-    // Kullanıcı bilgilerini çekme fonksiyonu
     const fetchLikersUserDetails = async (likersUserIds: string[]) => {
         try {
-            // Each userId will be processed to fetch only required fields
-            const userPromises = likersUserIds.map(async (likersUserIds) => {
-                const userDoc = await firestore()
-                    .collection('users')
-                    .doc(likersUserIds)        // Fetch specific user document
-                    .get();             // Get the document
+            const userPromises = likersUserIds.map(async (id) => {
+                const userDoc = await firestore().collection('users').doc(id).get();
 
                 if (userDoc.exists()) {
-                    const userData = userDoc.data();
-
-                    // Return only the required fields (photos, age, firstName)
-                    return {
-                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
-                        age: userData?.age,                                     // Age
-                        firstName: userData?.firstName,                          // First name
-                    };
-                } else {
-                    return null;  // Return null if the document doesn't exist
+                    return { id: userDoc.id, ...userDoc.data() };
                 }
+                return null;
             });
 
-            // Wait for all user data to be fetched
             const usersData = await Promise.all(userPromises);
-
-            // Filter out null values and update the state
-            setLikersUsers(usersData.filter(user => user !== null) as Users[]);
+            setLikersUsers(usersData.filter(u => u !== null) as any[]);
         } catch (error) {
             console.error("Error fetching user details: ", error);
         }
@@ -86,32 +73,27 @@ const Likes: React.FC = () => {
 
     const fetchSuperLikersUserDetails = async (superLikersUserIds: string[]) => {
         try {
-            // Each userId will be processed to fetch only required fields
-            const userPromises = superLikersUserIds.map(async (superLikersUserIds) => {
+            const userPromises = superLikersUserIds.map(async (id) => {
                 const userDoc = await firestore()
                     .collection('users')
-                    .doc(superLikersUserIds)        // Fetch specific user document
-                    .get();             // Get the document
+                    .doc(id)
+                    .get();
 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-
-                    // Return only the required fields (photos, age, firstName)
                     return {
-                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
-                        age: userData?.age,                                     // Age
-                        firstName: userData?.firstName,                          // First name
+                        id: userDoc.id,
+                        ...userData,
                     };
                 } else {
-                    return null;  // Return null if the document doesn't exist
+                    return null;
                 }
             });
 
-            // Wait for all user data to be fetched
             const usersData = await Promise.all(userPromises);
 
-            // Filter out null values and update the state
-            setSuperLikersUsers(usersData.filter(user => user !== null) as Users[]);
+            // Sadece var olan kullanıcıları kaydet
+            setSuperLikersUsers(usersData.filter((user) => user !== null) as any[]);
         } catch (error) {
             console.error("Error fetching user details: ", error);
         }
@@ -119,71 +101,53 @@ const Likes: React.FC = () => {
 
     const fetchLikeMatchesDetails = async (likeMatches: string[]) => {
         try {
-            // Each userId will be processed to fetch only required fields
-            const userPromises = likeMatches.map(async (likeMatches) => {
+            const userPromises = likeMatches.map(async (id) => {
                 const userDoc = await firestore()
                     .collection('users')
-                    .doc(likeMatches)        // Fetch specific user document
-                    .get();             // Get the document
+                    .doc(id)
+                    .get();
 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-
-                    // Return only the required fields (photos, age, firstName)
                     return {
-                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
-                        age: userData?.age,                                     // Age
-                        firstName: userData?.firstName,                          // First name
-                        latitude: userData?.latitude,
-                        longitude: userData?.longitude,
+                        id: userDoc.id,
+                        ...userData,
                     };
                 } else {
-                    return null;  // Return null if the document doesn't exist
+                    return null;
                 }
             });
 
-            // Wait for all user data to be fetched
             const usersData = await Promise.all(userPromises);
-
-            // Filter out null values and update the state
-            setLikeMatchesUsers(usersData.filter(user => user !== null) as Users[]);
+            setLikeMatchesUsers(usersData.filter((user) => user !== null) as any[]);
         } catch (error) {
-            console.error("Error fetching user details: ", error);
+            console.error('Error fetching user details: ', error);
         }
     };
 
     const fetchSuperLikeMatchesDetails = async (superLikeMatches: string[]) => {
         try {
-            // Each userId will be processed to fetch only required fields
-            const userPromises = superLikeMatches.map(async (superLikeMatches) => {
+            const userPromises = superLikeMatches.map(async (id) => {
                 const userDoc = await firestore()
                     .collection('users')
-                    .doc(superLikeMatches)        // Fetch specific user document
-                    .get();             // Get the document
+                    .doc(id)
+                    .get();
 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-
-                    // Return only the required fields (photos, age, firstName)
                     return {
-                        photos: userData?.photos[userData?.photos.length - 1],  // Most recent photo
-                        age: userData?.age,                                     // Age
-                        firstName: userData?.firstName,                          // First name
-                        latitude: userData?.latitude,
-                        longitude: userData?.longitude,
+                        id: userDoc.id,
+                        ...userData,
                     };
                 } else {
-                    return null;  // Return null if the document doesn't exist
+                    return null;
                 }
             });
 
-            // Wait for all user data to be fetched
             const usersData = await Promise.all(userPromises);
-
-            // Filter out null values and update the state
-            setSuperLikeMatchesUsers(usersData.filter(user => user !== null) as Users[]);
+            setSuperLikeMatchesUsers(usersData.filter((user) => user !== null) as any[]);
         } catch (error) {
-            console.error("Error fetching user details: ", error);
+            console.error('Error fetching user details: ', error);
         }
     };
 
@@ -202,132 +166,150 @@ const Likes: React.FC = () => {
     }, [userData]);
 
     return (
-        <View style={styles.container}>
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContainer}
-            >
-                <Header
-                    userData={userData}
-                    twoIcon={false} />
-                <View style={styles.inContainer}>
-
-                    <Text style={styles.sectionTitle1}>Beğeniler</Text>
+        <>
+            {loading ? (
+                <CLoading visible />
+            ) : (
+                <View style={styles.container}>
                     <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        style={styles.statsContainer}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContainer}
                     >
-                        {likersUsers.length > 0 || superLikersUsers.length > 0 ? (
-                            [...likersUsers, ...superLikersUsers.map(u => ({ ...u, isSuper: true }))].map(
-                                (user, index) => (
-                                    <View key={index} style={styles.statItem}>
-                                        <TouchableOpacity activeOpacity={0.5}>
-                                            <View
-                                                style={[
-                                                    styles.avatarOuter,
-                                                    {
-                                                        borderColor: user.isSuper
-                                                            ? colors.BLUE_COLOR
-                                                            : colors.RED_COLOR
-                                                    },
-                                                ]}
-                                            >
-                                                <Image
-                                                    source={{ uri: user.photos }}
-                                                    style={styles.avatarImage}
-                                                    blurRadius={12}
-                                                />
-                                            </View>
-                                        </TouchableOpacity>
-                                        <Text style={styles.statText}>
-                                            {user.firstName}, {user.age}
-                                        </Text>
-                                    </View>
-                                )
-                            )
-                        ) : (
-                            <Text style={styles.noDataText}>Hiç beğeni yok!</Text>
-                        )}
-                    </ScrollView>
+                        <Header
+                            userData={userData}
+                            twoIcon={false} />
+                        <View style={styles.inContainer}>
 
-                    {/* Your Matches */}
-                    <Text style={styles.sectionTitle2}>Eşleşmeler</Text>
-
-                    <View style={styles.cardContainer}>
-                        {likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0 ? (
-                            [...likeMatchesUsers, ...superLikeMatchesUsers.map(u => ({ ...u, isSuper: true }))].map(
-                                (user, index) => (
-                                    <TouchableOpacity key={index} activeOpacity={0.5}>
-                                        <View
-
-                                            style={[
-                                                styles.card,
-                                                {
-                                                    borderColor: user.isSuper
-                                                        ? colors.BLUE_COLOR
-                                                        : colors.RED_COLOR,
-                                                    borderWidth: 2,
-                                                },
-                                            ]}
-                                        >
-                                            <Image source={{ uri: user.photos }} style={styles.image} />
-                                            <View style={[
-                                                styles.matchBadge,
-                                                { backgroundColor: user.isSuper ? colors.BLUE_COLOR : colors.RED_COLOR }
-                                            ]}>
-                                                {user.isSuper ? (
-                                                    <Ionicons
-                                                        name="star"
-                                                        size={18}
-                                                        color={colors.WHITE_COLOR}
-                                                        style={{ marginLeft: 5 }}
+                            <Text style={styles.sectionTitle1}>Beğeniler</Text>
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                style={styles.statsContainer}
+                            >
+                                {likersUsers.length > 0 || superLikersUsers.length > 0 ? (
+                                    [...likersUsers, ...superLikersUsers.map(u => ({ ...u, isSuper: true }))].map(
+                                        (user, index) => (
+                                            <TouchableOpacity
+                                                activeOpacity={0.5}
+                                                key={index}
+                                                onPress={() => navigation.navigate(USER_PROFILE, { user: user })}>
+                                                <View style={styles.statItem}>
+                                                    <CImage
+                                                        disablePress={true}
+                                                        imgSource={{ uri: user.photos[0] }}
+                                                        borderWidth={2}
+                                                        borderColor={
+                                                            user.isSuper
+                                                                ? colors.BLUE_COLOR
+                                                                : colors.RED_COLOR
+                                                        }
+                                                        imageBorderRadius={100}
+                                                        borderRadius={100}
                                                     />
-                                                ) : (
-                                                    <Ionicons
-                                                        name="heart"
-                                                        size={18}
-                                                        color={colors.WHITE_COLOR}
-                                                        style={{ marginLeft: 5 }}
-                                                    />
-                                                )}
-
-                                            </View>
-
-                                            {/* Bilgi alanı */}
-                                            <View style={styles.infoContainer}>
-                                                <Text style={styles.likesDistanceText}>
-                                                    {getDistanceFromLatLonInKm(
-                                                        userData.latitude,
-                                                        userData.longitude,
-                                                        user.latitude,
-                                                        user.longitude,
-                                                    ).toFixed(1)} km uzakta
-                                                </Text>
-
-                                                <View style={styles.row}>
-                                                    <Text style={styles.name}>
+                                                    <Text style={styles.statText}>
                                                         {user.firstName}, {user.age}
                                                     </Text>
-                                                    {/* Çevrimiçi durumu (örnek, istersen Firestore'dan eklenebilir) */}
-                                                    {/* <View style={styles.onlineDot} /> */}
                                                 </View>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                )
-                            )
-                        ) : (
-                            <Text style={styles.noDataText}>Hiç eşleşme yok!</Text>
-                        )}
-                    </View>
+                                            </TouchableOpacity>
+                                        )
+                                    )
+                                ) : (
+                                    <View style={styles.noData}>
+                                        <CText
+                                            color={colors.DARK_GRAY}
+                                            fontSize={14}
+                                            textAlign="center">Hiç beğeni yok!</CText>
+                                    </View>
+                                )}
+                            </ScrollView>
+
+                            {/* Your Matches */}
+                            <Text style={styles.sectionTitle2}>Eşleşmeler</Text>
+
+                            <View style={styles.cardContainer}>
+                                {likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0 ? (
+                                    [...likeMatchesUsers, ...superLikeMatchesUsers.map(u => ({ ...u, isSuper: true }))].map(
+                                        (user, index) => (
+                                            <TouchableOpacity
+                                                key={index}
+                                                activeOpacity={0.5}
+                                                onPress={() => navigation.navigate(USER_PROFILE, { user: user })}>
+                                                <View
+
+                                                    style={[
+                                                        styles.card,
+                                                        {
+                                                            borderColor: user.isSuper
+                                                                ? colors.BLUE_COLOR
+                                                                : colors.RED_COLOR,
+                                                            borderWidth: 2,
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Image source={{ uri: user.photos[0] }} style={styles.image} />
+                                                    <View style={[
+                                                        styles.matchBadge,
+                                                        { backgroundColor: user.isSuper ? colors.BLUE_COLOR : colors.RED_COLOR }
+                                                    ]}>
+                                                        {user.isSuper ? (
+                                                            <Ionicons
+                                                                name="star"
+                                                                size={18}
+                                                                color={colors.WHITE_COLOR}
+                                                                style={{ marginLeft: 5 }}
+                                                            />
+                                                        ) : (
+                                                            <Ionicons
+                                                                name="heart"
+                                                                size={18}
+                                                                color={colors.WHITE_COLOR}
+                                                                style={{ marginLeft: 5 }}
+                                                            />
+                                                        )}
+
+                                                    </View>
+
+                                                    {/* Bilgi alanı */}
+                                                    <View style={styles.infoContainer}>
+                                                        <Text style={styles.likesDistanceText}>
+                                                            {getDistanceFromLatLonInKm(
+                                                                userData.latitude,
+                                                                userData.longitude,
+                                                                user.latitude,
+                                                                user.longitude,
+                                                            ).toFixed(1)} km uzakta
+                                                        </Text>
+
+                                                        <View style={styles.row}>
+                                                            <Text style={styles.name}>
+                                                                {user.firstName}, {user.age}
+                                                            </Text>
+                                                            {/* Çevrimiçi durumu (örnek, istersen Firestore'dan eklenebilir) */}
+                                                            {/* <View style={styles.onlineDot} /> */}
+                                                        </View>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                        )
+                                    )
+                                ) : (
+                                    <View style={styles.noData}>
+                                        <CText
+                                            color={colors.DARK_GRAY}
+                                            fontSize={14}
+                                            textAlign="center">Henüz eşleşme yok!</CText>
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+                    </ScrollView>
                 </View>
-            </ScrollView>
-        </View>
+            )}
+        </>
     );
 };
 
-export default Likes;
+export default Match;
 
 
 const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.create({
@@ -349,21 +331,6 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     },
     statItem: {
         alignItems: "center",
-    },
-    avatarOuter: {
-        width: 86,
-        height: 86,
-        borderRadius: 100,
-        borderWidth: 2,
-        borderColor: colors.BLACK_COLOR,
-        overflow: "hidden",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    avatarImage: {
-        width: "100%",
-        height: "100%",
-        position: "absolute",
     },
     blurOverlay: {
         position: "absolute",
@@ -388,7 +355,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         fontSize: 20,
         fontWeight: "700",
         color: colors.TEXT_MAIN_COLOR,
-        marginTop: 5,
+        marginTop: 15,
     },
     sectionTitle2: {
         fontSize: 20,
@@ -467,8 +434,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         marginLeft: 6,
         marginTop: 2,
     },
-    noDataText: {
-        fontSize: 16,
-        color: "#bbb",
+    noData: {
+        flex: 1,
     },
 });

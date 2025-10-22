@@ -9,6 +9,7 @@ interface CTextProps extends TextProps {
     color?: string;
     fontWeight?: FontWeightType;
     required?: boolean;
+    textAlign?: "auto" | "center" | "justify" | "left" | "right",
 }
 
 const CText: React.FC<CTextProps> = ({
@@ -18,6 +19,7 @@ const CText: React.FC<CTextProps> = ({
     color,
     fontWeight,
     required = false,
+    textAlign,
     ...props
 }) => {
     const { colors } = useTheme();
@@ -31,6 +33,7 @@ const CText: React.FC<CTextProps> = ({
                 fontSize: fontSize ? fontSize : isTablet ? 22 : 16,
                 color: color ? color : colors.TEXT_MAIN_COLOR,
                 fontWeight: fontWeight ? fontWeight : '400',
+                textAlign,
             },
                 style
             ]}

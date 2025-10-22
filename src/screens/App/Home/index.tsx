@@ -17,10 +17,12 @@ import Swiper from 'react-native-deck-swiper';
 import LottieView from 'lottie-react-native';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import Header from '../../../components/Header';
+import CImage from '../../../components/CImage';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { userData, loading } = useAppSelector((state) => state.userData);
+    const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
     const navigation: any = useNavigation();
     const { t } = useTranslation();
     const { colors } = useTheme();
@@ -75,7 +77,7 @@ const Home = () => {
                 : null;
 
             const now = new Date();
-            const twelveHoursAgo = new Date(now.getTime() - 60 * 1000); // ⏱ Test için 10 saniye
+            const twelveHoursAgo = new Date(now.getTime() - 0 * 1000); // ⏱ Test için 10 saniye
             // const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000); // 12 saat sonra görüntülensin
 
             let shouldReset = false;
@@ -269,17 +271,40 @@ const Home = () => {
 
             if (!likedUserData) return;
 
+            // 🔻 ADD: Mevcut eşleşme var mı kontrol et (Firestore'dan)
+            const meSnap = await currentUserRef.get();
+            const meData = meSnap.data() || {};
+
+            const alreadyLikeMatch =
+                (meData.likeMatches || []).includes(userId) ||
+                (likedUserData.likeMatches || []).includes(userData.userId);
+
+            const alreadySuperLikeMatch =
+                (meData.superLikeMatches || []).includes(userId) ||
+                (likedUserData.superLikeMatches || []).includes(userData.userId);
+
+            // varsa direkt ilgili ekrana git ve işlemi sonlandır
+            if (alreadySuperLikeMatch) {
+                navigation.navigate(SUPER_LIKE_MATCHED, { user1: userData, user2: likedUserData });
+                return;
+            }
+            if (alreadyLikeMatch) {
+                navigation.navigate(LIKE_MATCHED, { user1: userData, user2: likedUserData });
+                return;
+            }
             // 🔹 Karşı taraf beni önceden beğenmiş mi?
             const theyLikedMe = likedUserData.likedUsers?.includes(userData.userId);
 
             // 🔹 Karşı tarafın 'likers' listesine beni ekle
             await userRef.update({
                 likers: firestore.FieldValue.arrayUnion(userData.userId),
+                superLikers: firestore.FieldValue.arrayRemove(userData.userId),
             });
 
             // 🔹 Benim 'likedUsers' listeme onu ekle
             await currentUserRef.update({
                 likedUsers: firestore.FieldValue.arrayUnion(userId),
+                superLikedUsers: firestore.FieldValue.arrayRemove(userId),
             });
 
             // 🔹 Karşı taraf bana SuperLike atmış mı?
@@ -368,6 +393,27 @@ const Home = () => {
             const superLikedUserData = userSnap.data();
 
             if (!superLikedUserData) return;
+            // 🔻 ADD: Mevcut eşleşme var mı kontrol et (Firestore'dan)
+            const meSnap = await currentUserRef.get();
+            const meData = meSnap.data() || {};
+
+            const alreadySuperLikeMatch =
+                (meData.superLikeMatches || []).includes(userId) ||
+                (superLikedUserData.superLikeMatches || []).includes(userData.userId);
+
+            const alreadyLikeMatch =
+                (meData.likeMatches || []).includes(userId) ||
+                (superLikedUserData.likeMatches || []).includes(userData.userId);
+
+            // varsa direkt ilgili ekrana git ve işlemi sonlandır
+            if (alreadySuperLikeMatch) {
+                navigation.navigate(SUPER_LIKE_MATCHED, { user1: userData, user2: superLikedUserData });
+                return;
+            }
+            if (alreadyLikeMatch) {
+                navigation.navigate(LIKE_MATCHED, { user1: userData, user2: superLikedUserData });
+                return;
+            }
 
             // 🔹 Karşı taraf beni daha önce beğenmiş veya süperlike’lamış mı?
             const theyLikedMe =
@@ -377,11 +423,13 @@ const Home = () => {
             // 🔹 Karşı tarafın 'superLikers' listesine beni ekle
             await userRef.update({
                 superLikers: firestore.FieldValue.arrayUnion(userData.userId),
+                likers: firestore.FieldValue.arrayRemove(userData.userId),
             });
 
             // 🔹 Benim 'superLikedUsers' listeme onu ekle
             await currentUserRef.update({
                 superLikedUsers: firestore.FieldValue.arrayUnion(userId),
+                likedUsers: firestore.FieldValue.arrayRemove(userId),
             });
 
             // 🔹 Eğer karşı taraf da beni beğendiyse veya superlike'ladıysa → eşleşme!
@@ -429,17 +477,17 @@ const Home = () => {
             const currentUserRef = firestore().collection("users").doc(userData.userId);
 
             // 🔹 Karşı tarafın listelerinden beni kaldır
-            // await userRef.update({
-            //     likers: firestore.FieldValue.arrayRemove(userData.userId),
-            //     superLikers: firestore.FieldValue.arrayRemove(userData.userId),
-            //     likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
-            //     superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
-            // });
+            await userRef.update({
+                // likers: firestore.FieldValue.arrayRemove(userData.userId),
+                // superLikers: firestore.FieldValue.arrayRemove(userData.userId),
+                likedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+                superLikedUsers: firestore.FieldValue.arrayRemove(userData.userId),
+            });
 
             // 🔹 Benim listelerimden o kişiyi kaldır
             await currentUserRef.update({
-                likedUsers: firestore.FieldValue.arrayRemove(userId),
-                superLikedUsers: firestore.FieldValue.arrayRemove(userId),
+                // likedUsers: firestore.FieldValue.arrayRemove(userId),
+                // superLikedUsers: firestore.FieldValue.arrayRemove(userId),
                 likers: firestore.FieldValue.arrayRemove(userId),
                 superLikers: firestore.FieldValue.arrayRemove(userId),
             });
@@ -476,15 +524,32 @@ const Home = () => {
                     </View>
 
                     {loadingData || loading ? (
-                        <View style={styles.lottieContainer}>
-                            <LottieView
-                                source={require("../../../assets/lottie/search-person-button.json")}
-                                style={styles.lottie}
-                                autoPlay
-                                loop
-                                speed={0.5}
-                            />
-                        </View>
+                        <TouchableOpacity activeOpacity={0.5}>
+                            <View style={styles.lottieContainer}>
+                                <LottieView
+                                    source={
+                                        isDarkMode
+                                            ? require("../../../assets/lottie/search-button-black.json")
+                                            : require("../../../assets/lottie/search-button-white.json")
+                                    }
+                                    style={styles.lottie}
+                                    autoPlay
+                                    loop
+                                    speed={0.9}
+                                />
+                                <View style={{
+                                    position: "absolute",
+                                }}>
+                                    <CImage
+                                        disablePress={true}
+                                        imgSource={{ uri: userData?.photos[userData?.photos.length - 1] }}
+                                        width={100}
+                                        height={100}
+                                        imageBorderRadius={100}
+                                    />
+                                </View>
+                            </View>
+                        </TouchableOpacity>
                     ) : activeTab === "discover" ? (
                         nearbyUsers.length > 0 ? (
                             <Swiper
@@ -669,8 +734,8 @@ const Home = () => {
                                     ))}
                                 </View>
                             ) : (
-                                <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>
-                                    Seni henüz kimse beğenmedi.
+                                <Text style={{ textAlign: "center", color: colors.TEXT_MAIN_COLOR, marginTop: 50, }}>
+                                    Henüz beğeniniz bulunmamaktadır.
                                 </Text>
                             )}
                         </View>
@@ -746,8 +811,8 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         backgroundColor: colors.BACKGROUND_COLOR,
     },
     lottie: {
-        width: isTablet ? 400 : 200,
-        height: isTablet ? 400 : 200,
+        width: isTablet ? 400 : 250,
+        height: isTablet ? 400 : 250,
         alignItems: "center",
     },
     infoContainer: {

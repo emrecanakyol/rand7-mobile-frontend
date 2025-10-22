@@ -21,7 +21,7 @@ import DeviceInfo from 'react-native-device-info'
 import { useNavigation } from '@react-navigation/native'
 import { ADD_HELP } from '../../../navigators/Stack'
 import { useTranslation } from 'react-i18next'
-import { sendAdminNotification } from '../../../utils/constants/Notifications'
+import { sendAdminNotification } from '../../../constants/Notifications'
 
 const HelpSupport = () => {
   const navigation: any = useNavigation();

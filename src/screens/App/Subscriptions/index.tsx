@@ -13,7 +13,7 @@ import images from '../../../assets/image/images';
 import { useTranslation } from 'react-i18next';
 import firestore from '@react-native-firebase/firestore';
 import auth from "@react-native-firebase/auth";
-import { sendAdminNotification } from '../../../utils/constants/Notifications';
+import { sendAdminNotification } from '../../../constants/Notifications';
 import CLoading from '../../../components/CLoading';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store/store';

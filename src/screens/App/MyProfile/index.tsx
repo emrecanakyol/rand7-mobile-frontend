@@ -32,6 +32,13 @@ const Profile = () => {
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
+    // İlişki tipi -> görünen etiket
+    const RELATIONSHIP_LABELS: Record<string, string> = {
+        long: 'Uzun süreli ilişki',
+        short: 'Kısa süreli ilişki',
+        friendship: 'Arkadaşlık',
+        chat: 'Sadece sohbet',
+    };
 
     useEffect(() => {
         dispatch(fetchUserData());
@@ -50,7 +57,7 @@ const Profile = () => {
         <View style={styles.container}>
             {/* ⚙️ Ayarlar Butonu */}
             <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.goBack()}>
-                <Entypo name="chevron-left" size={20} color="#fff" />
+                <Entypo name="chevron-left" size={24} color="#fff" />
             </TouchableOpacity>
 
             {/* 📸 Dikey Kaydırılabilir Fotoğraflar */}
@@ -114,10 +121,10 @@ const Profile = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.sheetContent}
                 >
-                    <Text style={styles.sectionTitle}>About</Text>
+                    <Text style={styles.sectionTitle}>Hakkımda</Text>
                     <Text style={styles.aboutText}>{userData.about}</Text>
 
-                    <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Interest</Text>
+                    <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Hobiler</Text>
                     <View style={styles.interestContainer}>
                         {userData.hobbies?.map((item: string, index: number) => (
                             <View key={index} style={styles.hobbyChip}>
@@ -126,9 +133,9 @@ const Profile = () => {
                         ))}
                     </View>
 
-                    <Text style={[styles.sectionTitle, { marginTop: 30 }]}>More Info</Text>
+                    <Text style={[styles.sectionTitle, { marginTop: 30 }]}>Tercih</Text>
                     <Text style={styles.aboutText}>
-                        I enjoy photography, coffee, and spontaneous adventures 🌍. Let’s explore new places together!
+                        {RELATIONSHIP_LABELS[userData?.relationshipType as string] || 'Belirtilmemiş'}
                     </Text>
                 </BottomSheetScrollView>
             </BottomSheet>

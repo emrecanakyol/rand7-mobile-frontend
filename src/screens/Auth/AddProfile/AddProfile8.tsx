@@ -126,8 +126,8 @@ const AddProfile8 = ({ navigation, route }: any) => {
                                 min: 18,
                                 max: 90,
                             },
-                            birthDate: birthDate ? firestore.Timestamp.fromDate(birthDate) : null,
-                            age: calculateAge(birthDate.birthDate),
+                            birthDate: firestore.Timestamp.fromDate(birthDate),
+                            age: calculateAge(birthDate),
                         },
                         { merge: true },
                     );

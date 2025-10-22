@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../utils/colors';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import LottieView from 'lottie-react-native';
 
 interface LoadingOverlayProps {
   visible: boolean;
@@ -18,7 +19,13 @@ const Loading: React.FC<LoadingOverlayProps> = ({ visible, title }) => {
 
   return (
     <View style={styles.overlay}>
-      <ActivityIndicator size="large" color={colors.DARK_GRAY} />
+      {/* <ActivityIndicator size="large" color={colors.DARK_GRAY} /> */}
+      <LottieView
+        source={require("../../assets/lottie/loading-three-dots.json")}
+        style={styles.lottie}
+        autoPlay
+        loop
+      />
       <Text style={styles.message}>
         {title || t('loading')}
       </Text>
@@ -39,7 +46,11 @@ const getStyles = (colors: any, isDarkMode: boolean) => StyleSheet.create({
     fontSize: 14,
     color: colors.DARK_GRAY,
     fontWeight: "400",
-    marginTop: 10,
+  },
+  lottie: {
+    width: 70,
+    height: 70,
+    alignItems: "center",
   },
 });
 

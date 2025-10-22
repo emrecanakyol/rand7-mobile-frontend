@@ -380,7 +380,7 @@ import { useTheme } from "../../../utils/colors";
 import CustomBackButton from "../../../components/CBackButton";
 import CLoading from "../../../components/CLoading";
 import CText from "../../../components/CText/CText";
-import { GOOGLE_API_KEY } from "../../../utils/constants/key";
+import { GOOGLE_API_KEY } from "../../../constants/key";
 import { ADD_PROFILE_5 } from "../../../navigators/Stack";
 
 const AddProfile4 = ({ navigation, route }: any) => {

@@ -36,9 +36,9 @@ const Header: React.FC<HeaderProps> = ({ userData, twoIcon = true }) => {
                                 ? { uri: userData?.photos[userData?.photos.length - 1] }
                                 : images.defaultProfilePhoto
                         }
-                        width={45}
-                        height={45}
-                        imageBorderRadius={3}
+                        width={50}
+                        height={50}
+                        imageBorderRadius={50}
                     />
                 </TouchableOpacity>
 

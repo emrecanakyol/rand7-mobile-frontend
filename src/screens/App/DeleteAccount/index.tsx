@@ -12,7 +12,7 @@ import { ONEBOARDINGONE } from "../../../navigators/Stack";
 import { useTranslation } from "react-i18next";
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { sendAdminNotification } from "../../../utils/constants/Notifications";
+import { sendAdminNotification } from "../../../constants/Notifications";
 
 const DeleteAccount = ({ navigation }: any) => {
   const { colors } = useTheme();

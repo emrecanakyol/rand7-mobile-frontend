@@ -4,7 +4,7 @@ import { useTheme } from "../../utils/colors";
 import CText from "../CText/CText";
 import CustomBackButton from "../CBackButton";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ADMIN } from "../../utils/constants/Admin";
+import { ADMIN } from "../../constants/Admin";
 
 interface DetailHeadersProps {
     title: string;
