@@ -503,165 +503,165 @@ const Home = () => {
             <Header
                 userData={userData}
             />
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.inContainer}>
-                    {/* Tab Buttons */}
-                    <View style={styles.tabContainer}>
-                        <TouchableOpacity
-                            style={[styles.tabButton, activeTab === 'discover' && styles.activeTab]}
-                            onPress={() => setActiveTab('discover')}>
-                            <Text style={[styles.tabText, activeTab === 'discover' && styles.activeTabText]}>
-                                Keşfet
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.tabButton, activeTab === 'likes' && styles.activeTab]}
-                            onPress={() => setActiveTab('likes')}>
-                            <Text style={[styles.tabText, activeTab === 'likes' && styles.activeTabText]}>
-                                Seni Beğenenler
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+            <View style={styles.inContainer}>
+                {/* Tab Buttons */}
+                <View style={styles.tabContainer}>
+                    <TouchableOpacity
+                        style={[styles.tabButton, activeTab === 'discover' && styles.activeTab]}
+                        onPress={() => setActiveTab('discover')}>
+                        <Text style={[styles.tabText, activeTab === 'discover' && styles.activeTabText]}>
+                            Keşfet
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.tabButton, activeTab === 'likes' && styles.activeTab]}
+                        onPress={() => setActiveTab('likes')}>
+                        <Text style={[styles.tabText, activeTab === 'likes' && styles.activeTabText]}>
+                            Seni Beğenenler
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
-                    {loadingData || loading ? (
-                        <TouchableOpacity activeOpacity={0.5}>
-                            <View style={styles.lottieContainer}>
-                                <LottieView
-                                    source={
-                                        isDarkMode
-                                            ? require("../../../assets/lottie/search-button-black.json")
-                                            : require("../../../assets/lottie/search-button-white.json")
-                                    }
-                                    style={styles.lottie}
-                                    autoPlay
-                                    loop
-                                    speed={0.9}
+                {loadingData || loading ? (
+                    <TouchableOpacity activeOpacity={0.5}>
+                        <View style={styles.lottieContainer}>
+                            <LottieView
+                                source={
+                                    isDarkMode
+                                        ? require("../../../assets/lottie/search-button-black.json")
+                                        : require("../../../assets/lottie/search-button-white.json")
+                                }
+                                style={styles.lottie}
+                                autoPlay
+                                loop
+                                speed={0.9}
+                            />
+                            <View style={{
+                                position: "absolute",
+                            }}>
+                                <CImage
+                                    disablePress={true}
+                                    imgSource={{ uri: userData?.photos[userData?.photos.length - 1] }}
+                                    width={100}
+                                    height={100}
+                                    imageBorderRadius={100}
                                 />
-                                <View style={{
-                                    position: "absolute",
-                                }}>
-                                    <CImage
-                                        disablePress={true}
-                                        imgSource={{ uri: userData?.photos[userData?.photos.length - 1] }}
-                                        width={100}
-                                        height={100}
-                                        imageBorderRadius={100}
-                                    />
-                                </View>
                             </View>
-                        </TouchableOpacity>
-                    ) : activeTab === "discover" ? (
-                        nearbyUsers.length > 0 ? (
-                            <Swiper
-                                key={nearbyUsers.length}
-                                ref={swiperRef}
-                                cards={nearbyUsers}
-                                renderCard={(u) => {
-                                    if (!u) {
-                                        // ✅ undefined kart gelirse beyaz ekran yerine fallback göster
-                                        return (
-                                            <View style={{
-                                                flex: 1,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                backgroundColor: colors.BACKGROUND_COLOR,
-                                                borderRadius: 14,
-                                            }}>
-                                                <Text style={{ color: colors.TEXT_MAIN_COLOR }}>
-                                                    Gösterilecek başka kişi kalmadı.
+                        </View>
+                    </TouchableOpacity>
+                ) : activeTab === "discover" ? (
+                    nearbyUsers.length > 0 ? (
+                        <Swiper
+                            key={nearbyUsers.length}
+                            ref={swiperRef}
+                            cards={nearbyUsers}
+                            renderCard={(u) => {
+                                if (!u) {
+                                    // ✅ undefined kart gelirse beyaz ekran yerine fallback göster
+                                    return (
+                                        <View style={{
+                                            flex: 1,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            backgroundColor: colors.BACKGROUND_COLOR,
+                                            borderRadius: 14,
+                                        }}>
+                                            <Text style={{ color: colors.TEXT_MAIN_COLOR }}>
+                                                Gösterilecek başka kişi kalmadı.
+                                            </Text>
+                                        </View>
+                                    );
+                                }
+
+                                return (
+                                    <TouchableWithoutFeedback
+                                        onPress={() => navigation.navigate(USER_PROFILE, { user: u })}
+                                    >
+                                        <View style={styles.cardContainer}>
+                                            <Image
+                                                source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                                style={styles.profileImage}
+                                            />
+                                            <LinearGradient
+                                                colors={['transparent', 'rgba(0,0,0,0.7)']}
+                                                style={styles.gradientOverlay}
+                                            />
+                                            <View style={styles.distanceContainer}>
+                                                <Text style={styles.distanceText}>
+                                                    {getDistanceFromLatLonInKm(
+                                                        userData.latitude,
+                                                        userData.longitude,
+                                                        u.latitude,
+                                                        u.longitude
+                                                    ).toFixed(1)} km
                                                 </Text>
                                             </View>
-                                        );
-                                    }
 
-                                    return (
-                                        <TouchableWithoutFeedback
-                                            onPress={() => navigation.navigate(USER_PROFILE, { user: u })}
-                                        >
-                                            <View style={styles.cardContainer}>
-                                                <Image
-                                                    source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
-                                                    style={styles.profileImage}
-                                                />
-                                                <LinearGradient
-                                                    colors={['transparent', 'rgba(0,0,0,0.7)']}
-                                                    style={styles.gradientOverlay}
-                                                />
-                                                <View style={styles.distanceContainer}>
-                                                    <Text style={styles.distanceText}>
-                                                        {getDistanceFromLatLonInKm(
-                                                            userData.latitude,
-                                                            userData.longitude,
-                                                            u.latitude,
-                                                            u.longitude
-                                                        ).toFixed(1)} km
+                                            <View style={styles.infoContainer}>
+                                                <View style={styles.userInfo}>
+                                                    <Text style={styles.userName}>
+                                                        {u.firstName}, {u.age}
+                                                    </Text>
+                                                    <Text style={styles.userLocation}>
+                                                        {u.province}, {u.country}
                                                     </Text>
                                                 </View>
 
-                                                <View style={styles.infoContainer}>
-                                                    <View style={styles.userInfo}>
-                                                        <Text style={styles.userName}>
-                                                            {u.firstName}, {u.age}
-                                                        </Text>
-                                                        <Text style={styles.userLocation}>
-                                                            {u.province}, {u.country}
-                                                        </Text>
-                                                    </View>
-
-                                                    <View style={styles.actionButtons}>
-                                                        <TouchableOpacity
-                                                            style={styles.dislikeButton}
-                                                            onPress={() => {
-                                                                handleDislike(u.userId);
-                                                                swiperRef.current?.swipeLeft();
-                                                            }}
-                                                        >
-                                                            <Ionicons name="close" size={28} color="#000" />
-                                                        </TouchableOpacity>
-                                                        <TouchableOpacity
-                                                            style={styles.starButton}
-                                                            onPress={() => {
-                                                                handleSuperLike(u.userId);
-                                                                swiperRef.current?.swipeRight();
-                                                            }}
-                                                        >
-                                                            <Ionicons name="star" size={26} color="#fff" />
-                                                        </TouchableOpacity>
-                                                        <TouchableOpacity
-                                                            style={styles.likeButton}
-                                                            onPress={() => {
-                                                                handleLike(u.userId);
-                                                                swiperRef.current?.swipeRight();
-                                                            }}
-                                                        >
-                                                            <Ionicons name="heart" size={28} color="#fff" />
-                                                        </TouchableOpacity>
-                                                    </View>
+                                                <View style={styles.actionButtons}>
+                                                    <TouchableOpacity
+                                                        style={styles.dislikeButton}
+                                                        onPress={() => {
+                                                            handleDislike(u.userId);
+                                                            swiperRef.current?.swipeLeft();
+                                                        }}
+                                                    >
+                                                        <Ionicons name="close" size={28} color="#000" />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={styles.starButton}
+                                                        onPress={() => {
+                                                            handleSuperLike(u.userId);
+                                                            swiperRef.current?.swipeRight();
+                                                        }}
+                                                    >
+                                                        <Ionicons name="star" size={26} color="#fff" />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={styles.likeButton}
+                                                        onPress={() => {
+                                                            handleLike(u.userId);
+                                                            swiperRef.current?.swipeRight();
+                                                        }}
+                                                    >
+                                                        <Ionicons name="heart" size={28} color="#fff" />
+                                                    </TouchableOpacity>
                                                 </View>
                                             </View>
-                                        </TouchableWithoutFeedback>
-                                    );
-                                }}
-                                onSwipedAll={() => {
-                                    console.log("🕊 Tüm kartlar bitti.");
-                                    setNearbyUsers([]); // ✅ beyaz ekran yerine “yakında kimse yok” gösterecek
-                                }}
-                                onSwipedLeft={(cardIndex) => {
-                                    console.log('❌ Dislike:', nearbyUsers[cardIndex]?.firstName);
-                                }}
-                                onSwipedRight={(cardIndex) => {
-                                    console.log('❤️ Like:', nearbyUsers[cardIndex]?.firstName);
-                                }}
-                                stackSize={3}
-                                backgroundColor="transparent"
-                                cardIndex={0}
-                                animateCardOpacity
-                                verticalSwipe={false}
-                            />
-                        ) : (
-                            <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>Yakında kimse bulunamadı.</Text>
-                        )
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                );
+                            }}
+                            onSwipedAll={() => {
+                                console.log("🕊 Tüm kartlar bitti.");
+                                setNearbyUsers([]); // ✅ beyaz ekran yerine “yakında kimse yok” gösterecek
+                            }}
+                            onSwipedLeft={(cardIndex) => {
+                                console.log('❌ Dislike:', nearbyUsers[cardIndex]?.firstName);
+                            }}
+                            onSwipedRight={(cardIndex) => {
+                                console.log('❤️ Like:', nearbyUsers[cardIndex]?.firstName);
+                            }}
+                            stackSize={3}
+                            backgroundColor="transparent"
+                            cardIndex={0}
+                            animateCardOpacity
+                            verticalSwipe={false}
+                        />
                     ) : (
+                        <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>Yakında kimse bulunamadı.</Text>
+                    )
+                ) : (
+                    <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={styles.likesContainer}>
                             {nearbyUsers.length > 0 ? (
                                 <View style={styles.matchesGrid}>
@@ -739,10 +739,10 @@ const Home = () => {
                                 </Text>
                             )}
                         </View>
-                    )}
+                    </ScrollView>
+                )}
 
-                </View>
-            </ScrollView>
+            </View>
         </View >
     );
 };

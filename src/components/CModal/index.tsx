@@ -4,7 +4,6 @@ import { responsive } from '../../utils/responsive';
 import { useTheme } from '../../utils/colors';
 import CText from '../CText/CText';
 import Entypo from 'react-native-vector-icons/Entypo';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface CustomModalProps {
     visible: boolean;
