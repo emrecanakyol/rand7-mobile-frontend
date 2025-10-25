@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { responsive } from '../../../utils/responsive';
 import { useTheme } from '../../../utils/colors';
@@ -30,36 +30,104 @@ const RandomMatch = () => {
     };
 
     // Rastgele 2 annonId çek
+    // const handlePress = async () => {
+    //     setMatchLoading(true);
+    //     try {
+    //         const meAnnonId = userData?.annonId; // 👈 kendi annonId
+    //         if (!meAnnonId) throw new Error('Me annonId yok');
+
+    //         // Tüm kullanıcıları çek
+    //         const usersSnapshot = await firestore().collection('users').get();
+    //         const otherAnnonIds: string[] = [];
+
+    //         usersSnapshot.forEach(doc => {
+    //             const d = doc.data() as any;
+    //             if (d?.annonId && d.annonId !== meAnnonId) {
+    //                 otherAnnonIds.push(d.annonId);
+    //             }
+    //         });
+
+    //         if (otherAnnonIds.length === 0) {
+    //             console.log('Eşleşecek başka annonId yok.');
+    //             return;
+    //         }
+
+    //         // Rastgele 1 kişi seç
+    //         const picked = otherAnnonIds[Math.floor(Math.random() * otherAnnonIds.length)];
+
+    //         // İsteğe bağlı bekletme
+    //         await new Promise(r => setTimeout(r, getRandomDelay()));
+    //         navigation.navigate(ANONIM_CHAT, {
+    //             annonId: meAnnonId,
+    //             other2Id: picked
+    //         });
+    //     } catch (e) {
+    //         console.log('Annon match error:', e);
+    //     } finally {
+    //         setMatchLoading(false);
+    //     }
+    // };
+
+    // Rastgele 2 annonId çek
     const handlePress = async () => {
         setMatchLoading(true);
         try {
-            const meAnnonId = userData?.annonId;                // 👈 kendi annonId
-            if (!meAnnonId) throw new Error('Me annonId yok');
+            const meId = userData?.userId;
+            const meAnnonId = userData?.annonId;
+            if (!meId || !meAnnonId) throw new Error('annonId veya userId yok');
+
+            // Benim daha önce match olduğum kullanıcılar
+            const blockedIds = new Set([
+                ...(userData?.likeMatches || []),
+                ...(userData?.superLikeMatches || []),
+            ]);
+
+            // 5 dakikalık online içinde mi?
+            const cutoffMs = Date.now() - 55 * 60 * 1000; // 5 dk önceki timestamp (ms)
 
             // Tüm kullanıcıları çek
             const usersSnapshot = await firestore().collection('users').get();
-            const otherAnnonIds: string[] = [];
 
-            usersSnapshot.forEach(doc => {
-                const d = doc.data() as any;
-                if (d?.annonId && d.annonId !== meAnnonId) {
-                    otherAnnonIds.push(d.annonId);
-                }
-            });
+            // Uygun adayların annonId listesini çıkar
+            const candidates = usersSnapshot.docs
+                .map(d => d.data() as any)
+                .filter(u => {
+                    // aktif mi? (lastOnline varsa ve son 5 dk içinde mi)
+                    const lastOnlineDate =
+                        u?.lastOnline?.toDate
+                            ? u.lastOnline.toDate()
+                            : undefined;
+                    // Aktif değilse geç
+                    const isActiveRecently =
+                        lastOnlineDate
+                            ? lastOnlineDate.getTime() >= cutoffMs
+                            : false; // lastOnline yoksa aktif sayma
 
-            if (otherAnnonIds.length === 0) {
-                console.log('Eşleşecek başka annonId yok.');
+                    return (
+                        u?.userId &&                                   // geçerli kullanıcı mı
+                        u?.annonId &&                                  // anonim id var mı
+                        u.userId !== meId &&                           // ben değil
+                        !blockedIds.has(u.userId) &&                   // ben zaten onunla match değil miyim
+                        isActiveRecently                               // SON 5 DK içinde online mı
+                        // !(u.likeMatches || []).includes(meId) &&    // Karşı tarafın datasında o zaten benimle match mi?
+                        // !(u.superLikeMatches || []).includes(meId)  // Karşı tarafın datasında o zaten benimle match mi?
+                    )
+                })
+                .map(u => u.annonId);
+
+            if (!candidates.length) {
+                console.log('Uygun anonim eşleşme yok.');
                 return;
             }
 
-            // Rastgele 1 kişi seç
-            const picked = otherAnnonIds[Math.floor(Math.random() * otherAnnonIds.length)];
+            const picked = candidates[Math.floor(Math.random() * candidates.length)];
 
-            // İsteğe bağlı bekletme
+            // Yapay gecikme
             await new Promise(r => setTimeout(r, getRandomDelay()));
+
             navigation.navigate(ANONIM_CHAT, {
                 annonId: meAnnonId,
-                other2Id: picked
+                other2Id: picked,
             });
         } catch (e) {
             console.log('Annon match error:', e);

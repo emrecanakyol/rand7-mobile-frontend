@@ -49,7 +49,7 @@ function AnimatedTabBar({ state, descriptors, navigation }: any) {
     };
 
     return (
-        <View style={[styles.tabBar, { backgroundColor: '#000' }]}>
+        <View style={styles.tabBar}>
             {state.routes.map((route: any, index: number) => {
                 const { options } = descriptors[route.key];
                 const label =
@@ -118,7 +118,7 @@ export default function BottomTabs() {
 
     return (
         <Tab.Navigator
-            initialRouteName={HOME}
+            initialRouteName={RANDOM_MATCH}
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 85,
         paddingBottom: 25,
+        backgroundColor: '#000',
     },
     tabButton: {
         flex: 1,

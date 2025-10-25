@@ -93,6 +93,8 @@ const AddProfile8 = ({ navigation, route }: any) => {
     const saveOnPress = async () => {
         setLoading(true);
         const userId = auth().currentUser?.uid;
+        const now = new Date();
+        now.setSeconds(0, 0); //saniyeyi 00 yapıyor
 
         if (userId) {
             const uploadedPhotoUrls = await uploadPhotos();
@@ -126,6 +128,7 @@ const AddProfile8 = ({ navigation, route }: any) => {
                             },
                             birthDate: firestore.Timestamp.fromDate(birthDate),
                             age: calculateAge(birthDate),
+                            online: firestore.Timestamp.fromDate(now),
                         },
                         { merge: true },
                     );

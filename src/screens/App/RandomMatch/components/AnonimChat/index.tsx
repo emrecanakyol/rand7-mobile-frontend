@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
 import { GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAppSelector } from '../../../../../store/hooks';
 import CLoading from '../../../../../components/CLoading';
@@ -52,7 +52,8 @@ export default function AnonimChat() {
     const [matched, setMatched] = useState<boolean>(false);
 
     // --- EK: geri sayım ---
-    const TOTAL_SEC = 10; // 7 dakika
+    const TOTAL_SEC = 7 * 60; // 7 dakika
+    // const TOTAL_SEC = 1 * 60; // 7 dakika
     const [left, setLeft] = useState(TOTAL_SEC);
     const [timeoutModal, setTimeoutModal] = useState(false);
     const mm = String(Math.floor(left / 60)).padStart(2, '0');
@@ -217,8 +218,8 @@ export default function AnonimChat() {
     // -------- GiftedChat current user
     const user = useMemo(
         () => ({
-            _id: meId,
-            name: meName,
+            _id: meId ?? 'unknown-user',
+            name: meName ?? 'Bilinmiyor',
         }),
         [meId, meName]
     );
@@ -237,7 +238,9 @@ export default function AnonimChat() {
             batch.set(chatPath(otherId, meId), { matched: true }, { merge: true });
         }
 
-        try { await batch.commit(); } catch (e) {
+        try {
+            await batch.commit();
+        } catch (e) {
             console.log('like error', e); Alert.alert('Hata', 'Beğeni kaydedilemedi.');
         }
     }, [meId, otherId, iLiked]);
@@ -250,8 +253,13 @@ export default function AnonimChat() {
         // benim doc: iLiked
         batch.set(chatPath(meId, otherId), { iLiked: false }, { merge: true });
 
-        try { await batch.commit(); } catch (e) {
+        try {
+            await batch.commit();
+        } catch (e) {
             console.log('like error', e); Alert.alert('Hata', 'Beğeni kaydedilemedi.');
+        } finally {
+            setTimeoutModal(false);
+            navigation.goBack();
         }
     }, [meId, otherId, iLiked]);
 
@@ -288,7 +296,7 @@ export default function AnonimChat() {
 
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#FFF' }}>
+        <SafeAreaView edges={["bottom"]} style={{ flex: 1, backgroundColor: '#FFF' }}>
             {loading ? (
                 <CLoading visible={true} />
             ) : (
@@ -297,7 +305,7 @@ export default function AnonimChat() {
                         backgroundColor: '#FFFFFF',
                         borderBottomWidth: 1,
                         borderBottomColor: '#EFEFEF',
-                        paddingTop: insets.top,             // Safe area ekleyelim
+                        paddingTop: Platform.OS === "android" ? insets.top : 0,
                     }}>
                         <View style={{
                             height: 52,
@@ -357,7 +365,7 @@ export default function AnonimChat() {
                         renderAvatar={() => null}
                         text={text}
                         onInputTextChanged={setText}
-                        bottomOffset={insets.bottom}              // 👈 iOS safe-area
+                        bottomOffset={Platform.OS === "ios" ? -40 : 0} // ios cihazda klavye açılınca input ve klavye arasındaki boşluğu düzeltiyor
 
                         // 🔧 Toolbar: tek satır hizalaması + padding
                         renderInputToolbar={(props) => (
@@ -558,7 +566,7 @@ export default function AnonimChat() {
 
 
 
-        </View>
+        </SafeAreaView>
 
     );
 }
