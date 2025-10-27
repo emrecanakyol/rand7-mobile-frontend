@@ -36,7 +36,7 @@ const PhoneLogin = ({ navigation }: any) => {
             const confirmation = await signInPhoneNumber(phoneNumber);
             navigation.navigate(PHONE_VERIFICATION, { confirmation, phoneNumber });
         } catch (err) {
-            ToastError(t('login_failed_title'), t('invalid_phone_number'));
+            // console.log(err);
         } finally {
             setLoading(false);
         }

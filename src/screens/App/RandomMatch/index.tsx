@@ -80,6 +80,8 @@ const RandomMatch = () => {
             const blockedIds = new Set([
                 ...(userData?.likeMatches || []),
                 ...(userData?.superLikeMatches || []),
+                ...(userData?.blockers || []), // engellenen kullanıcıları da gösterme
+                ...(userData?.blocked || []), // engellenen kullanıcıları da gösterme
             ]);
 
             // 5 dakikalık online içinde mi?

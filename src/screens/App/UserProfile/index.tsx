@@ -9,6 +9,7 @@ import {
     NativeScrollEvent,
     NativeSyntheticEvent,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -17,7 +18,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hooks';
-import { LIKE_MATCHED, SUPER_LIKE_MATCHED } from '../../../navigators/Stack';
+import { CHAT, LIKE_MATCHED, SUPER_LIKE_MATCHED } from '../../../navigators/Stack';
 import CLoading from '../../../components/CLoading';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 
@@ -41,6 +42,72 @@ const UserProfile = ({ route }: any) => {
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
     const [hasAnyMatch, setHasAnyMatch] = useState(false);
+
+    const handleOpenChat = () => {
+        if (!userData?.userId || !user?.userId) return;
+
+        navigation.navigate(CHAT, {
+            userId: userData.userId,
+            user2Id: user.userId,
+        });
+    };
+
+    const handleRemoveMatch = () => {
+        if (!userData?.userId || !user?.userId) return;
+
+        Alert.alert(
+            'Eşleşmeyi Kaldır',
+            `${user?.firstName} ile olan eşleşmeyi kaldırmak istediğine emin misin?`,
+            [
+                { text: 'Vazgeç', style: 'cancel' },
+                {
+                    text: 'Evet, kaldır',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            setMatchLoading(true);
+
+                            const meRef = firestore().collection('users').doc(userData.userId);
+                            const otherRef = firestore().collection('users').doc(user.userId);
+
+                            const batch = firestore().batch();
+
+                            // Benim hesabımdan bu kişiyi kaldır
+                            batch.set(
+                                meRef,
+                                {
+                                    likeMatches: firestore.FieldValue.arrayRemove(user.userId),
+                                    superLikeMatches: firestore.FieldValue.arrayRemove(user.userId),
+                                },
+                                { merge: true }
+                            );
+
+                            // Onun hesabından beni kaldır
+                            batch.set(
+                                otherRef,
+                                {
+                                    likeMatches: firestore.FieldValue.arrayRemove(userData.userId),
+                                    superLikeMatches: firestore.FieldValue.arrayRemove(userData.userId),
+                                },
+                                { merge: true }
+                            );
+
+                            await batch.commit();
+
+                            // Lokal state'i de güncelle ki UI hemen düşsün
+                            setHasAnyMatch(false);
+                            setIsLiked(false);
+                            setIsSuperLiked(false);
+                        } catch (err) {
+                            console.error('❌ Eşleşme kaldırılırken hata:', err);
+                        } finally {
+                            setMatchLoading(false);
+                        }
+                    },
+                },
+            ]
+        );
+    };
 
     const handleMomentumScrollEnd = (
         e: NativeSyntheticEvent<NativeScrollEvent>
@@ -425,39 +492,69 @@ const UserProfile = ({ route }: any) => {
                                 {user?.province}, {user?.country}
                             </Text>
 
-                            {!hasAnyMatch && (
-                                <View style={styles.actionButtons}>
-                                    {!isDisliked && (
+                            <View style={styles.actionButtons}>
+                                {hasAnyMatch ? (
+                                    <>
+                                        {/* EŞLEŞMEYİ KALDIR */}
                                         <TouchableOpacity
-                                            style={styles.dislikeButton}
+                                            style={styles.unmatchButton}
                                             activeOpacity={0.8}
-                                            onPress={() => { handleDislike(user.userId); }}
+                                            onPress={handleRemoveMatch}
                                         >
-                                            <Ionicons name="close" size={24} color="#000" />
+                                            <Ionicons
+                                                name="trash"
+                                                size={20}
+                                                color="#fff"
+                                            />
                                         </TouchableOpacity>
-                                    )}
 
-                                    {!isSuperLiked && (
+                                        {/* MESAJ GÖNDER */}
                                         <TouchableOpacity
-                                            style={styles.starButton}
+                                            style={styles.messageButton}
                                             activeOpacity={0.8}
-                                            onPress={() => { handleSuperLike(user.userId); }}
+                                            onPress={handleOpenChat}
                                         >
-                                            <Ionicons name="star" size={22} color="#fff" />
+                                            <Ionicons
+                                                name="chatbubble-ellipses"
+                                                size={20}
+                                                color="#fff"
+                                            />
                                         </TouchableOpacity>
-                                    )}
+                                    </>
+                                ) : (
+                                    <>
+                                        {!isDisliked && (
+                                            <TouchableOpacity
+                                                style={styles.dislikeButton}
+                                                activeOpacity={0.8}
+                                                onPress={() => { handleDislike(user.userId); }}
+                                            >
+                                                <Ionicons name="close" size={24} color="#000" />
+                                            </TouchableOpacity>
+                                        )}
 
-                                    {!isLiked && (
-                                        <TouchableOpacity
-                                            style={styles.likeButton}
-                                            activeOpacity={0.8}
-                                            onPress={() => { handleLike(user.userId); }}
-                                        >
-                                            <Ionicons name="heart" size={24} color="#fff" />
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-                            )}
+                                        {!isSuperLiked && (
+                                            <TouchableOpacity
+                                                style={styles.starButton}
+                                                activeOpacity={0.8}
+                                                onPress={() => { handleSuperLike(user.userId); }}
+                                            >
+                                                <Ionicons name="star" size={22} color="#fff" />
+                                            </TouchableOpacity>
+                                        )}
+
+                                        {!isLiked && (
+                                            <TouchableOpacity
+                                                style={styles.likeButton}
+                                                activeOpacity={0.8}
+                                                onPress={() => { handleLike(user.userId); }}
+                                            >
+                                                <Ionicons name="heart" size={24} color="#fff" />
+                                            </TouchableOpacity>
+                                        )}
+                                    </>
+                                )}
+                            </View>
                         </View>
                     </View>
 
@@ -549,6 +646,22 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             justifyContent: 'center',
             alignItems: 'center',
             gap: 8,
+        },
+        messageButton: {
+            backgroundColor: '#4ade80', // yeşil ton, istersen colors.GREEN_COLOR benzeri
+            width: 50,
+            height: 50,
+            borderRadius: 30,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        unmatchButton: {
+            backgroundColor: '#ef4444', // kırmızı ton
+            width: 50,
+            height: 50,
+            borderRadius: 30,
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         dot: {
             width: 8,

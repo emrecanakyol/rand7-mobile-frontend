@@ -541,7 +541,7 @@ const Home = () => {
                             }}>
                                 <CImage
                                     disablePress={true}
-                                    imgSource={{ uri: userData?.photos[userData?.photos.length - 1] }}
+                                    imgSource={{ uri: userData?.photos?.[userData?.photos?.length - 1] }}
                                     width={100}
                                     height={100}
                                     imageBorderRadius={100}

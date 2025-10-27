@@ -128,7 +128,7 @@ const AddProfile8 = ({ navigation, route }: any) => {
                             },
                             birthDate: firestore.Timestamp.fromDate(birthDate),
                             age: calculateAge(birthDate),
-                            online: firestore.Timestamp.fromDate(now),
+                            lastOnline: firestore.Timestamp.fromDate(now),
                         },
                         { merge: true },
                     );

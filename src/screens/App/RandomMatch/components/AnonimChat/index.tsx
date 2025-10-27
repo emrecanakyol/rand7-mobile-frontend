@@ -11,6 +11,8 @@ import CLoading from '../../../../../components/CLoading';
 import CModal from '../../../../../components/CModal';
 import CText from '../../../../../components/CText/CText';
 import { CHAT } from '../../../../../navigators/Stack';
+import i18n from '../../../../../utils/i18n';
+import { ToastError, ToastSuccess } from '../../../../../utils/toast';
 
 type RootStackParamList = {
     Anonim: {
@@ -48,12 +50,16 @@ export default function AnonimChat() {
     const [loading, setLoading] = useState(true);
     const [otherName, setOtherName] = useState<string>('');
     const [otherAvatar, setOtherAvatar] = useState<string | undefined>(undefined);
-    const [iLiked, setILiked] = useState<boolean>(false);
     const [matched, setMatched] = useState<boolean>(false);
+    const [waitingLike, setWaitingLike] = useState<boolean>(false);
+    const [showMenu, setShowMenu] = useState(false);
+    const [reportModalVisible, setReportModalVisible] = useState(false);
+    const [reportText, setReportText] = useState('');
+    const [sendingReport, setSendingReport] = useState(false);
 
     // --- EK: geri sayım ---
-    const TOTAL_SEC = 7 * 60; // 7 dakika
-    // const TOTAL_SEC = 1 * 60; // 7 dakika
+    // const TOTAL_SEC = 7 * 60; // 7 dakika
+    const TOTAL_SEC = 10; // 7 dakika
     const [left, setLeft] = useState(TOTAL_SEC);
     const [timeoutModal, setTimeoutModal] = useState(false);
     const mm = String(Math.floor(left / 60)).padStart(2, '0');
@@ -106,9 +112,7 @@ export default function AnonimChat() {
     useEffect(() => {
         if (!meId || !otherId) return;
 
-        setLoading(true);
-
-        // Mesaj listener
+        // 1) MESAJ dinleyici (bunu aynen koruyoruz)
         const unsubMsgs = msgsCol(meId, otherId)
             .orderBy('createdAt', 'desc')
             .limit(40)
@@ -133,23 +137,30 @@ export default function AnonimChat() {
                 }
             );
 
-        // Chat doc listener (beğeni/eşleşme)
-        const unsubChat = chatPath(meId, otherId).onSnapshot((doc) => {
-            const d = doc.data() as any;
-            const a = !!d?.iLiked;
-            const b = !!d?.iLiked;
-            setILiked(a);
-            setMatched(!!d?.matched || (a && b));
-        });
-
-        // unread sıfırla
+        // 2) UNREAD sıfırla (benim tarafımdaki anonim chat metadata)
         chatPath(meId, otherId).set({ unreadCount: 0 }, { merge: true });
+
+        // 3) BENİM USER DOC LİSTENERIM
+        const unsubMeUser = firestore()
+            .collection('users')
+            .doc(meId)
+            .onSnapshot((docSnap) => {
+                const data = docSnap.data() as any;
+                const likeMatchesArr: string[] = Array.isArray(data?.likeMatches)
+                    ? data.likeMatches
+                    : [];
+
+                const amIMatchedWithOther = likeMatchesArr.includes(otherId);
+
+                setMatched(amIMatchedWithOther);
+            });
 
         return () => {
             unsubMsgs();
-            unsubChat();
+            unsubMeUser();
         };
     }, [meId, otherId]);
+
 
 
     // -------- Mesaj gönder (fan-out: her iki kullanıcı path’ine de yaz)
@@ -211,7 +222,7 @@ export default function AnonimChat() {
             await batch.commit();
         } catch (e) {
             console.log('send error', e);
-            Alert.alert('Hata', 'Mesaj gönderilemedi.');
+            ToastError('Hata', 'Mesaj gönderilemedi.');
         }
     }, [meId, otherId, meName]);
 
@@ -224,45 +235,163 @@ export default function AnonimChat() {
         [meId, meName]
     );
 
-    const handleLike = useCallback(async () => {
-        if (!meId || !otherId || iLiked) return;
-
-        const batch = firestore().batch();
-
-        // benim doc: iLiked
-        batch.set(chatPath(meId, otherId), { iLiked: true }, { merge: true });
-
-        // karşı taraf zaten beğendiyse: match
-        if (iLiked) {
-            batch.set(chatPath(meId, otherId), { matched: true }, { merge: true });
-            batch.set(chatPath(otherId, meId), { matched: true }, { merge: true });
-        }
+    // anonim sohbeti ve mesajlarını iki tarafta da sil
+    const wipeAnonChat = useCallback(async () => {
+        if (!meId || !otherId) return;
 
         try {
+            // 1) benim tarafımdaki mesajları çek
+            const myMsgsSnap = await msgsCol(meId, otherId).get();
+            // 2) karşı tarafın tarafındaki mesajları çek
+            const otherMsgsSnap = await msgsCol(otherId, meId).get();
+
+            // 3) batch başlat
+            const batch = firestore().batch();
+
+            // 4) benim tarafımdaki her mesajı sil
+            myMsgsSnap.forEach(doc => {
+                batch.delete(
+                    msgsCol(meId, otherId).doc(doc.id)
+                );
+            });
+
+            // 5) diğer tarafın aynalı mesajlarını sil
+            otherMsgsSnap.forEach(doc => {
+                batch.delete(
+                    msgsCol(otherId, meId).doc(doc.id)
+                );
+            });
+
+            // 6) sohbet metadata dokümanlarını da sil (anonim-chats/{otherId} ve anonim-chats/{meId})
+            batch.delete(chatPath(meId, otherId));
+            batch.delete(chatPath(otherId, meId));
+
+            // 7) commit
             await batch.commit();
-        } catch (e) {
-            console.log('like error', e); Alert.alert('Hata', 'Beğeni kaydedilemedi.');
+
+            console.log("Anonim chat silindi.");
+        } catch (err) {
+            console.log("wipeAnonChat error:", err);
         }
-    }, [meId, otherId, iLiked]);
+    }, [meId, otherId]);
+
+    const handleLike = useCallback(async () => {
+        if (!meId || !otherId) return;
+
+        try {
+            // UI: bekleme yazısını hemen göster
+            setWaitingLike(true);
+
+            const meRef = firestore().collection('users').doc(meId);
+            const otherRef = firestore().collection('users').doc(otherId);
+
+            // 1. önce her iki user doc'unu al
+            const [meSnap, otherSnap] = await Promise.all([meRef.get(), otherRef.get()]);
+            const meData = meSnap.data() as any || {};
+            const otherData = otherSnap.data() as any || {};
+
+            const otherLikedUsers: string[] = Array.isArray(otherData.likedUsers)
+                ? otherData.likedUsers
+                : [];
+
+            // karşı taraf beni önceden beğenmiş mi?
+            const isMutual = otherLikedUsers.includes(meId);
+
+            const batch = firestore().batch();
+
+            // --- AŞAMA 1: her zaman tek yönlü like'ı kaydet ---
+            // benim dokümanım: likedUsers'e otherId ekle
+            batch.set(
+                meRef,
+                {
+                    likedUsers: firestore.FieldValue.arrayUnion(otherId),
+                },
+                { merge: true }
+            );
+
+            // onun dokümanı: likers'e meId ekle
+            batch.set(
+                otherRef,
+                {
+                    likers: firestore.FieldValue.arrayUnion(meId),
+                },
+                { merge: true }
+            );
+
+            // --- AŞAMA 2: eğer karşılıklıysa kalıcı match ve temizlik ---
+            if (isMutual) {
+                // 2.1 likeMatches'e ekle (kalıcı ilişki)
+                batch.set(
+                    meRef,
+                    {
+                        likeMatches: firestore.FieldValue.arrayUnion(otherId),
+                    },
+                    { merge: true }
+                );
+                batch.set(
+                    otherRef,
+                    {
+                        likeMatches: firestore.FieldValue.arrayUnion(meId),
+                    },
+                    { merge: true }
+                );
+
+                // 2.2 geçici alanları temizle:
+                // - benim likedUsers listemden otherId'yi kaldır
+                // - benim likers listemden otherId'yi kaldır (diğer taraf beni daha önce beğenmişse bu alana girmiş olabilir)
+                // - onun likedUsers listesinden meId'yi kaldır
+                // - onun likers listesinden meId'yi kaldır
+                batch.set(
+                    meRef,
+                    {
+                        likedUsers: firestore.FieldValue.arrayRemove(otherId),
+                        likers: firestore.FieldValue.arrayRemove(otherId),
+                    },
+                    { merge: true }
+                );
+
+                batch.set(
+                    otherRef,
+                    {
+                        likedUsers: firestore.FieldValue.arrayRemove(meId),
+                        likers: firestore.FieldValue.arrayRemove(meId),
+                    },
+                    { merge: true }
+                );
+
+                // sonra anonim sohbeti temizle
+                await wipeAnonChat();
+            }
+
+            await batch.commit();
+
+            // Not:
+            // matched state'ini burada set etmiyoruz çünkü user listener'ında
+            // likeMatches değişince otomatik setMatched(true) olacak.
+            // O da CHAT'e yönlendirecek.
+
+        } catch (e) {
+            console.log('like error', e);
+            ToastError('Hata', 'Beğeni kaydedilemedi.');
+            setWaitingLike(false);
+        }
+    }, [meId, otherId]);
+
 
     const handleDisLike = useCallback(async () => {
-        if (!meId || !otherId || iLiked) return;
-
-        const batch = firestore().batch();
-
-        // benim doc: iLiked
-        batch.set(chatPath(meId, otherId), { iLiked: false }, { merge: true });
+        if (!meId || !otherId) return;
 
         try {
-            await batch.commit();
-        } catch (e) {
-            console.log('like error', e); Alert.alert('Hata', 'Beğeni kaydedilemedi.');
-        } finally {
+            // sonra anonim sohbeti temizle
+            await wipeAnonChat();
+            setWaitingLike(false);
             setTimeoutModal(false);
             navigation.goBack();
+        } catch (e) {
+            console.log('dislike error', e);
+            ToastError('Hata', 'İşlem tamamlanamadı.');
         }
-    }, [meId, otherId, iLiked]);
-
+    }, [meId, otherId]);
 
     // --- EK: geri sayım (component içinde) ---
     useEffect(() => {
@@ -294,6 +423,82 @@ export default function AnonimChat() {
         });
     }, [matched, meId, otherId, otherName, otherAvatar, navigation]);
 
+    const handleSendReport = useCallback(async () => {
+        if (!meId || !otherId) return;
+        if (!reportText.trim()) {
+            ToastError("Uyarı", "Lütfen rapor nedenini yazın.");
+            return;
+        }
+
+        try {
+            setSendingReport(true);
+
+            await firestore()
+                .collection('users')
+                .doc(meId)
+                .collection("reports")
+                .add({
+                    reporterId: meId,
+                    reportedId: otherId,
+                    message: reportText.trim(),
+                    createdAt: firestore.FieldValue.serverTimestamp(),
+                });
+
+            setReportText('');
+            setReportModalVisible(false);
+            ToastSuccess("Teşekkürler", "Raporun alındı. Ekibimiz inceleyecek.");
+        } catch (e) {
+            console.log('report error', e);
+            ToastError("Hata", "Rapor gönderilemedi.");
+        } finally {
+            setSendingReport(false);
+        }
+    }, [meId, otherId, reportText]);
+
+    const handleBlockUser = useCallback(() => {
+        if (!meId || !otherId) return;
+
+        Alert.alert(
+            "Engelle",
+            "Bu kullanıcıyı engellemek istediğinizden emin misiniz? Bu kullanıcı size tekrar ulaşamayacak.",
+            [
+                { text: "Vazgeç", style: "cancel" },
+                {
+                    text: "Engelle",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            // meId kullanıcısının altındaki blocked koleksiyonuna yazıyoruz
+                            await firestore()
+                                .collection('users')
+                                .doc(meId)
+                                .update({
+                                    blockers: firestore.FieldValue.arrayUnion(otherId),
+                                });
+
+                            await firestore()
+                                .collection('users')
+                                .doc(otherId)
+                                .update({
+                                    blocked: firestore.FieldValue.arrayUnion(meId),
+                                });
+
+
+                            ToastSuccess("Engellendi", "Kullanıcı engellendi.");
+                            // istersen burada sohbete geri dönüp ekranı kapatabiliriz:
+                            navigation.goBack();
+                        } catch (e) {
+                            console.log("block error", e);
+                            ToastError("Hata", "Kullanıcı engellenemedi.");
+                        } finally {
+                            // dropdown kapansın
+                            setShowMenu(false);
+                        }
+                    },
+                },
+            ]
+        );
+    }, [meId, otherId, other2Id, setShowMenu]);
 
     return (
         <SafeAreaView edges={["bottom"]} style={{ flex: 1, backgroundColor: '#FFF' }}>
@@ -336,13 +541,107 @@ export default function AnonimChat() {
                             </View>
 
                             {/* Sağdaki üç nokta istersen kalsın */}
-                            <TouchableOpacity
-                                onPress={() => {/* sheet açılabilir */ }}
-                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}
-                            >
-                                <Ionicons name="ellipsis-vertical" size={20} color="#111" />
-                            </TouchableOpacity>
+                            <View style={{ position: 'relative' }}>
+                                <TouchableOpacity
+                                    onPress={() => setShowMenu(v => !v)}
+                                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                    style={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 20,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Ionicons name="ellipsis-vertical" size={20} color="#111" />
+                                </TouchableOpacity>
+
+                                {showMenu && (
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            top: 44,
+                                            right: 0,
+                                            minWidth: 200,
+                                            backgroundColor: '#FFFFFF',
+                                            borderRadius: 12,
+                                            paddingVertical: 8,
+                                            shadowColor: '#000',
+                                            shadowOpacity: 0.15,
+                                            shadowRadius: 12,
+                                            shadowOffset: { width: 0, height: 6 },
+                                            elevation: 8,
+                                            borderWidth: 1,
+                                            borderColor: '#EEE',
+                                            zIndex: 1000,
+                                        }}
+                                    >
+                                        {/* Bu kullanıcıyı bildir */}
+                                        <TouchableOpacity
+                                            activeOpacity={0.6}
+                                            onPress={() => {
+                                                setShowMenu(false);
+                                                setReportModalVisible(true);
+                                            }}
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                paddingHorizontal: 14,
+                                                paddingVertical: 12,
+                                                gap: 10,
+                                            }}
+                                        >
+                                            <Ionicons name="flag-outline" size={18} color="#E11D48" />
+                                            <Text
+                                                style={{
+                                                    fontSize: 14,
+                                                    fontWeight: '600',
+                                                    color: '#E11D48',
+                                                }}
+                                            >
+                                                Bu kullanıcıyı bildir
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        {/* divider */}
+                                        <View
+                                            style={{
+                                                height: 1,
+                                                backgroundColor: '#EEE',
+                                                marginHorizontal: 12,
+                                                marginVertical: 4,
+                                            }}
+                                        />
+
+                                        {/* Engelle */}
+                                        <TouchableOpacity
+                                            activeOpacity={0.6}
+                                            onPress={() => {
+                                                setShowMenu(false);
+                                                handleBlockUser();
+                                            }}
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                paddingHorizontal: 14,
+                                                paddingVertical: 12,
+                                                gap: 10,
+                                            }}
+                                        >
+                                            <Ionicons name="close-circle-outline" size={18} color="#111" />
+                                            <Text
+                                                style={{
+                                                    fontSize: 14,
+                                                    fontWeight: '600',
+                                                    color: '#111',
+                                                }}
+                                            >
+                                                Engelle
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
                         </View>
                     </View>
 
@@ -360,6 +659,7 @@ export default function AnonimChat() {
                         user={user}
                         placeholder="Mesaj yaz..."
                         alwaysShowSend
+                        locale={"tr-TR"} // 👈 aktif uygulama dilini otomatik alır
                         showUserAvatar={false}
                         renderAvatarOnTop={false}
                         renderAvatar={() => null}
@@ -392,16 +692,6 @@ export default function AnonimChat() {
                                     backgroundColor: 'transparent',
                                 }}
                             >
-                                <TouchableOpacity
-                                    onPress={() => { /* Buraya foto/video/emoji menüsü açabilirsin */ }}
-                                    activeOpacity={0.7}
-                                    style={{
-                                        width: 36,
-                                        height: 36,
-                                    }}
-                                >
-                                    <Ionicons name="add" size={28} color="#4B5563" />
-                                </TouchableOpacity>
 
                                 {/* 📝 Text Input */}
                                 <TextInput
@@ -551,13 +841,13 @@ export default function AnonimChat() {
                         </TouchableOpacity>
 
                     </View>
-                    {iLiked && !matched && (
-                        <Text style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+                    {!matched && (
+                        <Text style={{ marginTop: 28, fontSize: 12, color: '#666' }}>
                             Karşı tarafın beğenmesini bekliyoruz…
                         </Text>
                     )}
                     {matched && (
-                        <Text style={{ marginTop: 8, fontSize: 12, color: '#0a0' }}>
+                        <Text style={{ marginTop: 18, fontSize: 12, color: '#0a0' }}>
                             Eşleştiniz! Sohbetiniz kalıcı oldu.
                         </Text>
                     )}
@@ -565,6 +855,140 @@ export default function AnonimChat() {
             </CModal>
 
 
+            <CModal // kullanıcıyı bildirme 
+                visible={reportModalVisible}
+                onClose={() => {
+                    if (!sendingReport) {
+                        setReportModalVisible(false);
+                    }
+                }}
+            >
+                <View
+                    style={{
+                        width: '100%',
+                        maxWidth: 400,
+                    }}
+                >
+                    {/* Başlık */}
+                    <Text
+                        style={{
+                            fontSize: 18,
+                            fontWeight: '700',
+                            color: '#111',
+                            textAlign: 'center',
+                        }}
+                    >
+                        Bu kullanıcıyı bildir
+                    </Text>
+
+                    {/* Açıklama */}
+                    <Text
+                        style={{
+                            marginTop: 12,
+                            fontSize: 14,
+                            lineHeight: 20,
+                            color: '#444',
+                            textAlign: 'center',
+                        }}
+                    >
+                        Lütfen neden bildirdiğini kısaca yaz.
+                    </Text>
+
+                    {/* Multiline input */}
+                    <View
+                        style={{
+                            marginTop: 16,
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            borderRadius: 12,
+                            backgroundColor: '#FFF',
+                            paddingHorizontal: 12,
+                            paddingVertical: 8,
+                        }}
+                    >
+                        <TextInput
+                            value={reportText}
+                            onChangeText={setReportText}
+                            placeholder="Örn: Topluluk kurallarına aykırı davranış sergiliyor."
+                            placeholderTextColor="#999"
+                            multiline
+                            editable={!sendingReport}
+                            style={{
+                                minHeight: 80,
+                                maxHeight: 140,
+                                fontSize: 14,
+                                color: '#000',
+                                textAlignVertical: 'top',
+                            }}
+                        />
+                    </View>
+
+                    {/* Butonlar */}
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            marginTop: 24,
+                        }}
+                    >
+                        {/* İptal */}
+                        <TouchableOpacity
+                            disabled={sendingReport}
+                            onPress={() => {
+                                if (!sendingReport) {
+                                    setReportModalVisible(false);
+                                }
+                            }}
+                            style={{
+                                flex: 1,
+                                height: 44,
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: '#ccc',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginRight: 8,
+                                backgroundColor: '#FFF',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    fontSize: 15,
+                                    fontWeight: '600',
+                                    color: '#111',
+                                }}
+                            >
+                                İptal
+                            </Text>
+                        </TouchableOpacity>
+
+                        {/* Gönder */}
+                        <TouchableOpacity
+                            disabled={sendingReport}
+                            onPress={handleSendReport}
+                            style={{
+                                flex: 1,
+                                height: 44,
+                                borderRadius: 10,
+                                backgroundColor: sendingReport ? '#9CA3AF' : '#E11D48',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginLeft: 8,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    fontSize: 15,
+                                    fontWeight: '700',
+                                    color: '#FFF',
+                                }}
+                            >
+                                {sendingReport ? 'Gönderiliyor...' : 'Gönder'}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </CModal>
 
         </SafeAreaView>
 

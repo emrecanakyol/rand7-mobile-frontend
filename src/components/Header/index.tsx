@@ -32,8 +32,8 @@ const Header: React.FC<HeaderProps> = ({ userData, twoIcon = true }) => {
                     <CImage
                         disablePress={true}
                         imgSource={
-                            userData?.photos && userData?.photos.length > 0
-                                ? { uri: userData?.photos[userData?.photos.length - 1] }
+                            userData?.photos && userData?.photos?.length > 0
+                                ? { uri: userData?.photos?.[userData?.photos?.length - 1] }
                                 : images.defaultProfilePhoto
                         }
                         width={50}

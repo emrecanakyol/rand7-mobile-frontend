@@ -76,7 +76,6 @@ export default function Messages() {
                                     username,
                                     avatar,
                                     preview: meta.lastMessage || 'Sohbete başlayın…', // ✅ about yerine son mesaj
-                                    online: false, // online durumunu ayrıca bağlayabilirsin
                                     lastMessageAt: meta.lastMessageAt?.toDate
                                         ? meta.lastMessageAt.toDate()
                                         : undefined,

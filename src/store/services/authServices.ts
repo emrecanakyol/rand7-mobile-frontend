@@ -106,11 +106,36 @@ export const signOut = async (dispatch: any) => {
 //===PHONE===
 export const signInPhoneNumber = async (phoneNumber: string) => {
     try {
-        const confirmation = await auth().signInWithPhoneNumber(phoneNumber)
+        const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
         return confirmation;
     } catch (error: any) {
-        console.log('Phone sign in failed:', error);
-        throw error.response.data;
+        // Firebase hata kodunu kontrol et
+        const errorCode = error?.code || error?.message || '';
+
+        if (errorCode.includes('too-many-requests')) {
+            // Cihaz geçici olarak engellendi
+            ToastError(
+                'Çok fazla istek gönderildi',
+                'Lütfen kısa bir süre sonra tekrar deneyin.'
+            );
+        } else if (errorCode.includes('invalid-phone-number')) {
+            ToastError(
+                'Geçersiz Telefon Numarası',
+                'Lütfen geçerli bir telefon numarası formatı girin.'
+            );
+        } else if (errorCode.includes('network-request-failed')) {
+            ToastError(
+                'Bağlantı Hatası',
+                'Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.'
+            );
+        } else {
+            ToastError(
+                'Doğrulama Başarısız',
+                'Telefon numarası doğrulaması şu anda gerçekleştirilemiyor.'
+            );
+        }
+        // Hata fırlatmayı istersen log amaçlı koruyabilirsin:
+        throw error;
     }
 };
 
@@ -166,6 +191,7 @@ import {
     statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { clearPremiumData } from '../reducer/premiumDataReducer';
+import { ToastError } from '../../utils/toast';
 
 // Initialize GoogleSignin
 GoogleSignin.configure({
