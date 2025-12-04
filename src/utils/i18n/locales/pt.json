@@ -24,5 +24,16 @@
     "dont_have_account": "Não tem uma conta?",
     "login_failed_title": "Falha no login",
     "login_failed_message": "Ocorreu um erro ao fazer login.",
-    "login_with_phone": "Entrar com telefone"
+    "login_with_phone": "Entrar com telefone",
+    "phone_number_entry": "Digite seu número de telefone",
+    "send_code": "Enviar código",
+    "login_with_email": "Entrar com e-mail",
+    "invalid_phone_number": "Por favor, insira um número de telefone válido.",
+    "reset_password_title": "Redefinir Senha",
+    "reset_password_button": "Enviar código de redefinição",
+    "reset_success_title": "E-mail enviado",
+    "reset_success_message": "Um link para redefinir sua senha foi enviado para seu e-mail.",
+    "reset_error_title": "Falha na redefinição",
+    "reset_error_message": "Ocorreu um erro ao enviar a solicitação de redefinição.",
+    "reset_password_info": "Verifique sua caixa de entrada. Se não encontrar, veja sua pasta de spam."
 }

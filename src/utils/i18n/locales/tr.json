@@ -24,5 +24,16 @@
     "dont_have_account": "Hesabın yok mu?",
     "login_failed_title": "Giriş Başarısız",
     "login_failed_message": "Giriş yapılırken bir hata oluştu.",
-    "login_with_phone": "Telefon ile giriş yap"
+    "login_with_phone": "Telefon ile giriş yap",
+    "phone_number_entry": "Telefon numaranı gir",
+    "send_code": "Kodu Gönder",
+    "login_with_email": "E-posta ile giriş yap",
+    "invalid_phone_number": "Lütfen geçerli bir telefon numarası gir.",
+    "reset_password_title": "Şifre Sıfırla",
+    "reset_password_button": "Şifre Sıfırlama Kodu Gönder",
+    "reset_success_title": "Mail Gönderildi",
+    "reset_success_message": "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
+    "reset_error_title": "Sıfırlama Başarısız",
+    "reset_error_message": "Şifre sıfırlama isteği gönderilirken bir hata oluştu.",
+    "reset_password_info": "Lütfen e-posta kutunuzu kontrol edin. Gelen kutusunda bulamazsan spam klasörüne bakın."
 }

@@ -24,5 +24,16 @@
     "dont_have_account": "Vous n’avez pas de compte ?",
     "login_failed_title": "Échec de la connexion",
     "login_failed_message": "Une erreur s'est produite lors de la connexion.",
-    "login_with_phone": "Se connecter avec le téléphone"
+    "login_with_phone": "Se connecter avec le téléphone",
+    "phone_number_entry": "Saisissez votre numéro de téléphone",
+    "send_code": "Envoyer le code",
+    "login_with_email": "Se connecter avec e-mail",
+    "invalid_phone_number": "Veuillez saisir un numéro de téléphone valide.",
+    "reset_password_title": "Réinitialiser le mot de passe",
+    "reset_password_button": "Envoyer le code de réinitialisation",
+    "reset_success_title": "E-mail envoyé",
+    "reset_success_message": "Un lien de réinitialisation de mot de passe a été envoyé à votre e-mail.",
+    "reset_error_title": "Échec de la réinitialisation",
+    "reset_error_message": "Une erreur s'est produite lors de l'envoi de la demande de réinitialisation.",
+    "reset_password_info": "Veuillez vérifier votre boîte mail. Si vous ne voyez rien, consultez le dossier spam."
 }

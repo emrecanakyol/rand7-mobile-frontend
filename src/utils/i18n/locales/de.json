@@ -24,5 +24,16 @@
     "dont_have_account": "Hast du kein Konto?",
     "login_failed_title": "Anmeldung fehlgeschlagen",
     "login_failed_message": "Beim Anmelden ist ein Fehler aufgetreten.",
-    "login_with_phone": "Mit Telefon anmelden"
+    "login_with_phone": "Mit Telefon anmelden",
+    "phone_number_entry": "Telefonnummer eingeben",
+    "send_code": "Code senden",
+    "login_with_email": "Mit E-Mail anmelden",
+    "invalid_phone_number": "Bitte gib eine gültige Telefonnummer ein.",
+    "reset_password_title": "Passwort zurücksetzen",
+    "reset_password_button": "Reset-Code senden",
+    "reset_success_title": "E-Mail gesendet",
+    "reset_success_message": "Ein Link zum Zurücksetzen des Passworts wurde an deine E-Mail gesendet.",
+    "reset_error_title": "Zurücksetzen fehlgeschlagen",
+    "reset_error_message": "Beim Senden der Zurücksetzungsanfrage ist ein Fehler aufgetreten.",
+    "reset_password_info": "Bitte überprüfe deinen Posteingang. Falls nicht vorhanden, prüfe deinen Spam-Ordner."
 }
