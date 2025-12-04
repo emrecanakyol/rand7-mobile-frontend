@@ -7,5 +7,16 @@
     "tos_link": "Nutzungsbedingungen",
     "and": "und",
     "privacy_link": "Datenschutzrichtlinie",
-    "tos_accept_text": "gelesen und akzeptiert hast."
+    "tos_accept_text": "gelesen und akzeptiert hast.",
+    "sign_up": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "verify_password": "Passwort bestätigen",
+    "already_have_account": "Hast du bereits ein Konto?",
+    "login": "Anmelden",
+    "register_failed_title": "Registrierung fehlgeschlagen",
+    "passwords_do_not_match": "Passwörter stimmen nicht überein.",
+    "register_success_title": "Registrierung erfolgreich",
+    "register_success_message": "Dein Konto wurde erfolgreich erstellt!",
+    "register_failed_message": "Bei der Registrierung ist ein Fehler aufgetreten."
 }

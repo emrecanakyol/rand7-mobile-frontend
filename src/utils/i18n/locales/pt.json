@@ -7,5 +7,16 @@
     "tos_link": "Termos de Uso",
     "and": "e",
     "privacy_link": "Política de Privacidade",
-    "tos_accept_text": "leu e aceitou."
+    "tos_accept_text": "leu e aceitou.",
+    "sign_up": "Criar Conta",
+    "email": "E-mail",
+    "password": "Senha",
+    "verify_password": "Confirmar Senha",
+    "already_have_account": "Já tem uma conta?",
+    "login": "Entrar",
+    "register_failed_title": "Falha no Cadastro",
+    "passwords_do_not_match": "As senhas não coincidem.",
+    "register_success_title": "Cadastro Bem-sucedido",
+    "register_success_message": "Sua conta foi criada com sucesso!",
+    "register_failed_message": "Ocorreu um erro durante o cadastro."
 }

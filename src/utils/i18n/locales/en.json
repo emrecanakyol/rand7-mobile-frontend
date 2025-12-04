@@ -7,5 +7,16 @@
     "tos_link": "Terms of Use",
     "and": "and",
     "privacy_link": "Privacy Policy",
-    "tos_accept_text": "read and accepted."
+    "tos_accept_text": "read and accepted.",
+    "sign_up": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "verify_password": "Verify Password",
+    "already_have_account": "Already have an account?",
+    "login": "Login",
+    "register_failed_title": "Registration Failed",
+    "passwords_do_not_match": "Passwords do not match.",
+    "register_success_title": "Registration Successful",
+    "register_success_message": "Your account has been created successfully!",
+    "register_failed_message": "An error occurred during registration."
 }

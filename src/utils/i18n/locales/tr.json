@@ -7,5 +7,16 @@
     "tos_link": "Kullanım Koşullarımızı",
     "and": "ve",
     "privacy_link": "Gizlilik Politikamızı",
-    "tos_accept_text": "okuduğunu ve kabul ettiğini beyan edersin."
+    "tos_accept_text": "okuduğunu ve kabul ettiğini beyan edersin.",
+    "sign_up": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "verify_password": "Şifreyi Doğrula",
+    "already_have_account": "Zaten hesabın var mı?",
+    "login": "Giriş Yap",
+    "register_failed_title": "Kayıt Başarısız",
+    "passwords_do_not_match": "Şifreler eşleşmiyor.",
+    "register_success_title": "Kayıt Başarılı",
+    "register_success_message": "Hesabın başarıyla oluşturuldu!",
+    "register_failed_message": "Kayıt olurken bir hata oluştu."
 }

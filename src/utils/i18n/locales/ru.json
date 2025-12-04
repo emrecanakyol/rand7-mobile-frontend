@@ -7,5 +7,16 @@
     "tos_link": "Условия использования",
     "and": "и",
     "privacy_link": "Политику конфиденциальности",
-    "tos_accept_text": "прочитали и приняли."
+    "tos_accept_text": "прочитали и приняли.",
+    "sign_up": "Регистрация",
+    "email": "Э-почта",
+    "password": "Пароль",
+    "verify_password": "Подтвердите пароль",
+    "already_have_account": "Уже есть аккаунт?",
+    "login": "Войти",
+    "register_failed_title": "Ошибка регистрации",
+    "passwords_do_not_match": "Пароли не совпадают.",
+    "register_success_title": "Регистрация успешна",
+    "register_success_message": "Ваш аккаунт успешно создан!",
+    "register_failed_message": "Произошла ошибка при регистрации."
 }

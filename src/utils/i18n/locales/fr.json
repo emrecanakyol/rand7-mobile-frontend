@@ -7,5 +7,16 @@
     "tos_link": "Conditions d'utilisation",
     "and": "et",
     "privacy_link": "Politique de confidentialité",
-    "tos_accept_text": "lu et accepté."
+    "tos_accept_text": "lu et accepté.",
+    "sign_up": "Créer un compte",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "verify_password": "Confirmer le mot de passe",
+    "already_have_account": "Vous avez déjà un compte ?",
+    "login": "Se connecter",
+    "register_failed_title": "Échec de l'inscription",
+    "passwords_do_not_match": "Les mots de passe ne correspondent pas.",
+    "register_success_title": "Inscription réussie",
+    "register_success_message": "Votre compte a été créé avec succès !",
+    "register_failed_message": "Une erreur s'est produite lors de l'inscription."
 }
