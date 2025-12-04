@@ -18,5 +18,11 @@
     "passwords_do_not_match": "Şifreler eşleşmiyor.",
     "register_success_title": "Kayıt Başarılı",
     "register_success_message": "Hesabın başarıyla oluşturuldu!",
-    "register_failed_message": "Kayıt olurken bir hata oluştu."
+    "register_failed_message": "Kayıt olurken bir hata oluştu.",
+    "login_button": "Giriş Yap",
+    "forgot_password": "Şifremi Unuttum",
+    "dont_have_account": "Hesabın yok mu?",
+    "login_failed_title": "Giriş Başarısız",
+    "login_failed_message": "Giriş yapılırken bir hata oluştu.",
+    "login_with_phone": "Telefon ile giriş yap"
 }

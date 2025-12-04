@@ -11,7 +11,6 @@ import { useTheme } from '../../../utils/colors';
 import CButton from '../../../components/CButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CText from '../../../components/CText/CText';
-import CBackButton from '../../../components/CBackButton';
 
 const EmailLogin = ({ navigation }: any) => {
     const { colors } = useTheme();

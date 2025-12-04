@@ -18,5 +18,11 @@
     "passwords_do_not_match": "Passwörter stimmen nicht überein.",
     "register_success_title": "Registrierung erfolgreich",
     "register_success_message": "Dein Konto wurde erfolgreich erstellt!",
-    "register_failed_message": "Bei der Registrierung ist ein Fehler aufgetreten."
+    "register_failed_message": "Bei der Registrierung ist ein Fehler aufgetreten.",
+    "login_button": "Anmelden",
+    "forgot_password": "Passwort vergessen",
+    "dont_have_account": "Hast du kein Konto?",
+    "login_failed_title": "Anmeldung fehlgeschlagen",
+    "login_failed_message": "Beim Anmelden ist ein Fehler aufgetreten.",
+    "login_with_phone": "Mit Telefon anmelden"
 }

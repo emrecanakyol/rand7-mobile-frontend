@@ -18,5 +18,11 @@
     "passwords_do_not_match": "As senhas não coincidem.",
     "register_success_title": "Cadastro Bem-sucedido",
     "register_success_message": "Sua conta foi criada com sucesso!",
-    "register_failed_message": "Ocorreu um erro durante o cadastro."
+    "register_failed_message": "Ocorreu um erro durante o cadastro.",
+    "login_button": "Entrar",
+    "forgot_password": "Esqueci minha senha",
+    "dont_have_account": "Não tem uma conta?",
+    "login_failed_title": "Falha no login",
+    "login_failed_message": "Ocorreu um erro ao fazer login.",
+    "login_with_phone": "Entrar com telefone"
 }

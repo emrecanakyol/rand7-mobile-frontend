@@ -18,5 +18,11 @@
     "passwords_do_not_match": "Пароли не совпадают.",
     "register_success_title": "Регистрация успешна",
     "register_success_message": "Ваш аккаунт успешно создан!",
-    "register_failed_message": "Произошла ошибка при регистрации."
+    "register_failed_message": "Произошла ошибка при регистрации.",
+    "login_button": "Войти",
+    "forgot_password": "Забыли пароль?",
+    "dont_have_account": "Нет аккаунта?",
+    "login_failed_title": "Ошибка входа",
+    "login_failed_message": "Произошла ошибка при входе.",
+    "login_with_phone": "Войти по телефону"
 }
