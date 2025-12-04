@@ -33,24 +33,24 @@ const AddProfile3 = ({ navigation, route }: any) => {
             <View>
                 <CustomBackButton />
 
-                <CText style={styles.title}>Boyun kaç cm?</CText>
+                <CText style={styles.title}>{t("height_question_title")}</CText>
 
                 <CText style={styles.description}>
-                    Lütfen boyunu seç. Bu bilgi, eşleşmelerde profilini daha iyi tanımlamaya yardımcı olur.
+                    {t("height_question_description")}
                 </CText>
 
                 <CDropdown
                     data={heights}
                     value={height}
                     onChange={(item) => setHeight(item.value)}
-                    placeholder={t("Boy seç")}
+                    placeholder={t("select_height")}
                     containerStyle={styles.dropdownContainer}
                 />
             </View>
 
             <View style={styles.btnContainer}>
                 <CButton
-                    title={t("İleri")}
+                    title={t("next")}
                     disabled={!height}
                     onPress={next}
                     style={styles.btnStyle}

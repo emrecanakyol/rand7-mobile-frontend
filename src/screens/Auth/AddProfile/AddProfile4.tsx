@@ -382,8 +382,10 @@ import CLoading from "../../../components/CLoading";
 import CText from "../../../components/CText/CText";
 import { GOOGLE_API_KEY } from "../../../constants/key";
 import { ADD_PROFILE_5 } from "../../../navigators/Stack";
+import { useTranslation } from "react-i18next";
 
 const AddProfile4 = ({ navigation, route }: any) => {
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const styles = getStyles(colors);
 
@@ -398,9 +400,9 @@ const AddProfile4 = ({ navigation, route }: any) => {
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
-                    title: "Konum Erişimi İzni",
-                    message: "Konumunuzu almak için izin gerekli.",
-                    buttonPositive: "İzin Ver",
+                    title: t("location_permission_title"),
+                    message: t("location_permission_message"),
+                    buttonPositive: t("location_permission_allow"),
                 }
             );
             return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -438,10 +440,10 @@ const AddProfile4 = ({ navigation, route }: any) => {
                 setProvince(foundProvince);
                 setCountry(foundCountry);
             } else {
-                setAddress("Adres bilgisi alınamadı.");
+                setAddress(t("address_not_found"));
             }
         } catch (err) {
-            setAddress("Adres bilgisi alınırken hata oluştu.");
+            setAddress(t("address_fetch_error"));
         }
         await new Promise(resolve => setTimeout(resolve, 5000)); // 5 saniye beklet
         setLoading(false);
@@ -496,12 +498,12 @@ const AddProfile4 = ({ navigation, route }: any) => {
                     <View>
                         <CustomBackButton />
 
-                        <CText style={styles.title}>Nerede yaşıyorsun?</CText>
+                        <CText style={styles.title}>{t("location_question_title")}</CText>
                         <CText style={styles.description}>
-                            Profilini oluşturmak için bulunduğun konumu paylaş. Bu bilgi eşleşmelerini daha doğru hale getirir.
+                            {t("location_question_description")}
                         </CText>
 
-                        <CButton title="Konumumu Bul" onPress={getLocation} disabled={loading} />
+                        <CButton title={t("find_my_location")} onPress={getLocation} disabled={loading} />
 
                         {coords && (
                             <>
@@ -532,7 +534,7 @@ const AddProfile4 = ({ navigation, route }: any) => {
                                 </View>
                                 <View style={styles.noteContainer}>
                                     <CText style={styles.noteText}>
-                                        İstersen harita üzerindeki imleci sürükleyerek konumunu manuel olarak da belirleyebilirsin.
+                                        {t("location_drag_note")}
                                     </CText>
                                 </View>
 
@@ -541,7 +543,7 @@ const AddProfile4 = ({ navigation, route }: any) => {
                     </View>
 
                     <CButton
-                        title="İleri"
+                        title={t("next")}
                         onPress={next}
                         disabled={!coords}
                         style={styles.nextButton}

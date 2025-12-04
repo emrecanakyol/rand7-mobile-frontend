@@ -6,8 +6,10 @@ import CButton from "../../../components/CButton";
 import CText from "../../../components/CText/CText";
 import { ADD_PROFILE_3 } from "../../../navigators/Stack";
 import CustomBackButton from "../../../components/CBackButton";
+import { useTranslation } from "react-i18next";
 
 const AddProfile2 = ({ navigation, route }: any) => {
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const [gender, setGender] = useState<string | null>(null);
 
@@ -24,14 +26,14 @@ const AddProfile2 = ({ navigation, route }: any) => {
             <View>
                 <CustomBackButton />
 
-                <CText style={styles.title}>Seni en iyi hangi seçenek tanımlar?</CText>
+                <CText style={styles.title}>{t('gender_question_title')}</CText>
 
                 <CText style={styles.description}>
-                    Lütfen seni en iyi tanımlayan seçeneği belirle. Bu bilgi profilinizin doğru şekilde oluşturulmasına yardımcı olur.
+                    {t('gender_question_description')}
                 </CText>
 
                 <CButton
-                    title="Erkek"
+                    title={t('male')}
                     onPress={() => setGender("male")}
                     backgroundColor={gender === "male" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={gender === "male" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -39,7 +41,7 @@ const AddProfile2 = ({ navigation, route }: any) => {
                 />
 
                 <CButton
-                    title="Kadın"
+                    title={t('female')}
                     onPress={() => setGender("female")}
                     backgroundColor={gender === "female" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={gender === "female" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -49,7 +51,7 @@ const AddProfile2 = ({ navigation, route }: any) => {
 
             <View style={styles.btnContainer}>
                 <CButton
-                    title="İleri"
+                    title={t('next')}
                     disabled={!gender}
                     onPress={next}
                     style={styles.btnStyle}
@@ -65,7 +67,7 @@ const getStyles = (colors: any) =>
             flex: 1,
             padding: responsive(20),
             backgroundColor: colors.BACKGROUND_COLOR,
-            justifyContent: "space-between", // üstte içerik, altta footer
+            justifyContent: "space-between",
         },
         title: {
             fontSize: responsive(28),

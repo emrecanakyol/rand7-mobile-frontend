@@ -6,8 +6,10 @@ import CButton from "../../../components/CButton";
 import CText from "../../../components/CText/CText";
 import CustomBackButton from "../../../components/CBackButton";
 import { ADD_PROFILE_7 } from "../../../navigators/Stack";
+import { useTranslation } from "react-i18next";
 
 const AddProfile6 = ({ navigation, route }: any) => {
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const [relationshipType, setRelationshipType] = useState<string | null>(null);
 
@@ -24,14 +26,14 @@ const AddProfile6 = ({ navigation, route }: any) => {
             <View>
                 <CustomBackButton />
 
-                <CText style={styles.title}>Ne tür bir ilişki arıyorsun?</CText>
+                <CText style={styles.title}>{t("relationship_question_title")}</CText>
 
                 <CText style={styles.description}>
-                    Amacını bilmemiz, seninle benzer niyetlere sahip kişilerle eşleşmeni sağlar.
+                    {t("relationship_question_description")}
                 </CText>
 
                 <CButton
-                    title="Uzun süreli ilişki"
+                    title={t("relationship_long")}
                     onPress={() => setRelationshipType("long")}
                     backgroundColor={relationshipType === "long" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={relationshipType === "long" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -39,7 +41,7 @@ const AddProfile6 = ({ navigation, route }: any) => {
                 />
 
                 <CButton
-                    title="Kısa süreli ilişki"
+                    title={t("relationship_short")}
                     onPress={() => setRelationshipType("short")}
                     backgroundColor={relationshipType === "short" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={relationshipType === "short" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -47,7 +49,7 @@ const AddProfile6 = ({ navigation, route }: any) => {
                 />
 
                 <CButton
-                    title="Arkadaşlık"
+                    title={t("relationship_friendship")}
                     onPress={() => setRelationshipType("friendship")}
                     backgroundColor={relationshipType === "friendship" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={relationshipType === "friendship" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -55,7 +57,7 @@ const AddProfile6 = ({ navigation, route }: any) => {
                 />
 
                 <CButton
-                    title="Sadece sohbet"
+                    title={t("relationship_chat")}
                     onPress={() => setRelationshipType("chat")}
                     backgroundColor={relationshipType === "chat" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={relationshipType === "chat" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -65,7 +67,7 @@ const AddProfile6 = ({ navigation, route }: any) => {
 
             <View style={styles.btnContainer}>
                 <CButton
-                    title="İleri"
+                    title={t("next")}
                     disabled={!relationshipType}
                     onPress={next}
                     style={styles.btnStyle}

@@ -116,7 +116,6 @@ const OnBoardingOne = () => {
                         title={t('continue')}
                         onPress={() => navigation.navigate(EMAIL_LOGIN)}
                         borderRadius={28}
-                        backgroundColor={colors.PURPLE_COLOR}
                     />
 
                     <CButton

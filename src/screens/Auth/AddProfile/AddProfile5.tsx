@@ -6,8 +6,10 @@ import CButton from "../../../components/CButton";
 import CText from "../../../components/CText/CText";
 import { ADD_PROFILE_6 } from "../../../navigators/Stack";
 import CustomBackButton from "../../../components/CBackButton";
+import { useTranslation } from "react-i18next";
 
 const AddProfile5 = ({ navigation, route }: any) => {
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const [lookingFor, setLookingFor] = useState<string | null>(null);
 
@@ -24,14 +26,14 @@ const AddProfile5 = ({ navigation, route }: any) => {
             <View>
                 <CustomBackButton />
 
-                <CText style={styles.title}>İlgi duyduğun kişileri seç</CText>
+                <CText style={styles.title}>{t("looking_for_title")}</CText>
 
                 <CText style={styles.description}>
-                    Eşleşmelerini sana en uygun kişilerle yapabilmemiz için kiminle tanışmak istediğini belirt.
+                    {t("looking_for_description")}
                 </CText>
 
                 <CButton
-                    title="Erkek"
+                    title={t("male")}
                     onPress={() => setLookingFor("male")}
                     backgroundColor={lookingFor === "male" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={lookingFor === "male" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -39,7 +41,7 @@ const AddProfile5 = ({ navigation, route }: any) => {
                 />
 
                 <CButton
-                    title="Kadın"
+                    title={t("female")}
                     onPress={() => setLookingFor("female")}
                     backgroundColor={lookingFor === "female" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={lookingFor === "female" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -47,7 +49,7 @@ const AddProfile5 = ({ navigation, route }: any) => {
                 />
 
                 <CButton
-                    title="Her ikisi"
+                    title={t("both")}
                     onPress={() => setLookingFor("both")}
                     backgroundColor={lookingFor === "both" ? colors.BLACK_COLOR : colors.WHITE_COLOR}
                     textColor={lookingFor === "both" ? colors.WHITE_COLOR : colors.BLACK_COLOR}
@@ -57,7 +59,7 @@ const AddProfile5 = ({ navigation, route }: any) => {
 
             <View style={styles.btnContainer}>
                 <CButton
-                    title="İleri"
+                    title={t("next")}
                     disabled={!lookingFor}
                     onPress={next}
                     style={styles.btnStyle}

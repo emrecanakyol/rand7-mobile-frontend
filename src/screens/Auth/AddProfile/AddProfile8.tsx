@@ -13,8 +13,10 @@ import CLoading from "../../../components/CLoading";
 import { BOOTOMTABS } from "../../../navigators/Stack";
 import { ToastError } from "../../../utils/toast";
 import { calculateAge } from "../../../components/CalculateAge";
+import { useTranslation } from "react-i18next";
 
 const AddProfile8 = ({ navigation, route }: any) => {
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const [about, setAbout] = useState("");
@@ -135,7 +137,10 @@ const AddProfile8 = ({ navigation, route }: any) => {
                 await navigation.navigate(BOOTOMTABS);
             } catch (error) {
                 console.log('Error saving profile: ', error);
-                ToastError("Hata", "Lütfen internet bağlantınızı kontrol edin !")
+                ToastError(
+                    t("error_title"),
+                    t("check_internet_connection")
+                );
             }
         } else {
             console.log('User not logged in');
@@ -158,9 +163,9 @@ const AddProfile8 = ({ navigation, route }: any) => {
                         <View>
                             <CustomBackButton />
 
-                            <CText style={styles.title}>Bize biraz kendinden bahset</CText>
+                            <CText style={styles.title}>{t("about_title")}</CText>
                             <CText style={styles.description}>
-                                Profilinde kısa bir açıklama ekleyerek diğer kullanıcıların seni tanımasını sağla.
+                                {t("about_description")}
                             </CText>
 
                             <CTextInput
@@ -168,14 +173,14 @@ const AddProfile8 = ({ navigation, route }: any) => {
                                 onChangeText={setAbout}
                                 multiline
                                 maxLength={1500}
-                                placeholder="Örneğin: Seyahat etmeyi, müzik dinlemeyi ve yeni insanlarla tanışmayı seviyorum."
+                                placeholder={t("about_placeholder")}
                                 style={styles.textInput}
                             />
                         </View>
 
                         <View style={styles.footer}>
                             <CButton
-                                title="Kaydet"
+                                title={t("save")}
                                 onPress={saveOnPress}
                                 disabled={!about}
                                 style={styles.saveButton}

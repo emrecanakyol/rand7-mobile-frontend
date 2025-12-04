@@ -7,53 +7,59 @@ import CButton from "../../../components/CButton";
 import { ADD_PROFILE_8 } from "../../../navigators/Stack";
 import CustomBackButton from "../../../components/CBackButton";
 import { categorizedHobbies } from "../../../constants/constant";
+import { useTranslation } from "react-i18next";
 
 const AddProfile7 = ({ navigation, route }: any) => {
     const { colors } = useTheme();
+    const { t } = useTranslation();
     const [selected, setSelected] = useState<string[]>([]);
     const maxSelection = 10;
 
-    const toggle = (item: string) => {
+    const toggle = (hobbyKey: string) => {
         setSelected((prev) => {
-            if (prev.includes(item)) return prev.filter((x) => x !== item);
+            if (prev.includes(hobbyKey)) return prev.filter((x) => x !== hobbyKey);
             if (prev.length >= maxSelection) return prev;
-            return [...prev, item];
+            return [...prev, hobbyKey];
         });
     };
 
     const next = () =>
         navigation.navigate(ADD_PROFILE_8, {
             ...route.params,
-            hobbies: selected
+            hobbies: selected, // Artık key’ler gidiyor: ["music", "reading", ...]
         });
 
     const styles = getStyles(colors);
 
     return (
-        <ScrollView >
+        <ScrollView>
             <View style={styles.container}>
-
                 <CustomBackButton />
 
                 <View>
-                    <CText style={styles.title}>İlgi alanlarını seçebilirsin</CText>
+                    <CText style={styles.title}>
+                        {t("interests_title")}
+                    </CText>
                     <CText style={styles.subtitle}>
-                        Neleri sevdiğini bilmek, seni tanımanın en güzel yolu. Hadi, ilgi alanlarını seç ve hikayeni başlat.
+                        {t("interests_subtitle")}
                     </CText>
                 </View>
 
-                {Object.entries(categorizedHobbies).map(([category, hobbies]) => (
-                    <View key={category} style={styles.categoryContainer}>
-                        <CText style={styles.categoryTitle}>{category}</CText>
+                {Object.entries(categorizedHobbies).map(([categoryKey, hobbies]) => (
+                    <View key={categoryKey} style={styles.categoryContainer}>
+                        {/* Kategori başlığı */}
+                        <CText style={styles.categoryTitle}>
+                            {t(`cat_${categoryKey}`)}
+                        </CText>
 
                         <View style={styles.hobbiesContainer}>
-                            {hobbies.map((hobby) => {
-                                const isSelected = selected.includes(hobby);
+                            {(hobbies as string[]).map((hobbyKey) => {
+                                const isSelected = selected.includes(hobbyKey);
                                 return (
                                     <CButton
-                                        key={hobby}
-                                        title={hobby}
-                                        onPress={() => toggle(hobby)}
+                                        key={hobbyKey}
+                                        title={t(`hobby_${hobbyKey}`)}
+                                        onPress={() => toggle(hobbyKey)}
                                         backgroundColor={
                                             isSelected ? colors.BLACK_COLOR : colors.WHITE_COLOR
                                         }
@@ -74,16 +80,14 @@ const AddProfile7 = ({ navigation, route }: any) => {
                     </CText>
 
                     <CButton
-                        title="İleri"
+                        title={t("next")}
                         disabled={selected.length === 0}
                         onPress={next}
                         style={styles.btnStyle}
                     />
                 </View>
-
-            </View >
+            </View>
         </ScrollView>
-
     );
 };
 
@@ -94,9 +98,6 @@ const getStyles = (colors: any) =>
             backgroundColor: colors.BACKGROUND_COLOR,
             padding: responsive(20),
             justifyContent: "space-between",
-        },
-        inContainer: {
-            backgroundColor: "red",
         },
         title: {
             fontSize: responsive(22),
