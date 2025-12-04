@@ -21,8 +21,10 @@ import { useAppSelector } from '../../../store/hooks';
 import { CHAT, LIKE_MATCHED, SUPER_LIKE_MATCHED } from '../../../navigators/Stack';
 import CLoading from '../../../components/CLoading';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
+import { useTranslation } from 'react-i18next';
 
 const UserProfile = ({ route }: any) => {
+    const { t } = useTranslation();
     const { user } = route.params || {};
     const { userData, loading } = useAppSelector((state) => state.userData);
 
@@ -56,12 +58,12 @@ const UserProfile = ({ route }: any) => {
         if (!userData?.userId || !user?.userId) return;
 
         Alert.alert(
-            'Eşleşmeyi Kaldır',
-            `${user?.firstName} ile olan eşleşmeyi kaldırmak istediğine emin misin?`,
+            t('remove_match_title'),
+            t('remove_match_message', { name: user?.firstName }),
             [
-                { text: 'Vazgeç', style: 'cancel' },
+                { text: t('remove_match_cancel'), style: 'cancel' },
                 {
-                    text: 'Evet, kaldır',
+                    text: t('remove_match_confirm'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -118,11 +120,12 @@ const UserProfile = ({ route }: any) => {
     };
 
     // İlişki tipi -> görünen etiket
-    const RELATIONSHIP_LABELS: Record<string, string> = {
-        long: 'Uzun süreli ilişki',
-        short: 'Kısa süreli ilişki',
-        friendship: 'Arkadaşlık',
-        chat: 'Sadece sohbet',
+    // İlişki tipi -> i18n key
+    const RELATIONSHIP_LABEL_KEYS: Record<string, string> = {
+        long: 'relationship_long',
+        short: 'relationship_short',
+        friendship: 'relationship_friendship',
+        chat: 'relationship_chat',
     };
 
     useEffect(() => {
@@ -573,7 +576,7 @@ const UserProfile = ({ route }: any) => {
                             contentContainerStyle={styles.sheetContent}
                         >
                             <Text style={styles.sectionTitle}>
-                                Hakkında
+                                {t('profile_about')}
                             </Text>
                             <Text style={styles.aboutText}>
                                 {user?.about}
@@ -585,7 +588,7 @@ const UserProfile = ({ route }: any) => {
                                     { marginTop: 20 },
                                 ]}
                             >
-                                Hobiler
+                                {t('profile_hobbies')}
                             </Text>
                             <View style={styles.interestContainer}>
                                 {(user?.hobbies || []).map((item: string, index: number) => (
@@ -594,7 +597,7 @@ const UserProfile = ({ route }: any) => {
                                         style={styles.hobbyChip}
                                     >
                                         <Text style={styles.hobbyText}>
-                                            {item}
+                                            {t(`hobby_${item}`)}
                                         </Text>
                                     </View>
                                 ))}
@@ -606,10 +609,12 @@ const UserProfile = ({ route }: any) => {
                                     { marginTop: 30 },
                                 ]}
                             >
-                                Tercih
+                                {t('profile_preference')}
                             </Text>
                             <Text style={styles.aboutText}>
-                                {RELATIONSHIP_LABELS[user?.relationshipType as string] || 'Belirtilmemiş'}
+                                {RELATIONSHIP_LABEL_KEYS[user?.relationshipType as string]
+                                    ? t(RELATIONSHIP_LABEL_KEYS[user?.relationshipType as string])
+                                    : t('not_specified')}
                             </Text>
                         </BottomSheetScrollView>
                     </BottomSheet>

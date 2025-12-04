@@ -156,18 +156,18 @@ const RandomMatch = () => {
                         speed={0.7}
                     />
 
-                    <Text style={styles.title}>Eşleşin!</Text>
+                    <Text style={styles.title}>{t("random_match_title")}</Text>
 
 
                     <Text style={styles.subtitle}>
-                        Rastgele, anonim bir kullanıcıyla{'\n'}eşleşmek için butona basın.
+                        {t("random_match_subtitle")}
                     </Text>
 
                     <TouchableOpacity
                         activeOpacity={0.9}
                         onPress={handlePress}
                         accessibilityRole="button"
-                        accessibilityLabel="Eşleştir"
+                        accessibilityLabel={t("random_match_cta_label")}
                         style={styles.ctaButton}
                     >
                         <Icon name="shuffle-outline" size={28} color="#FFFFFF" />

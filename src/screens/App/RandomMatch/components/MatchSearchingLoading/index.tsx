@@ -2,8 +2,10 @@ import LottieView from 'lottie-react-native';
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { useTheme } from '../../../../../utils/colors';
+import { useTranslation } from "react-i18next";
 
 export const MatchSearchingLoading = () => {
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
@@ -12,7 +14,7 @@ export const MatchSearchingLoading = () => {
     return (
         <View style={styles.wrap}>
             {/* Başlık */}
-            <Text style={styles.title}>7 Dakikalık Sohbet</Text>
+            <Text style={styles.title}>{t("match_searching_title")}</Text>
 
             {/* İllüstrasyon alanı */}
             <View style={styles.canvas}>
@@ -32,7 +34,7 @@ export const MatchSearchingLoading = () => {
             </View>
 
             {/* Durum metni */}
-            <Text style={styles.searching}>Eşleşme aranıyor…</Text>
+            <Text style={styles.searching}>{t("match_searching_searching")}</Text>
 
             <LottieView
                 source={require('../../../../../assets/lottie/loading-three-dots.json')}
@@ -43,7 +45,7 @@ export const MatchSearchingLoading = () => {
             />
 
             {/* Alt açıklama */}
-            <Text style={styles.caption}>Senin için en uygun kişi bulunuyor…</Text>
+            <Text style={styles.caption}>{t("match_searching_caption")}</Text>
         </View>
     );
 };

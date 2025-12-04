@@ -88,7 +88,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
 
             {/* Location */}
             <View style={styles.row}>
-                <Text style={styles.label}>Konum</Text>
+                <Text style={styles.label}>{t('filter_location')}</Text>
                 <TouchableOpacity onPress={() => setMapModalVisible(true)}>
                     <Text style={styles.value}>
                         {selectedLocation
@@ -101,8 +101,8 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             {/* Distance */}
             <View style={styles.section}>
                 <View style={styles.row}>
-                    <Text style={styles.label}>Maksimum Mesafe</Text>
-                    <Text style={styles.value}>{distance} km</Text>
+                    <Text style={styles.label}>{t('filter_max_distance')}</Text>
+                    <Text style={styles.value}>{t('filter_distance_km', { distance })}</Text>
                 </View>
                 <Slider
                     minimumValue={1}
@@ -127,7 +127,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             {/* Age */}
             <View style={styles.section}>
                 <View style={styles.row}>
-                    <Text style={styles.label}>Yaş Aralığı</Text>
+                    <Text style={styles.label}>{t('filter_age_range')}</Text>
                     <Text style={styles.value}>
                         {ageRange[0]} – {ageRange[1]}
                     </Text>
@@ -159,7 +159,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
 
             {/* Göster (Show Preference) */}
             <View style={styles.section}>
-                <Text style={styles.label}>Bana Göster</Text>
+                <Text style={styles.label}>{t('filter_show_me')}</Text>
                 <View style={styles.preferenceContainer}>
                     <TouchableOpacity
                         style={[
@@ -174,7 +174,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
                                 showPreference === "female" && styles.checkedText,
                             ]}
                         >
-                            Kadın
+                            {t('filter_show_female')}
                         </Text>
                     </TouchableOpacity>
 
@@ -191,7 +191,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
                                 showPreference === "male" && styles.checkedText,
                             ]}
                         >
-                            Erkek
+                            {t('filter_show_male')}
                         </Text>
                     </TouchableOpacity>
 
@@ -208,7 +208,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
                                 showPreference === "both" && styles.checkedText,
                             ]}
                         >
-                            Her ikisi
+                            {t('filter_show_both')}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -217,7 +217,7 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             {/* Online now */}
             {/* <View style={styles.section}>
                 <View style={styles.row}>
-                    <Text style={styles.label}>Şu anda çevrimiçi olanlar</Text>
+                    <Text style={styles.label}>{t('filter_online_now')}</Text>
                     <Switch
                         trackColor={{ false: "#ccc", true: colors.BLACK_COLOR }}
                         thumbColor="#fff"
@@ -230,10 +230,10 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             {/* Buttons */}
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.resetBtn} onPress={onClose}>
-                    <Text style={styles.resetText}>Kapat</Text>
+                    <Text style={styles.resetText}>{t('filter_close')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
-                    <Text style={styles.applyText}>Uygula</Text>
+                    <Text style={styles.applyText}>{t('filter_apply')}</Text>
                 </TouchableOpacity>
             </View>
             {/* Modal */}

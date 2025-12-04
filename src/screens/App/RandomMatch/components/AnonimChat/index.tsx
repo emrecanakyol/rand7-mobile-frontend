@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
+import { View, Alert, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
 import { GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -11,8 +11,8 @@ import CLoading from '../../../../../components/CLoading';
 import CModal from '../../../../../components/CModal';
 import CText from '../../../../../components/CText/CText';
 import { CHAT } from '../../../../../navigators/Stack';
-import i18n from '../../../../../utils/i18n';
 import { ToastError, ToastSuccess } from '../../../../../utils/toast';
+import { useTranslation } from "react-i18next";
 
 type RootStackParamList = {
     Anonim: {
@@ -28,6 +28,7 @@ const msgsCol = (a: string, b: string) =>
     chatPath(a, b).collection('messages');
 
 export default function AnonimChat() {
+    const { t, i18n } = useTranslation();
     const route = useRoute<RouteProp<RootStackParamList, 'Anonim'>>();
     const { annonId, other2Id } = route.params ?? {};
     // tekrar tekrar yönlenmeyi önlemek için
@@ -222,7 +223,10 @@ export default function AnonimChat() {
             await batch.commit();
         } catch (e) {
             console.log('send error', e);
-            ToastError('Hata', 'Mesaj gönderilemedi.');
+            ToastError(
+                t("common_error_title"),
+                t("anon_chat_send_error")
+            );
         }
     }, [meId, otherId, meName]);
 
@@ -426,7 +430,10 @@ export default function AnonimChat() {
     const handleSendReport = useCallback(async () => {
         if (!meId || !otherId) return;
         if (!reportText.trim()) {
-            ToastError("Uyarı", "Lütfen rapor nedenini yazın.");
+            ToastError(
+                t("common_warning_title"),
+                t("anon_chat_report_validation")
+            );
             return;
         }
 
@@ -446,10 +453,16 @@ export default function AnonimChat() {
 
             setReportText('');
             setReportModalVisible(false);
-            ToastSuccess("Teşekkürler", "Raporun alındı. Ekibimiz inceleyecek.");
+            ToastSuccess(
+                t("common_thanks_title"),
+                t("anon_chat_report_success")
+            );
         } catch (e) {
             console.log('report error', e);
-            ToastError("Hata", "Rapor gönderilemedi.");
+            ToastError(
+                t("common_error_title"),
+                t("anon_chat_report_error")
+            );
         } finally {
             setSendingReport(false);
         }
@@ -459,12 +472,12 @@ export default function AnonimChat() {
         if (!meId || !otherId) return;
 
         Alert.alert(
-            "Engelle",
-            "Bu kullanıcıyı engellemek istediğinizden emin misiniz? Bu kullanıcı size tekrar ulaşamayacak.",
+            t("anon_chat_block_title"),
+            t("anon_chat_block_message"),
             [
-                { text: "Vazgeç", style: "cancel" },
+                { text: t("common_cancel"), style: "cancel" },
                 {
-                    text: "Engelle",
+                    text: t("anon_chat_block_confirm"),
                     style: "destructive",
                     onPress: async () => {
                         try {
@@ -484,12 +497,18 @@ export default function AnonimChat() {
                                 });
 
 
-                            ToastSuccess("Engellendi", "Kullanıcı engellendi.");
+                            ToastSuccess(
+                                t("anon_chat_block_success_title"),
+                                t("anon_chat_block_success_message")
+                            );
                             // istersen burada sohbete geri dönüp ekranı kapatabiliriz:
                             navigation.goBack();
                         } catch (e) {
                             console.log("block error", e);
-                            ToastError("Hata", "Kullanıcı engellenemedi.");
+                            ToastError(
+                                t("common_error_title"),
+                                t("anon_chat_block_error_message")
+                            );
                         } finally {
                             // dropdown kapansın
                             setShowMenu(false);
@@ -599,7 +618,7 @@ export default function AnonimChat() {
                                                     color: '#E11D48',
                                                 }}
                                             >
-                                                Bu kullanıcıyı bildir
+                                                {t("anon_chat_report_title")}
                                             </Text>
                                         </TouchableOpacity>
 
@@ -636,7 +655,7 @@ export default function AnonimChat() {
                                                     color: '#111',
                                                 }}
                                             >
-                                                Engelle
+                                                {t("anon_chat_block_menu")}
                                             </Text>
                                         </TouchableOpacity>
                                     </View>
@@ -657,7 +676,7 @@ export default function AnonimChat() {
                         messages={messages}
                         onSend={(msgs) => { onSend(msgs); setText(''); }}
                         user={user}
-                        placeholder="Mesaj yaz..."
+                        placeholder={t("anon_chat_input_placeholder")}
                         alwaysShowSend
                         locale={"tr-TR"} // 👈 aktif uygulama dilini otomatik alır
                         showUserAvatar={false}
@@ -697,7 +716,7 @@ export default function AnonimChat() {
                                 <TextInput
                                     value={text}
                                     onChangeText={setText}
-                                    placeholder="Mesajınızı yazın"
+                                    placeholder={t("anon_chat_composer_placeholder")}
                                     autoFocus={false}
                                     multiline
                                     style={{
@@ -793,7 +812,7 @@ export default function AnonimChat() {
                             textAlign: "center",
                         }}
                     >
-                        Zaman doldu!
+                        {t("anon_chat_timer_title")}
                     </Text>
                     <Text
                         style={{
@@ -804,7 +823,7 @@ export default function AnonimChat() {
                             textAlign: "center",
                         }}
                     >
-                        Gizemli hikâyeyi açmak için tek dokunuş yeter.
+                        {t("anon_chat_timer_subtitle")}
                     </Text>
 
                     {/* Butonlar */}
@@ -843,12 +862,12 @@ export default function AnonimChat() {
                     </View>
                     {!matched && (
                         <Text style={{ marginTop: 28, fontSize: 12, color: '#666' }}>
-                            Karşı tarafın beğenmesini bekliyoruz…
+                            {t("anon_chat_waiting_other_like")}
                         </Text>
                     )}
                     {matched && (
                         <Text style={{ marginTop: 18, fontSize: 12, color: '#0a0' }}>
-                            Eşleştiniz! Sohbetiniz kalıcı oldu.
+                            {t("anon_chat_matched_message")}
                         </Text>
                     )}
                 </View>
@@ -878,7 +897,7 @@ export default function AnonimChat() {
                             textAlign: 'center',
                         }}
                     >
-                        Bu kullanıcıyı bildir
+                        {t("anon_chat_report_title")}
                     </Text>
 
                     {/* Açıklama */}
@@ -891,7 +910,7 @@ export default function AnonimChat() {
                             textAlign: 'center',
                         }}
                     >
-                        Lütfen neden bildirdiğini kısaca yaz.
+                        {t("anon_chat_report_description")}
                     </Text>
 
                     {/* Multiline input */}
@@ -909,7 +928,7 @@ export default function AnonimChat() {
                         <TextInput
                             value={reportText}
                             onChangeText={setReportText}
-                            placeholder="Örn: Topluluk kurallarına aykırı davranış sergiliyor."
+                            placeholder={t("anon_chat_report_placeholder")}
                             placeholderTextColor="#999"
                             multiline
                             editable={!sendingReport}
@@ -958,7 +977,7 @@ export default function AnonimChat() {
                                     color: '#111',
                                 }}
                             >
-                                İptal
+                                {t("common_cancel")}
                             </Text>
                         </TouchableOpacity>
 
@@ -983,7 +1002,7 @@ export default function AnonimChat() {
                                     color: '#FFF',
                                 }}
                             >
-                                {sendingReport ? 'Gönderiliyor...' : 'Gönder'}
+                                {sendingReport ? t("common_sending") : t("common_send")}
                             </Text>
                         </TouchableOpacity>
                     </View>

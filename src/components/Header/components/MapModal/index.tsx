@@ -7,10 +7,9 @@ import { useTheme } from "../../../../utils/colors";
 import { responsive } from "../../../../utils/responsive";
 import CButton from "../../../CButton";
 import CText from "../../../CText/CText";
-import firestore from '@react-native-firebase/firestore'
+import { useTranslation } from "react-i18next";
 import CLoading from "../../../CLoading";
 import { GOOGLE_API_KEY } from "../../../../constants/key";
-import { useAppSelector } from "../../../../store/hooks";
 import { AppDispatch } from "../../../../store/Store";
 import { useDispatch } from "react-redux";
 import { fetchUserData } from "../../../../store/services/userDataService";
@@ -27,8 +26,8 @@ interface MapModalProps {
 }
 
 const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect }) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch<AppDispatch>();
-    const { userData } = useAppSelector((state) => state.userData);
     const { colors } = useTheme();
     const styles = getStyles(colors);
     const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -42,9 +41,9 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect }) => {
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
-                    title: "Konum Erişimi İzni",
-                    message: "Konumunuzu almak için izin gerekli.",
-                    buttonPositive: "İzin Ver",
+                    title: t("map_location_permission_title"),
+                    message: t("map_location_permission_message"),
+                    buttonPositive: t("map_location_permission_allow"),
                 }
             );
             return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -82,10 +81,10 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect }) => {
                 setProvince(foundProvince);
                 setCountry(foundCountry);
             } else {
-                setAddress("Adres bilgisi alınamadı.");
+                setAddress(t("map_address_not_found"));
             }
         } catch (err) {
-            setAddress("Adres bilgisi alınırken hata oluştu.");
+            setAddress(t("map_address_error"));
         }
         await new Promise(resolve => setTimeout(resolve, 3000)); // 3 saniye beklet
         setLoading(false);
@@ -144,12 +143,12 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect }) => {
             ) : (
                 <View style={styles.container}>
                     <View>
-                        <CText style={styles.title}>Nerede yaşıyorsun?</CText>
+                        <CText style={styles.title}>{t("map_where_do_you_live")}</CText>
                         <CText style={styles.description}>
-                            Konumunu değiştirirsen profilinden de konumun değişeceğini bilmenizi isteriz.
+                            {t("map_location_change_info")}
                         </CText>
 
-                        <CButton title="Konumumu Bul" onPress={getLocation} disabled={loading} />
+                        <CButton title={t("map_find_my_location")} onPress={getLocation} disabled={loading} />
 
                         {coords && (
                             <>
@@ -180,7 +179,7 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect }) => {
                                 </View>
                                 <View style={styles.noteContainer}>
                                     <CText style={styles.noteText}>
-                                        İstersen harita üzerindeki imleci sürükleyerek konumunu manuel olarak da belirleyebilirsin.
+                                        {t("map_drag_pin_info")}
                                     </CText>
                                 </View>
 
@@ -190,13 +189,13 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect }) => {
 
                     <View style={styles.buttonContainer}>
                         <CButton
-                            title="Geri"
+                            title={t("common_back")}
                             onPress={onClose}
                             backgroundColor={colors.LIGHT_GRAY}
                             textColor={colors.DARK_GRAY}
                         />
                         <CButton
-                            title="Kaydet"
+                            title={t("save")}
                             onPress={handleApply}
                             disabled={!coords}
                         />

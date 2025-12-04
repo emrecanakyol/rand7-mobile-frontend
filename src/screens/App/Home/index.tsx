@@ -18,6 +18,7 @@ import LottieView from 'lottie-react-native';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import Header from '../../../components/Header';
 import CImage from '../../../components/CImage';
+import CText from '../../../components/CText/CText';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -180,7 +181,6 @@ const Home = () => {
             // 🔹 Eğer hiç beğeni yoksa
             if (likers.length === 0 && superLikers.length === 0) {
                 setNearbyUsers([]);
-                console.log("🕊 Seni beğenen yok.");
                 return;
             }
 
@@ -510,14 +510,14 @@ const Home = () => {
                         style={[styles.tabButton, activeTab === 'discover' && styles.activeTab]}
                         onPress={() => setActiveTab('discover')}>
                         <Text style={[styles.tabText, activeTab === 'discover' && styles.activeTabText]}>
-                            Keşfet
+                            {t('discover_tab')}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.tabButton, activeTab === 'likes' && styles.activeTab]}
                         onPress={() => setActiveTab('likes')}>
                         <Text style={[styles.tabText, activeTab === 'likes' && styles.activeTabText]}>
-                            Seni Beğenenler
+                            {t('likes_tab')}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -567,7 +567,7 @@ const Home = () => {
                                             borderRadius: 14,
                                         }}>
                                             <Text style={{ color: colors.TEXT_MAIN_COLOR }}>
-                                                Gösterilecek başka kişi kalmadı.
+                                                {t('no_more_users')}
                                             </Text>
                                         </View>
                                     );
@@ -587,14 +587,16 @@ const Home = () => {
                                                 style={styles.gradientOverlay}
                                             />
                                             <View style={styles.distanceContainer}>
-                                                <Text style={styles.distanceText}>
-                                                    {getDistanceFromLatLonInKm(
-                                                        userData.latitude,
-                                                        userData.longitude,
-                                                        u.latitude,
-                                                        u.longitude
-                                                    ).toFixed(1)} km
-                                                </Text>
+                                                <CText style={styles.distanceText}>
+                                                    {t('distance_km', {
+                                                        distance: getDistanceFromLatLonInKm(
+                                                            userData.latitude,
+                                                            userData.longitude,
+                                                            u.latitude,
+                                                            u.longitude
+                                                        ).toFixed(1),
+                                                    })}
+                                                </CText>
                                             </View>
 
                                             <View style={styles.infoContainer}>
@@ -658,7 +660,7 @@ const Home = () => {
                             verticalSwipe={false}
                         />
                     ) : (
-                        <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>Yakında kimse bulunamadı.</Text>
+                        <Text style={{ color: colors.TEXT_MAIN_COLOR, marginTop: 50 }}>{t('no_nearby_users')}</Text>
                     )
                 ) : (
                     <ScrollView showsVerticalScrollIndicator={false}>
@@ -720,12 +722,14 @@ const Home = () => {
                                                 </View>
                                                 <View style={styles.matchInfo}>
                                                     <Text style={styles.likesDistanceText}>
-                                                        {getDistanceFromLatLonInKm(
-                                                            userData.latitude,
-                                                            userData.longitude,
-                                                            u.latitude,
-                                                            u.longitude
-                                                        ).toFixed(1)} km uzakta
+                                                        {t('distance_km_away', {
+                                                            distance: getDistanceFromLatLonInKm(
+                                                                userData.latitude,
+                                                                userData.longitude,
+                                                                u.latitude,
+                                                                u.longitude
+                                                            ).toFixed(1),
+                                                        })}
                                                     </Text>
                                                     <Text style={styles.likesUserName}>{u.firstName}, {calculateAge(u.birthDate)}</Text>
                                                 </View>
@@ -735,7 +739,7 @@ const Home = () => {
                                 </View>
                             ) : (
                                 <Text style={{ textAlign: "center", color: colors.TEXT_MAIN_COLOR, marginTop: 50, }}>
-                                    Henüz beğeniniz bulunmamaktadır.
+                                    {t('no_likes_yet')}
                                 </Text>
                             )}
                         </View>
@@ -834,7 +838,6 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     distanceText: {
         fontSize: 12,
         fontWeight: '500',
-        color: '#333',
     },
     userInfo: {
         marginBottom: 10,

@@ -11,6 +11,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '../../../utils/colors';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -22,6 +23,7 @@ import { fetchUserData } from '../../../store/services/userDataService';
 import { calculateAge } from '../../../components/CalculateAge';
 
 const Profile = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch<AppDispatch>();
     const { userData, loading } = useAppSelector((state) => state.userData);
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -33,11 +35,11 @@ const Profile = () => {
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
     // İlişki tipi -> görünen etiket
-    const RELATIONSHIP_LABELS: Record<string, string> = {
-        long: 'Uzun süreli ilişki',
-        short: 'Kısa süreli ilişki',
-        friendship: 'Arkadaşlık',
-        chat: 'Sadece sohbet',
+    const RELATIONSHIP_LABEL_KEYS: Record<string, string> = {
+        long: 'relationship_long',
+        short: 'relationship_short',
+        friendship: 'relationship_friendship',
+        chat: 'relationship_chat',
     };
 
     useEffect(() => {
@@ -121,21 +123,25 @@ const Profile = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.sheetContent}
                 >
-                    <Text style={styles.sectionTitle}>Hakkımda</Text>
+                    <Text style={styles.sectionTitle}>{t('profile_about')}</Text>
                     <Text style={styles.aboutText}>{userData.about}</Text>
 
-                    <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Hobiler</Text>
+                    <Text style={[styles.sectionTitle, { marginTop: 20 }]}>{t('profile_hobbies')}</Text>
                     <View style={styles.interestContainer}>
                         {userData.hobbies?.map((item: string, index: number) => (
                             <View key={index} style={styles.hobbyChip}>
-                                <Text style={styles.hobbyText}>{item}</Text>
+                                <Text style={styles.hobbyText}>
+                                    {t(`hobby_${item}`)}
+                                </Text>
                             </View>
                         ))}
                     </View>
 
-                    <Text style={[styles.sectionTitle, { marginTop: 30 }]}>Tercih</Text>
+                    <Text style={[styles.sectionTitle, { marginTop: 30 }]}>{t('profile_preference')}</Text>
                     <Text style={styles.aboutText}>
-                        {RELATIONSHIP_LABELS[userData?.relationshipType as string] || 'Belirtilmemiş'}
+                        {RELATIONSHIP_LABEL_KEYS[userData?.relationshipType as string]
+                            ? t(RELATIONSHIP_LABEL_KEYS[userData.relationshipType as string])
+                            : t('not_specified')}
                     </Text>
                 </BottomSheetScrollView>
             </BottomSheet>

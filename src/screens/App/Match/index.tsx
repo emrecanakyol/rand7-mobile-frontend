@@ -180,7 +180,7 @@ const Match: React.FC = () => {
                             twoIcon={false} />
                         <View style={styles.inContainer}>
 
-                            <Text style={styles.sectionTitle1}>Beğeniler</Text>
+                            <Text style={styles.sectionTitle1}>{t("match_likes_title")}</Text>
                             <ScrollView
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
@@ -218,13 +218,13 @@ const Match: React.FC = () => {
                                         <CText
                                             color={colors.DARK_GRAY}
                                             fontSize={14}
-                                            textAlign="center">Hiç beğeni yok!</CText>
+                                            textAlign="center">{t("match_no_likes")}</CText>
                                     </View>
                                 )}
                             </ScrollView>
 
                             {/* Your Matches */}
-                            <Text style={styles.sectionTitle2}>Eşleşmeler</Text>
+                            <Text style={styles.sectionTitle2}>{t("match_matches_title")}</Text>
 
                             <View style={styles.cardContainer}>
                                 {likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0 ? (
@@ -277,7 +277,7 @@ const Match: React.FC = () => {
                                                                 userData.longitude,
                                                                 user.latitude,
                                                                 user.longitude,
-                                                            ).toFixed(1)} km uzakta
+                                                            ).toFixed(1)} {t("match_km_away")}
                                                         </Text>
 
                                                         <View style={styles.row}>
@@ -297,7 +297,7 @@ const Match: React.FC = () => {
                                         <CText
                                             color={colors.DARK_GRAY}
                                             fontSize={14}
-                                            textAlign="center">Henüz eşleşme yok!</CText>
+                                            textAlign="center">{t("match_no_matches")}</CText>
                                     </View>
                                 )}
                             </View>

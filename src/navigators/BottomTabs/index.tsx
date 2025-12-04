@@ -98,7 +98,7 @@ function AnimatedTabBar({ state, descriptors, navigation }: any) {
 function getIconName(routeName: string, focused: boolean) {
     switch (routeName) {
         case HOME:
-            return focused ? 'home' : 'home-outline';
+            return focused ? 'copy' : 'copy-outline';
         case RANDOM_MATCH:
             return focused ? 'compass' : 'compass-outline';
         case MATCH:
@@ -113,12 +113,9 @@ function getIconName(routeName: string, focused: boolean) {
 }
 
 export default function BottomTabs() {
-    const { width, height } = Dimensions.get('window');
-    const isTablet = Math.min(width, height) >= 600;
-
     return (
         <Tab.Navigator
-            initialRouteName={RANDOM_MATCH}
+            initialRouteName={HOME}
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
