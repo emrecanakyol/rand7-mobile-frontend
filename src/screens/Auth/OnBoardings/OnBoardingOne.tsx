@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../utils/colors';
 import { responsive } from '../../../utils/responsive';
-import i18n from '../../../utils/i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import CDropdown from '../../../components/CDropdown';
-import { t } from 'i18next';
+import { useTranslation } from "react-i18next";
 import CButton from '../../../components/CButton';
 import CModal from '../../../components/CModal';
 import CImage from '../../../components/CImage';
@@ -14,30 +11,28 @@ import CText from '../../../components/CText/CText';
 import { EMAIL_LOGIN, REGISTER } from '../../../navigators/Stack';
 
 const OnBoardingOne = () => {
+    const { t } = useTranslation();
     const navigation: any = useNavigation();
     const { colors } = useTheme();
-    const { width, height } = Dimensions.get('window');
-    const isTablet = Math.min(width, height) >= 600;
-
-    const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
     const [tosVisible, setTosVisible] = useState(false);
     const [privacyVisible, setPrivacyVisible] = useState(false);
+    // const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
 
-    const languageOptions = [
-        { label: '🇬🇧 English', value: 'en' },
-        { label: '🇹🇷 Türkçe', value: 'tr' },
-        { label: '🇩🇪 German', value: 'de' },
-        { label: '🇸🇦 Arabic', value: 'ar' },
-        { label: '🇫🇷 French', value: 'fr' },
-        { label: '🇷🇺 Russian', value: 'ru' },
-        { label: '🇵🇹 Portuguese', value: 'pt' },
-    ];
+    // const languageOptions = [
+    //     { label: '🇬🇧 English', value: 'en' },
+    //     { label: '🇹🇷 Türkçe', value: 'tr' },
+    //     { label: '🇩🇪 German', value: 'de' },
+    //     { label: '🇸🇦 Arabic', value: 'ar' },
+    //     { label: '🇫🇷 French', value: 'fr' },
+    //     { label: '🇷🇺 Russian', value: 'ru' },
+    //     { label: '🇵🇹 Portuguese', value: 'pt' },
+    // ];
 
-    const handleLanguageChange = async (item: any) => {
-        setSelectedLanguage(item.value);
-        await i18n.changeLanguage(item.value);
-        await AsyncStorage.setItem('appLanguage', item.value);
-    };
+    // const handleLanguageChange = async (item: any) => {
+    //     setSelectedLanguage(item.value);
+    //     await i18n.changeLanguage(item.value);
+    //     await AsyncStorage.setItem('appLanguage', item.value);
+    // };
 
     return (
         <View style={{
@@ -91,8 +86,7 @@ const OnBoardingOne = () => {
                         marginBottom: 5,
                     }}
                 >
-                    Sana en uygun kişileri{'\n'}
-                    hemen keşfet !
+                    {t('onboarding_title')}
                 </CText>
                 <CText
                     style={{
@@ -100,14 +94,13 @@ const OnBoardingOne = () => {
                         color: '#6B6B6B',
                         textAlign: 'center',
                     }}>
-                    Kişisel tercihlerinize göre özenle{'\n'}
-                    seçilmiş eşleşmeler.
+                    {t('onboarding_subtitle')}
                 </CText>
             </View>
 
             <View>
                 <View style={{ gap: 10 }}>
-                    <CDropdown
+                    {/* <CDropdown
                         data={languageOptions}
                         value={selectedLanguage}
                         onChange={handleLanguageChange}
@@ -118,16 +111,16 @@ const OnBoardingOne = () => {
                         dropdownStyle={{
                             marginBottom: 5,
                         }}
-                    />
+                    /> */}
                     <CButton
-                        title={'Devam'}
+                        title={t('continue')}
                         onPress={() => navigation.navigate(EMAIL_LOGIN)}
                         borderRadius={28}
                         backgroundColor={colors.PURPLE_COLOR}
                     />
 
                     <CButton
-                        title={'Kayıt ol'}
+                        title={t('register')}
                         onPress={() => navigation.navigate(REGISTER)}
                         borderRadius={28}
                         backgroundColor={colors.LIGHT_PINK}
@@ -144,7 +137,7 @@ const OnBoardingOne = () => {
                         color: colors.DARK_GRAY,
                         lineHeight: responsive(18),
                     }}>
-                        Devam ederek,{' '}
+                        {t("tos_text")}{' '}
                         <CText
                             onPress={() => setTosVisible(true)}
                             style={{
@@ -153,7 +146,7 @@ const OnBoardingOne = () => {
                                 color: colors.TEXT_MAIN_COLOR,
                             }}
                         >
-                            Kullanım Koşullarımızı
+                            {t("tos_link")}
                         </CText>{' '}
                         ve{' '}
                         <CText
@@ -164,9 +157,9 @@ const OnBoardingOne = () => {
                                 color: colors.TEXT_MAIN_COLOR,
                             }}
                         >
-                            Gizlilik Politikamızı
+                            {t("privacy_link")}
                         </CText>{' '}
-                        okuduğunu ve kabul ettiğini beyan edersin.
+                        {t("tos_accept_text")}
                     </CText>
                 </View>
             </View>

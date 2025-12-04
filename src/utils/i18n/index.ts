@@ -6,7 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import en from './locales/en.json';
 import tr from './locales/tr.json';
 import de from './locales/de.json';
-import ar from './locales/ar.json';
 import fr from './locales/fr.json';
 import ru from './locales/ru.json';
 import pt from './locales/pt.json';
@@ -15,7 +14,6 @@ const resources = {
     en: { translation: en },
     tr: { translation: tr },
     de: { translation: de },
-    ar: { translation: ar },
     fr: { translation: fr },
     ru: { translation: ru },
     pt: { translation: pt },
