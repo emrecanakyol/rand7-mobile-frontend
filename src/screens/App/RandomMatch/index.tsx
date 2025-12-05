@@ -69,64 +69,94 @@ const RandomMatch = () => {
     // };
 
     // Rastgele 2 annonId çek
+    // Rastgele 2 annonId çek — lastOnline yerine random match flag kullanarak
     const handlePress = async () => {
         setMatchLoading(true);
+        let meIdForFinally: string | undefined;
+
         try {
             const meId = userData?.userId;
             const meAnnonId = userData?.annonId;
-            if (!meId || !meAnnonId) throw new Error('annonId veya userId yok');
+            meIdForFinally = meId;
+
+            if (!meId || !meAnnonId) {
+                throw new Error('annonId veya userId yok');
+            }
 
             // Benim daha önce match olduğum kullanıcılar
             const blockedIds = new Set([
                 ...(userData?.likeMatches || []),
                 ...(userData?.superLikeMatches || []),
-                ...(userData?.blockers || []), // engellenen kullanıcıları da gösterme
-                ...(userData?.blocked || []), // engellenen kullanıcıları da gösterme
+                ...(userData?.blockers || []),
+                ...(userData?.blocked || []),
             ]);
 
-            // 5 dakikalık online içinde mi?
-            const cutoffMs = Date.now() - 55 * 60 * 1000; // 5 dk önceki timestamp (ms)
+            // 1️⃣ Kendimi "Random Match arıyorum" moduna al
+            await firestore()
+                .collection('users')
+                .doc(meId) // doküman id’in farklıysa burayı kendi yapına göre düzenle
+                .set(
+                    {
+                        isRandomSearching: true,
+                        randomSearchingAt: firestore.FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
+                );
 
-            // Tüm kullanıcıları çek
+            // Son X dakika içinde random match arayanlar (örnek: 5 dk)
+            const cutoffMs = Date.now() - 5 * 60 * 1000;
+
+            // 2️⃣ Tüm kullanıcıları çek
             const usersSnapshot = await firestore().collection('users').get();
 
-            // Uygun adayların annonId listesini çıkar
+            // 3️⃣ Random match arayan uygun adayları filtrele
             const candidates = usersSnapshot.docs
                 .map(d => d.data() as any)
                 .filter(u => {
-                    // aktif mi? (lastOnline varsa ve son 5 dk içinde mi)
-                    const lastOnlineDate =
-                        u?.lastOnline?.toDate
-                            ? u.lastOnline.toDate()
-                            : undefined;
-                    // Aktif değilse geç
-                    const isActiveRecently =
-                        lastOnlineDate
-                            ? lastOnlineDate.getTime() >= cutoffMs
-                            : false; // lastOnline yoksa aktif sayma
+                    if (!u?.userId || !u?.annonId) {
+                        return false;
+                    }
 
-                    return (
-                        u?.userId &&                                   // geçerli kullanıcı mı
-                        u?.annonId &&                                  // anonim id var mı
-                        u.userId !== meId &&                           // ben değil
-                        !blockedIds.has(u.userId) &&                   // ben zaten onunla match değil miyim
-                        isActiveRecently                               // SON 5 DK içinde online mı
-                        // !(u.likeMatches || []).includes(meId) &&    // Karşı tarafın datasında o zaten benimle match mi?
-                        // !(u.superLikeMatches || []).includes(meId)  // Karşı tarafın datasında o zaten benimle match mi?
-                    )
+                    // Ben değil
+                    if (u.userId === meId) {
+                        return false;
+                    }
+
+                    // Daha önce match / block ettiğim kullanıcı olmasın
+                    if (blockedIds.has(u.userId)) {
+                        return false;
+                    }
+
+                    // Sadece random match butonuna basmış olanlar
+                    const isSearching = !!u.isRandomSearching;
+
+                    const searchingDate =
+                        u?.randomSearchingAt?.toDate
+                            ? u.randomSearchingAt.toDate()
+                            : undefined;
+
+                    const isSearchingRecently = searchingDate
+                        ? searchingDate.getTime() >= cutoffMs
+                        : false;
+
+                    return isSearching && isSearchingRecently;
                 })
                 .map(u => u.annonId);
 
             if (!candidates.length) {
-                console.log('Uygun anonim eşleşme yok.');
+                console.log('Şu anda random match arayan başka kullanıcı yok.');
+                // İstersen burada kullanıcıya toast / modal ile bilgi gösterebilirsin
                 return;
             }
 
-            const picked = candidates[Math.floor(Math.random() * candidates.length)];
+            // Rastgele 1 aday seç
+            const picked =
+                candidates[Math.floor(Math.random() * candidates.length)];
 
-            // Yapay gecikme
+            // Yapay gecikme (animasyon vs için)
             await new Promise(r => setTimeout(r, getRandomDelay()));
 
+            // Eşleşme ekranına git
             navigation.navigate(ANONIM_CHAT, {
                 annonId: meAnnonId,
                 other2Id: picked,
@@ -134,6 +164,23 @@ const RandomMatch = () => {
         } catch (e) {
             console.log('Annon match error:', e);
         } finally {
+            // 4️⃣ İş bittiğinde kendimi random search modundan çıkar
+            try {
+                if (meIdForFinally) {
+                    await firestore()
+                        .collection('users')
+                        .doc(meIdForFinally)
+                        .set(
+                            {
+                                isRandomSearching: false,
+                            },
+                            { merge: true }
+                        );
+                }
+            } catch (innerErr) {
+                console.log('Random search flag reset error:', innerErr);
+            }
+
             setMatchLoading(false);
         }
     };
