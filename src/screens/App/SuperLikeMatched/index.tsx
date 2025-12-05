@@ -24,10 +24,10 @@ const SuperLikeMatched = () => {
 
             {/* Başlık */}
             <Text style={styles.title}>
-                Mükemmel !
+                {t('superLikeMatched.awesome')}
             </Text>
             <Text style={styles.title}>
-                Karşılıklı süper bir eşleşme 💫
+                {t('superLikeMatched.matched')}
             </Text>
 
             {/* Profil Görselleri */}
@@ -61,11 +61,11 @@ const SuperLikeMatched = () => {
             {/* Butonlar */}
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.messageButton}>
-                    <Text style={styles.messageButtonText}>Mesaj Gönder</Text>
+                    <Text style={styles.messageButtonText}>{t('superLikeMatched.sendMessage')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.keepSwipingButton}>
-                    <Text style={styles.keepSwipingText}>Keşfetmeye devam et</Text>
+                    <Text style={styles.keepSwipingText}>{t('superLikeMatched.keepExploring')}</Text>
                 </TouchableOpacity>
             </View>
         </View>

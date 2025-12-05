@@ -237,5 +237,13 @@
     "dark_mode": "Dark mode",
     "notifications": "Notifications",
     "notifications_disabled_message": "Notifications are currently disabled. You can enable them from your device settings.",
-    "language_selection": "Language selection"
+    "language_selection": "Language selection",
+    "likeMatched.awesome": "Great!",
+    "likeMatched.matched": "You matched by liking each other ❤️",
+    "likeMatched.sendMessage": "Send message",
+    "likeMatched.keepSwiping": "Keep swiping",
+    "superLikeMatched.awesome": "Perfect!",
+    "superLikeMatched.matched": "A mutual super match 💫",
+    "superLikeMatched.sendMessage": "Send message",
+    "superLikeMatched.keepExploring": "Keep exploring"
 }

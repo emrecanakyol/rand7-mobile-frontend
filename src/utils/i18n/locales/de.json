@@ -237,5 +237,13 @@
     "dark_mode": "Dunkelmodus",
     "notifications": "Benachrichtigungen",
     "notifications_disabled_message": "Benachrichtigungen sind derzeit deaktiviert. Sie können sie in den Geräteeinstellungen aktivieren.",
-    "language_selection": "Sprachauswahl"
+    "language_selection": "Sprachauswahl",
+    "likeMatched.awesome": "Großartig!",
+    "likeMatched.matched": "Ihr habt euch gegenseitig geliked ❤️",
+    "likeMatched.sendMessage": "Nachricht senden",
+    "likeMatched.keepSwiping": "Weiter wischen",
+    "superLikeMatched.awesome": "Perfekt!",
+    "superLikeMatched.matched": "Ein gegenseitiges Super-Match 💫",
+    "superLikeMatched.sendMessage": "Nachricht senden",
+    "superLikeMatched.keepExploring": "Weiter erkunden"
 }

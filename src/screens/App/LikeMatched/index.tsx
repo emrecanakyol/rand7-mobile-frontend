@@ -23,10 +23,10 @@ const LikeMatched = () => {
             </View>
 
             <Text style={styles.title}>
-                Harika !
+                {t('likeMatched.awesome')}
             </Text>
             <Text style={styles.title}>
-                Birbirinizi beğenerek eşleştiniz ❤️
+                {t('likeMatched.matched')}
             </Text>
 
             {/* Profil Görselleri */}
@@ -61,11 +61,11 @@ const LikeMatched = () => {
             {/* Butonlar */}
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.messageButton}>
-                    <Text style={styles.messageButtonText}>Mesaj gönder</Text>
+                    <Text style={styles.messageButtonText}>{t('likeMatched.sendMessage')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.keepSwipingButton}>
-                    <Text style={styles.keepSwipingText}>Beğenmeye devam et</Text>
+                    <Text style={styles.keepSwipingText}>{t('likeMatched.keepSwiping')}</Text>
                 </TouchableOpacity>
             </View>
         </View>

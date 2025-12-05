@@ -237,5 +237,13 @@
     "dark_mode": "Karanlık mod",
     "notifications": "Bildirimler",
     "notifications_disabled_message": "Bildirimler şu anda kapalı. Cihaz ayarlarından etkinleştirebilirsiniz.",
-    "language_selection": "Dil seçimi"
+    "language_selection": "Dil seçimi",
+    "likeMatched.awesome": "Harika!",
+    "likeMatched.matched": "Birbirinizi beğenerek eşleştiniz ❤️",
+    "likeMatched.sendMessage": "Mesaj gönder",
+    "likeMatched.keepSwiping": "Beğenmeye devam et",
+    "superLikeMatched.awesome": "Mükemmel!",
+    "superLikeMatched.matched": "Karşılıklı süper bir eşleşme 💫",
+    "superLikeMatched.sendMessage": "Mesaj gönder",
+    "superLikeMatched.keepExploring": "Keşfetmeye devam et"
 }
