@@ -1,12 +1,12 @@
 // Chat.tsx (CHAT_STACK ekranın)
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
 import { GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
 import { useAppSelector } from '../../../store/hooks';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CImage from '../../../components/CImage';
 import CLoading from '../../../components/CLoading';
@@ -184,7 +184,7 @@ export default function Chat() {
     }
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#FFF' }}>
+        <SafeAreaView edges={["bottom"]} style={{ flex: 1, backgroundColor: '#FFF' }}>
             {loading ? (
                 <CLoading visible={true} />
             ) : (
@@ -193,7 +193,7 @@ export default function Chat() {
                         backgroundColor: '#FFFFFF',
                         borderBottomWidth: 1,
                         borderBottomColor: '#EFEFEF',
-                        paddingTop: insets.top,             // Safe area ekleyelim
+                        paddingTop: Platform.OS === "android" ? insets.top : 0,
                     }}>
                         <View style={{
                             height: 52,
@@ -357,7 +357,7 @@ export default function Chat() {
                     />
                 </>
             )}
-        </View>
+        </SafeAreaView>
 
     );
 }

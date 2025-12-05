@@ -505,8 +505,8 @@ const UserProfile = ({ route }: any) => {
                                             onPress={handleRemoveMatch}
                                         >
                                             <Ionicons
-                                                name="trash"
-                                                size={20}
+                                                name="close"
+                                                size={30}
                                                 color="#fff"
                                             />
                                         </TouchableOpacity>
@@ -519,7 +519,7 @@ const UserProfile = ({ route }: any) => {
                                         >
                                             <Ionicons
                                                 name="chatbubble-ellipses"
-                                                size={20}
+                                                size={30}
                                                 color="#fff"
                                             />
                                         </TouchableOpacity>

@@ -60,7 +60,7 @@ export default function AnonimChat() {
 
     // --- EK: geri sayım ---
     // const TOTAL_SEC = 7 * 60; // 7 dakika
-    const TOTAL_SEC = 10; // 7 dakika
+    const TOTAL_SEC = 60; // 7 dakika
     const [left, setLeft] = useState(TOTAL_SEC);
     const [timeoutModal, setTimeoutModal] = useState(false);
     const mm = String(Math.floor(left / 60)).padStart(2, '0');
