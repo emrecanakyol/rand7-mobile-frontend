@@ -16,6 +16,7 @@ import firestore from '@react-native-firebase/firestore';
 import { useTheme } from '../../../utils/colors';
 import { useAppSelector } from '../../../store/hooks';
 import { CHAT } from '../../../navigators/Stack';
+import { useTranslation } from 'react-i18next';
 
 type RowItem = {
     id: string;
@@ -29,6 +30,7 @@ type RowItem = {
 };
 
 export default function Messages() {
+    const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { colors } = useTheme();
     const { userData } = useAppSelector((s) => s.userData);
@@ -75,7 +77,7 @@ export default function Messages() {
                                     userId: otherId,
                                     username,
                                     avatar,
-                                    preview: meta.lastMessage || 'Sohbete başlayın…', // ✅ about yerine son mesaj
+                                    preview: meta.lastMessage || t('messages_preview_start_chat'),
                                     lastMessageAt: meta.lastMessageAt?.toDate
                                         ? meta.lastMessageAt.toDate()
                                         : undefined,
@@ -132,7 +134,7 @@ export default function Messages() {
                 <Ionicons name="search" size={18} color="#888" style={{ marginRight: 6 }} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Kullanıcı ara..."
+                    placeholder={t('messages_search_placeholder')}
                     placeholderTextColor="#999"
                     value={query}
                     onChangeText={setQuery}
@@ -153,7 +155,7 @@ export default function Messages() {
                     ListEmptyComponent={
                         <View style={styles.emptyWrap}>
                             <Ionicons name="chatbubbles-outline" size={28} color="#999" />
-                            <Text style={styles.emptyText}>Henüz mesajlaştığın kullanıcı yok</Text>
+                            <Text style={styles.emptyText}>{t('messages_empty_text')}</Text>
                         </View>
                     }
                 />

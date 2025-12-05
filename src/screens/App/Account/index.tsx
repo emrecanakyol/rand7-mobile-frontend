@@ -19,8 +19,10 @@ import { fetchUserData } from '../../../store/services/userDataService';
 import CImage from '../../../components/CImage';
 import { calculateAge } from '../../../components/CalculateAge';
 import { signOut } from '../../../store/services/authServices';
+import { useTranslation } from 'react-i18next';
 
-const SettingsScreen = () => {
+const Account = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch<AppDispatch>();
     const { userData, loading } = useAppSelector((state) => state.userData);
     const navigation: any = useNavigation();
@@ -65,13 +67,13 @@ const SettingsScreen = () => {
                 <View style={styles.progressCard}>
                     <View style={{ flex: 1 }}>
                         <Text style={styles.progressSubText}>
-                            Tam profil ile bir adım öne çıkın !
+                            {t('completeProfileSubtitle')}
                         </Text>
                     </View>
                     <TouchableOpacity
                         style={styles.editButton}
                         onPress={() => navigation.navigate(EDIT_PROFILE)}>
-                        <Text style={styles.editButtonText}>Profili Düzenle</Text>
+                        <Text style={styles.editButtonText}>{t('editProfile')}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -81,7 +83,7 @@ const SettingsScreen = () => {
                         style={styles.menuItem}
                         onPress={() => navigation.navigate(HELP)}>
                         <Ionicons name="person-outline" size={22} color={colors.BLUE_COLOR} />
-                        <Text style={styles.menuText}>Yardım / Destek</Text>
+                        <Text style={styles.menuText}>{t('helpSupport')}</Text>
                         <Ionicons
                             name="chevron-forward-outline"
                             size={20}
@@ -106,7 +108,7 @@ const SettingsScreen = () => {
                         style={styles.menuItem}
                         onPress={() => navigation.navigate(SETTINGS)}>
                         <Ionicons name="settings-outline" size={22} color={colors.BLUE_COLOR} />
-                        <Text style={styles.menuText}>Settings</Text>
+                        <Text style={styles.menuText}>{t('settings')}</Text>
                         <Ionicons
                             name="chevron-forward-outline"
                             size={20}
@@ -116,7 +118,7 @@ const SettingsScreen = () => {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.menuItem} onPress={out}>
                         <Ionicons name="close-outline" size={22} color={colors.BLUE_COLOR} />
-                        <Text style={styles.menuText}>Çıkış yap</Text>
+                        <Text style={styles.menuText}>{t('logout')}</Text>
                         <Ionicons
                             name="chevron-forward-outline"
                             size={20}
@@ -145,7 +147,7 @@ const SettingsScreen = () => {
     );
 };
 
-export default SettingsScreen;
+export default Account;
 
 const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.create({
     container: {

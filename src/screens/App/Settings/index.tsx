@@ -74,7 +74,7 @@ const Settings = () => {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <DetailHeaders title={t('settings')} />
             <ScrollView style={styles.inContainer} showsVerticalScrollIndicator={false}>
                 <View style={styles.darkModeContainer}>
@@ -82,8 +82,8 @@ const Settings = () => {
                     <Switch
                         value={isDarkMode}
                         onValueChange={onToggleSwitch}
-                        trackColor={{ false: '#767577', true: '#81b0ff' }}
-                        thumbColor={isDarkMode ? '#f5dd4b' : '#f4f3f4'}
+                        trackColor={{ false: '#767577', true: '#32CD32' }}
+                        thumbColor={isDarkMode ? "#fff" : '#f4f3f4'}
                     />
                 </View>
                 <View style={[styles.divider, styles.notifiContainer]}>
@@ -91,7 +91,7 @@ const Settings = () => {
                     <Switch
                         value={isNotificationsEnabled}
                         onValueChange={toggleNotificationPermission}
-                        trackColor={{ false: '#767577', true: colors.GREEN_COLOR }}
+                        trackColor={{ false: '#767577', true: "#32CD32" }}
                         thumbColor={isNotificationsEnabled ? "#fff" : '#f4f3f4'}
                     />
                 </View>
@@ -115,7 +115,7 @@ const Settings = () => {
                     />
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  Alert,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CPhotosAdd from '../../../components/CPhotosAdd';
@@ -70,8 +69,6 @@ const EditProfileScreen = () => {
     });
   };
 
-  // 🧠 state'lerin altına ekle
-
   // küçük yardımcılar
   const isArrayEqual = (a?: any[], b?: any[]) =>
     Array.isArray(a) && Array.isArray(b) ? a.length === b.length && a.every((v, i) => v === b[i]) : a === b;
@@ -85,7 +82,7 @@ const EditProfileScreen = () => {
 
   const onSave = async () => {
     if (!userId) {
-      ToastError('Error', 'User ID not found.');
+      ToastError(t("error"), t("errorUserIdNotFound"));
       return;
     }
 
@@ -106,17 +103,17 @@ const EditProfileScreen = () => {
     if (changed(hobbies, userData?.hobbies)) payload.hobbies = hobbies;
 
     if (Object.keys(payload).length === 0) {
-      ToastError('Info', 'No changes to save.');
+      ToastError(t("info"), t("infoNoChangesToSave"));
       return;
     }
 
     try {
       setSaving(true);
       await firestore().collection('users').doc(userId).set(payload, { merge: true });
-      ToastSuccess('Success', 'Profile updated.');
+      ToastSuccess(t("success"), t("successProfileUpdated"));
     } catch (e: any) {
       console.log('[EditProfile] save error:', e);
-      ToastError('Error', 'Failed to save changes.');
+      ToastError(t("error"), t("errorFailedToSaveChanges"));
     } finally {
       setSaving(false);
     }
@@ -131,7 +128,7 @@ const EditProfileScreen = () => {
           onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={26} color="#000" />
         </TouchableOpacity>
-        <CText style={styles.headerTitle}>Edit Profile</CText>
+        <CText style={styles.headerTitle}>{t("editProfileTitle")}</CText>
         <View style={{ width: 26 }} />
       </View>
 
@@ -189,7 +186,7 @@ const EditProfileScreen = () => {
         </View>
 
         {/* 🧾 Kişisel Bilgiler */}
-        <CText style={styles.sectionLabel}>PERSONAL DETAILS</CText>
+        <CText style={styles.sectionLabel}>{t("personalDetails")}</CText>
 
         <View style={styles.fieldGroupName}>
           <View style={styles.label}>
@@ -258,16 +255,16 @@ const EditProfileScreen = () => {
         </View>
 
         <View style={styles.interestHeader}>
-          <CText style={styles.label}>My Hobbies</CText>
+          <CText style={styles.label}>{t("myHobbies")}</CText>
           <TouchableOpacity onPress={() => setHobbyModalVisible(true)}>
-            <CText style={styles.editText}>Edit</CText>
+            <CText style={styles.editText}>{t("edit")}</CText>
           </TouchableOpacity>
 
         </View>
 
         <View style={styles.interestsContainer}>
           {hobbies.length === 0 ? (
-            <CText style={{ color: '#999', marginTop: 8 }}>No interests selected yet.</CText>
+            <CText style={{ color: '#999', marginTop: 8 }}>{t("noInterestsSelected")}</CText>
           ) : (
             hobbies.map((item, i) => (
               <View key={`${item}_${i}`} style={styles.interestTag}>
@@ -278,7 +275,7 @@ const EditProfileScreen = () => {
         </View>
 
         <CButton
-          title={"Save"}
+          title={t("save")}
           onPress={onSave}
           loading={saving}
           disabled={saving}
@@ -290,7 +287,7 @@ const EditProfileScreen = () => {
         visible={hobbyModalVisible}
         onClose={() => setHobbyModalVisible(false)}
         justifyContent="flex-end"
-        modalTitle="Select Hobbies"
+        modalTitle={t("selectHobbies")}
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -298,11 +295,18 @@ const EditProfileScreen = () => {
         >
           {Object.entries(categorizedHobbies).map(([category, options]) => (
             <View key={category} style={{ marginBottom: responsive(18) }}>
-              <CText style={styles.categoryTitle}>{category}</CText>
+              {/* Kategori ismini de çevirilebilir yapmak istersen: */}
+              {/* {t(`hobby_category_${category}`)} kullanabilirsin */}
+              <CText style={styles.categoryTitle}>
+                {t(`hobby_category_${category}`)}
+              </CText>
+
               <View style={styles.hobbiesContainer}>
                 {options.map((hobby) => {
                   const selected = hobbies.includes(hobby);
-                  const limitReached = hobbies.length >= MAX_HOBBY_SELECTION && !selected;
+                  const limitReached =
+                    hobbies.length >= MAX_HOBBY_SELECTION && !selected;
+
                   return (
                     <TouchableOpacity
                       key={hobby}
@@ -310,20 +314,26 @@ const EditProfileScreen = () => {
                       style={[
                         styles.hobbyButton,
                         {
-                          backgroundColor: selected ? colors.BLACK_COLOR : colors.WHITE_COLOR,
+                          backgroundColor: selected
+                            ? colors.BLACK_COLOR
+                            : colors.WHITE_COLOR,
                           borderWidth: 1,
-                          borderColor: selected ? colors.BLACK_COLOR : colors.GRAY_COLOR,
+                          borderColor: selected
+                            ? colors.BLACK_COLOR
+                            : colors.GRAY_COLOR,
                           opacity: limitReached ? 0.5 : 1,
                         },
                       ]}
                     >
                       <CText
                         style={{
-                          color: selected ? colors.WHITE_COLOR : colors.TEXT_MAIN_COLOR,
+                          color: selected
+                            ? colors.WHITE_COLOR
+                            : colors.TEXT_MAIN_COLOR,
                           fontWeight: '600',
                         }}
                       >
-                        {hobby}
+                        {t(`hobby_${hobby}`)}
                       </CText>
                     </TouchableOpacity>
                   );
@@ -332,9 +342,10 @@ const EditProfileScreen = () => {
             </View>
           ))}
 
+
           <View style={styles.hobbyFooterRow}>
             <CText style={styles.progressText}>{hobbies.length}/{MAX_HOBBY_SELECTION}</CText>
-            <CText style={{ color: '#999' }}>Tap to select / deselect</CText>
+            <CText style={{ color: '#999' }}>{t("hobbiesTapToSelect")}</CText>
           </View>
 
           <View style={{ height: responsive(16) }} />
@@ -342,7 +353,7 @@ const EditProfileScreen = () => {
             style={[styles.saveButton, { backgroundColor: colors.BLACK_COLOR }]}
             onPress={() => setHobbyModalVisible(false)}
           >
-            <CText style={styles.saveButtonText}>Done</CText>
+            <CText style={styles.saveButtonText}>{t("done")}</CText>
           </TouchableOpacity>
         </ScrollView>
       </CModal>

@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CImage from '../../../components/CImage';
 import CLoading from '../../../components/CLoading';
+import { useTranslation } from 'react-i18next';
 
 type RootStackParamList = {
     Chat: {
@@ -25,6 +26,7 @@ const msgsCol = (a: string, b: string) =>
     chatPath(a, b).collection('messages');
 
 export default function Chat() {
+    const { t, i18n } = useTranslation();
     const route = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
     const { userId, user2Id } = route.params ?? {};
 
@@ -160,7 +162,7 @@ export default function Chat() {
             await batch.commit();
         } catch (e) {
             console.log('send error', e);
-            Alert.alert('Hata', 'Mesaj gönderilemedi.');
+            Alert.alert(t('chat_error_title'), t('chat_error_message'));
         }
     }, [meId, otherId, meName]);
 
@@ -254,7 +256,7 @@ export default function Chat() {
                         messages={messages}
                         onSend={(msgs) => { onSend(msgs); setText(''); }}
                         user={user}
-                        placeholder="Mesaj yaz..."
+                        placeholder={t('chat_placeholder')}
                         alwaysShowSend
                         showUserAvatar={false}
                         renderAvatarOnTop={false}
@@ -262,6 +264,7 @@ export default function Chat() {
                         text={text}
                         onInputTextChanged={setText}
                         bottomOffset={insets.bottom}              // 👈 iOS safe-area
+                        locale={i18n.language}
 
                         // 🔧 Toolbar: tek satır hizalaması + padding
                         renderInputToolbar={(props) => (
@@ -303,7 +306,7 @@ export default function Chat() {
                                 <TextInput
                                     value={text}
                                     onChangeText={setText}
-                                    placeholder="Mesajınızı yazın"
+                                    placeholder={t('chat_input_placeholder')}
                                     autoFocus={false}
                                     multiline
                                     style={{
