@@ -66,6 +66,9 @@
     "location_question_title": "Où habites-tu ?",
     "location_question_description": "Partage ta localisation actuelle pour compléter ton profil. Cela rend tes correspondances plus précises.",
     "find_my_location": "Trouver ma position",
+    "location_title": "Localisation (Pays/Ville)",
+    "location_info": "Informations de localisation",
+    "location_not_found": "Localisation introuvable.",
     "location_drag_note": "Tu peux aussi définir ta position manuellement en déplaçant l'épingle sur la carte.",
     "looking_for_title": "Choisis les personnes qui t'intéressent",
     "looking_for_description": "Indique-nous avec qui tu souhaites faire des rencontres pour que nous puissions te proposer les matchs les plus adaptés.",
@@ -245,5 +248,6 @@
     "superLikeMatched.awesome": "Parfait !",
     "superLikeMatched.matched": "Un super match réciproque 💫",
     "superLikeMatched.sendMessage": "Envoyer un message",
-    "superLikeMatched.keepExploring": "Continuer à explorer"
+    "superLikeMatched.keepExploring": "Continuer à explorer",
+    "loading": "Chargement"
 }

@@ -66,6 +66,9 @@
     "location_question_title": "Where do you live?",
     "location_question_description": "Share your current location to complete your profile. This helps make your matches more accurate.",
     "find_my_location": "Find my location",
+    "location_title": "Location (Country/City)",
+    "location_info": "Location information",
+    "location_not_found": "Location not found.",
     "location_drag_note": "You can also manually set your location by dragging the pin on the map.",
     "looking_for_title": "Choose who you're interested in",
     "looking_for_description": "Let us know who you want to meet so we can match you with the most suitable people.",
@@ -245,5 +248,6 @@
     "superLikeMatched.awesome": "Perfect!",
     "superLikeMatched.matched": "A mutual super match 💫",
     "superLikeMatched.sendMessage": "Send message",
-    "superLikeMatched.keepExploring": "Keep exploring"
+    "superLikeMatched.keepExploring": "Keep exploring",
+    "loading": "Loading"
 }

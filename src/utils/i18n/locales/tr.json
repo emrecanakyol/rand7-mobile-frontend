@@ -66,6 +66,9 @@
     "location_question_title": "Nerede yaşıyorsun?",
     "location_question_description": "Profilini oluşturmak için bulunduğun konumu paylaş. Bu bilgi eşleşmelerini daha doğru hale getirir.",
     "find_my_location": "Konumumu Bul",
+    "location_title": "Konum (Ülke/Şehir)",
+    "location_info": "Konum bilgisi",
+    "location_not_found": "Konum bulunamadı.",
     "location_drag_note": "İstersen harita üzerindeki imleci sürükleyerek konumunu manuel olarak da belirleyebilirsin.",
     "looking_for_title": "İlgi duyduğun kişileri seç",
     "looking_for_description": "Eşleşmelerini sana en uygun kişilerle yapabilmemiz için kiminle tanışmak istediğini belirt.",
@@ -245,5 +248,6 @@
     "superLikeMatched.awesome": "Mükemmel!",
     "superLikeMatched.matched": "Karşılıklı süper bir eşleşme 💫",
     "superLikeMatched.sendMessage": "Mesaj gönder",
-    "superLikeMatched.keepExploring": "Keşfetmeye devam et"
+    "superLikeMatched.keepExploring": "Keşfetmeye devam et",
+    "loading": "Yükleniyor"
 }

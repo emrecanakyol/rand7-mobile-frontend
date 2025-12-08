@@ -11,6 +11,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CImage from '../../../components/CImage';
 import CLoading from '../../../components/CLoading';
 import { useTranslation } from 'react-i18next';
+import { USER_PROFILE } from '../../../navigators/Stack';
 
 type RootStackParamList = {
     Chat: {
@@ -45,6 +46,34 @@ export default function Chat() {
     const [loading, setLoading] = useState(true);
     const [otherName, setOtherName] = useState<string>('');
     const [otherAvatar, setOtherAvatar] = useState<string | undefined>(undefined);
+    const [otherUser, setOtherUser] = useState<any | null>(null);
+
+    useEffect(() => {
+        if (!otherId) return;
+        const ref = firestore().collection('users').doc(otherId);
+        const unsub = ref.onSnapshot((doc) => {
+            const d = doc.data() as any;
+            const fn = d?.firstName?.trim?.() || '';
+            const ln = d?.lastName?.trim?.() || '';
+            const pretty = fn;
+            setOtherName(pretty);
+
+            const avatar =
+                Array.isArray(d?.photos) && d.photos[0]
+                    ? d.photos[0]
+                    : undefined;
+            setOtherAvatar(avatar);
+
+            // 🔹 PROFIL EKRANI İÇİN TÜM USER DATASINI TUT
+            if (d) {
+                setOtherUser({
+                    ...d,
+                    userId: otherId, // UserProfile içinde user.userId olarak kullanıyorsun
+                });
+            }
+        });
+        return () => unsub();
+    }, [otherId]);
 
     useEffect(() => {
         if (!otherId) return;
@@ -214,14 +243,29 @@ export default function Chat() {
                             </TouchableOpacity>
 
                             {/* Avatar + İsim (sol hizalı) */}
-                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                            <View
+                                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}
+                            >
                                 {otherAvatar ? (
-                                    <CImage
-                                        imgSource={{ uri: otherAvatar }}
-                                        width={45}
-                                        height={45}
-                                        imageBorderRadius={3}
-                                    />
+                                    <TouchableOpacity
+                                        activeOpacity={0.8}
+                                        disabled={!otherUser}
+                                        onPress={() => {
+                                            if (!otherUser) return;
+                                            // 🔻 KENDİ ROUTE ADINA GÖRE DÜZENLE
+                                            navigation.navigate(USER_PROFILE, {
+                                                user: otherUser,
+                                            });
+                                        }}
+                                    >
+                                        <CImage
+                                            imgSource={{ uri: otherAvatar }}
+                                            width={45}
+                                            height={45}
+                                            imageBorderRadius={3}
+                                            disablePress={true}
+                                        />
+                                    </TouchableOpacity>
                                 ) : (
                                     <View
                                         style={{
@@ -263,7 +307,7 @@ export default function Chat() {
                         renderAvatar={() => null}
                         text={text}
                         onInputTextChanged={setText}
-                        bottomOffset={insets.bottom}              // 👈 iOS safe-area
+                        bottomOffset={insets.bottom}
                         locale={i18n.language}
 
                         // 🔧 Toolbar: tek satır hizalaması + padding
@@ -291,8 +335,8 @@ export default function Chat() {
                                     backgroundColor: 'transparent',
                                 }}
                             >
-                                <TouchableOpacity
-                                    onPress={() => { /* Buraya foto/video/emoji menüsü açabilirsin */ }}
+                                {/* <TouchableOpacity
+                                    onPress={() => { }}
                                     activeOpacity={0.7}
                                     style={{
                                         width: 36,
@@ -300,7 +344,7 @@ export default function Chat() {
                                     }}
                                 >
                                     <Ionicons name="add" size={28} color="#4B5563" />
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
 
                                 {/* 📝 Text Input */}
                                 <TextInput
