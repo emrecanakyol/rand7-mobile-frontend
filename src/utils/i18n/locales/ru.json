@@ -254,5 +254,7 @@
     "hobby_category_sports_activity": "Спорт и активность",
     "hobby_category_life_culture": "Образ жизни и культура",
     "hobby_category_technology_games": "Технологии и игры",
-    "hobby_category_social_daily": "Социальная жизнь и повседневность"
+    "hobby_category_social_daily": "Социальная жизнь и повседневность",
+    "valid_email_error": "Пожалуйста, введите действительный адрес электронной почты.",
+    "valid_password_error": "Пароль должен содержать не менее 6 символов и хотя бы одну цифру."
 }

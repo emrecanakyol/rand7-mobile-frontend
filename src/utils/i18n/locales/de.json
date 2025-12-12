@@ -254,5 +254,7 @@
     "hobby_category_sports_activity": "Sport & Aktivität",
     "hobby_category_life_culture": "Leben & Kultur",
     "hobby_category_technology_games": "Technologie & Spiele",
-    "hobby_category_social_daily": "Soziales & Alltag"
+    "hobby_category_social_daily": "Soziales & Alltag",
+    "valid_email_error": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    "valid_password_error": "Das Passwort muss mindestens 6 Zeichen lang sein und mindestens eine Zahl enthalten."
 }

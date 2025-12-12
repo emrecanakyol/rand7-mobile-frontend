@@ -254,5 +254,7 @@
     "hobby_category_sports_activity": "Spor ve Aktivite",
     "hobby_category_life_culture": "Yaşam ve Kültür",
     "hobby_category_technology_games": "Teknoloji ve Oyunlar",
-    "hobby_category_social_daily": "Sosyal ve Günlük"
+    "hobby_category_social_daily": "Sosyal ve Günlük",
+    "valid_email_error": "Geçerli bir e-posta adresi giriniz.",
+    "valid_password_error": "Şifre en az 6 karakter olmalı ve en az bir rakam içermelidir."
 }

@@ -31,12 +31,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Konumunuzu almak için izin gerekiyor.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>You need to grant access to the camera in order to add a profile photo, group photo or reminder notification photo to the app.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Video hikaye paylaşmak için mikrofon erişimi gereklidir.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Konumunuzu almak için izin gerekiyor.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Video hikaye paylaşmak için mikrofon erişimi gereklidir.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>In order to add a profile photo, group photo or reminder notification photo to the application, you need to grant access to the photo library.</string>
 	<key>RCTNewArchEnabled</key>
@@ -75,7 +75,7 @@
 		<string>arm64</string>
 	</array>
 	<key>UIRequiresFullScreen</key>
-	<true/>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
