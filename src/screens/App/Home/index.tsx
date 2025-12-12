@@ -19,6 +19,7 @@ import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import Header from '../../../components/Header';
 import CImage from '../../../components/CImage';
 import CText from '../../../components/CText/CText';
+import WelcomeModal from '../../../components/WelcomeModal';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -34,6 +35,13 @@ const Home = () => {
     const [nearbyUsers, setNearbyUsers] = useState<any[]>([]);
     const swiperRef = useRef<any>(null);
     const [loadingData, setLoadingData] = useState(false);
+
+    const [welcomeVisible, setWelcomeVisible] = useState(true);
+
+    useEffect(() => {
+        // Ekran açılır açılmaz modal göster
+        setWelcomeVisible(true);
+    }, []);
 
     // Veriler eksikse yine profil oluştur ekranına yönlendir
     const checkUserProfile = async () => {
@@ -500,6 +508,10 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
+            {/* <WelcomeModal
+                visible={welcomeVisible}
+                onClose={() => setWelcomeVisible(false)}
+            /> */}
             <Header
                 userData={userData}
             />

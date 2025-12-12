@@ -25,6 +25,7 @@ import firestore from '@react-native-firebase/firestore';
 import CButton from '../../../components/CButton';
 import auth from '@react-native-firebase/auth';
 import { ToastError, ToastSuccess } from '../../../utils/toast';
+import storage from '@react-native-firebase/storage';
 
 const EditProfileScreen = () => {
   const { userData } = useAppSelector((state) => state.userData);
@@ -50,7 +51,7 @@ const EditProfileScreen = () => {
   };
 
   // 🔻 Tüm state’leri userData’dan başlat
-  const [photos, setPhotos] = useState<string[]>(userData.photos ?? []);
+  const [photos, setPhotos] = useState<string[]>(userData?.photos ?? []);
   // const [photos, setPhotos] = useState<string[]>(Array.isArray(userData?.photos) ? userData.photos : []);
   const [firstName, setFirstName] = useState<string>(userData.firstName ?? '');
   const [lastName, setLastName] = useState<string>(userData.lastName ?? '');
@@ -80,6 +81,61 @@ const EditProfileScreen = () => {
 
   const userId = auth().currentUser?.uid;
 
+  const isRemoteUrl = (uri?: string) => {
+    if (!uri) return false;
+
+    return uri.startsWith('http://') || uri.startsWith('https://');
+  };
+
+  const normalizeLocalPathForPutFile = (uri: string) => {
+    // RNFB putFile bazen "file://" ile sorun çıkarabiliyor.
+    // En güvenlisi: file:// varsa kırp.
+    if (uri.startsWith('file://')) {
+      return uri.replace('file://', '');
+    }
+
+    return uri;
+  };
+
+  const uploadPhotoIfNeeded = async (
+    uri: string,
+    userId: string,
+    index: number,
+  ) => {
+    if (!uri) return uri;
+
+    // Zaten remote ise dokunma
+    if (isRemoteUrl(uri)) return uri;
+
+    const filePath = normalizeLocalPathForPutFile(uri);
+    const fileName = `photo_${index}_${Date.now()}.jpg`;
+    const ref = storage().ref(`users/${userId}/photos/${fileName}`);
+
+    await ref.putFile(filePath);
+
+    const downloadUrl = await ref.getDownloadURL();
+    return downloadUrl;
+  };
+
+  const ensureRemotePhotos = async (photoUris: string[], userId: string) => {
+    // sırayı koruyarak her index’i dönüştür
+    const next = await Promise.all(
+      photoUris.map(async (uri, idx) => {
+        if (!uri) return uri;
+
+        try {
+          return await uploadPhotoIfNeeded(uri, userId, idx);
+        } catch (e) {
+          console.log('[EditProfile] upload error:', e);
+          // upload başarısızsa eski uri kalsın (istersen burada null da yapabilirsin)
+          return uri;
+        }
+      }),
+    );
+
+    return next;
+  };
+
   const onSave = async () => {
     if (!userId) {
       ToastError(t("error"), t("errorUserIdNotFound"));
@@ -89,7 +145,24 @@ const EditProfileScreen = () => {
     // Sadece değişmiş alanları merge edeceğiz
     const payload: any = {};
 
-    if (changed(photos, userData?.photos)) payload.photos = photos;
+    // if (changed(photos, userData?.photos)) payload.photos = photos;
+    if (changed(photos, userData?.photos)) {
+      const remotePhotos = await ensureRemotePhotos(photos, userId);
+
+      // Eğer hâlâ local path kalan varsa (upload hatası vb.), Firestore’a yazma:
+      const hasLocalLeft = remotePhotos.some((x) => x && !isRemoteUrl(x));
+
+      if (hasLocalLeft) {
+        ToastError(t("error"), t("errorFailedToUploadPhotos"));
+        return;
+      }
+
+      payload.photos = remotePhotos;
+
+      // UI da URL’lerle güncellensin
+      setPhotos(remotePhotos);
+    }
+
     if (changed(firstName, userData?.firstName)) payload.firstName = firstName?.trim() ?? '';
     if (changed(lastName, userData?.lastName)) payload.lastName = lastName?.trim() ?? '';
     if (changed(about, userData?.about)) payload.about = about ?? '';

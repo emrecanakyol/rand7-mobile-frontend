@@ -115,7 +115,7 @@ function getIconName(routeName: string, focused: boolean) {
 export default function BottomTabs() {
     return (
         <Tab.Navigator
-            initialRouteName={HOME}
+            initialRouteName={RANDOM_MATCH}
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,

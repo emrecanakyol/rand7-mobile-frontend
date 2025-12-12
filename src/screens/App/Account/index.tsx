@@ -24,12 +24,14 @@ import { useTranslation } from 'react-i18next';
 const Account = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch<AppDispatch>();
-    const { userData, loading } = useAppSelector((state) => state.userData);
+    const { userData, loading } = useAppSelector((state) => state?.userData);
     const navigation: any = useNavigation();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
+
+    console.log(userData)
 
     useEffect(() => {
         dispatch(fetchUserData());
@@ -59,8 +61,8 @@ const Account = () => {
                             />
                         </View>
                     </TouchableOpacity>
-                    <Text style={styles.userName}>{userData.firstName}, {calculateAge(userData.birthDate)}</Text>
-                    <Text style={styles.userLocation}>{userData.province}, {userData.country}</Text>
+                    <Text style={styles.userName}>{userData?.firstName}, {calculateAge(userData?.birthDate)}</Text>
+                    <Text style={styles.userLocation}>{userData?.province}, {userData?.country}</Text>
                 </View>
 
                 {/* 📈 Profil Tamamlama Kartı */}
