@@ -77,7 +77,7 @@ const Settings = () => {
         <View style={styles.container}>
             <DetailHeaders title={t('settings')} />
             <ScrollView style={styles.inContainer} showsVerticalScrollIndicator={false}>
-                <View style={styles.darkModeContainer}>
+                {/* <View style={styles.darkModeContainer}>
                     <CText style={styles.label}>{t('dark_mode')}</CText>
                     <Switch
                         value={isDarkMode}
@@ -85,7 +85,7 @@ const Settings = () => {
                         trackColor={{ false: '#767577', true: '#32CD32' }}
                         thumbColor={isDarkMode ? "#fff" : '#f4f3f4'}
                     />
-                </View>
+                </View> */}
                 <View style={[styles.divider, styles.notifiContainer]}>
                     <CText style={styles.label}>{t('notifications')}</CText>
                     <Switch
