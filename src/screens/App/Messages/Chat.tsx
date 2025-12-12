@@ -308,224 +308,223 @@ export default function Chat() {
 
     return (
         <SafeAreaView edges={["bottom"]} style={{ flex: 1, backgroundColor: '#FFF' }}>
-            {loading ? (
-                <CLoading visible={true} />
-            ) : (
-                <>
-                    <View style={{
-                        backgroundColor: '#FFFFFF',
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#EFEFEF',
-                        paddingTop: Platform.OS === "android" ? insets.top : 0,
-                    }}>
-                        <View style={{
-                            height: 52,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            paddingHorizontal: 12,
-                        }}>
-                            {/* Back */}
+            <View style={{
+                backgroundColor: '#FFFFFF',
+                borderBottomWidth: 1,
+                borderBottomColor: '#EFEFEF',
+                paddingTop: Platform.OS === "android" ? insets.top : 0,
+            }}>
+                <View style={{
+                    height: 52,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 12,
+                }}>
+                    {/* Back */}
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        style={{
+                            width: 40, height: 40, borderRadius: 20,
+                            alignItems: 'center', justifyContent: 'center',
+                        }}
+                    >
+                        <Ionicons name="chevron-back" size={24} color="#111" />
+                    </TouchableOpacity>
+
+                    {/* Avatar + İsim (sol hizalı) */}
+                    <View
+                        style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}
+                    >
+                        {otherAvatar ? (
                             <TouchableOpacity
-                                onPress={() => navigation.goBack()}
-                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                style={{
-                                    width: 40, height: 40, borderRadius: 20,
-                                    alignItems: 'center', justifyContent: 'center',
+                                activeOpacity={0.8}
+                                disabled={!otherUser}
+                                onPress={() => {
+                                    if (!otherUser) return;
+                                    // 🔻 KENDİ ROUTE ADINA GÖRE DÜZENLE
+                                    navigation.navigate(USER_PROFILE, {
+                                        user: otherUser,
+                                    });
                                 }}
                             >
-                                <Ionicons name="chevron-back" size={24} color="#111" />
+                                <CImage
+                                    imgSource={{ uri: otherAvatar }}
+                                    width={45}
+                                    height={45}
+                                    imageBorderRadius={3}
+                                    disablePress={true}
+                                />
                             </TouchableOpacity>
-
-                            {/* Avatar + İsim (sol hizalı) */}
+                        ) : (
                             <View
-                                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}
+                                style={{
+                                    width: 32, height: 32, borderRadius: 16, marginRight: 10,
+                                    backgroundColor: '#F1F1F1', alignItems: 'center', justifyContent: 'center'
+                                }}
                             >
-                                {otherAvatar ? (
-                                    <TouchableOpacity
-                                        activeOpacity={0.8}
-                                        disabled={!otherUser}
-                                        onPress={() => {
-                                            if (!otherUser) return;
-                                            // 🔻 KENDİ ROUTE ADINA GÖRE DÜZENLE
-                                            navigation.navigate(USER_PROFILE, {
-                                                user: otherUser,
-                                            });
-                                        }}
-                                    >
-                                        <CImage
-                                            imgSource={{ uri: otherAvatar }}
-                                            width={45}
-                                            height={45}
-                                            imageBorderRadius={3}
-                                            disablePress={true}
-                                        />
-                                    </TouchableOpacity>
-                                ) : (
-                                    <View
-                                        style={{
-                                            width: 32, height: 32, borderRadius: 16, marginRight: 10,
-                                            backgroundColor: '#F1F1F1', alignItems: 'center', justifyContent: 'center'
-                                        }}
-                                    >
-                                        <Ionicons name="person" size={18} color="#9AA0A6" />
-                                    </View>
-                                )}
-
-                                <Text
-                                    numberOfLines={1}
-                                    style={{ fontSize: 16, fontWeight: '700', color: '#111', maxWidth: '80%' }}
-                                >
-                                    {otherName}
-                                </Text>
+                                <Ionicons name="person" size={18} color="#9AA0A6" />
                             </View>
-
-                            {/* Sağdaki üç nokta istersen kalsın */}
-                            {/* Sağdaki üç nokta + menü */}
-                            <View style={{ position: 'relative' }}>
-                                <TouchableOpacity
-                                    onPress={() => setShowMenu(v => !v)}
-                                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                    style={{
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: 20,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <Ionicons name="ellipsis-vertical" size={20} color="#111" />
-                                </TouchableOpacity>
-
-                                {showMenu && (
-                                    <View
-                                        style={{
-                                            position: 'absolute',
-                                            top: 44,
-                                            right: 0,
-                                            minWidth: 200,
-                                            backgroundColor: '#FFFFFF',
-                                            borderRadius: 12,
-                                            paddingVertical: 8,
-                                            shadowColor: '#000',
-                                            shadowOpacity: 0.15,
-                                            shadowRadius: 12,
-                                            shadowOffset: { width: 0, height: 6 },
-                                            elevation: 8,
-                                            borderWidth: 1,
-                                            borderColor: '#EEE',
-                                            zIndex: 1000,
-                                        }}
-                                    >
-                                        {/* Bu kullanıcıyı bildir */}
-                                        <TouchableOpacity
-                                            activeOpacity={0.6}
-                                            onPress={() => {
-                                                setShowMenu(false);
-                                                setReportModalVisible(true);
-                                            }}
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                paddingHorizontal: 14,
-                                                paddingVertical: 12,
-                                                gap: 10,
-                                            }}
-                                        >
-                                            <Ionicons name="flag-outline" size={18} color="#E11D48" />
-                                            <Text
-                                                style={{
-                                                    fontSize: 14,
-                                                    fontWeight: '600',
-                                                    color: '#E11D48',
-                                                }}
-                                            >
-                                                {t("anon_chat_report_title")}
-                                            </Text>
-                                        </TouchableOpacity>
-
-                                        {/* divider */}
-                                        <View
-                                            style={{
-                                                height: 1,
-                                                backgroundColor: '#EEE',
-                                                marginHorizontal: 12,
-                                                marginVertical: 4,
-                                            }}
-                                        />
-
-                                        {/* Engelle */}
-                                        <TouchableOpacity
-                                            activeOpacity={0.6}
-                                            onPress={() => {
-                                                setShowMenu(false);
-                                                handleBlockUser();
-                                            }}
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                paddingHorizontal: 14,
-                                                paddingVertical: 12,
-                                                gap: 10,
-                                            }}
-                                        >
-                                            <Ionicons name="close-circle-outline" size={18} color="#111" />
-                                            <Text
-                                                style={{
-                                                    fontSize: 14,
-                                                    fontWeight: '600',
-                                                    color: '#111',
-                                                }}
-                                            >
-                                                {t("anon_chat_block_menu")}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-
-                        </View>
-                    </View>
-
-                    <GiftedChat
-                        messages={messages}
-                        onSend={(msgs) => { onSend(msgs); setText(''); }}
-                        user={user}
-                        placeholder={t('chat_placeholder')}
-                        alwaysShowSend
-                        showUserAvatar={false}
-                        renderAvatarOnTop={false}
-                        renderAvatar={() => null}
-                        text={text}
-                        onInputTextChanged={setText}
-                        bottomOffset={insets.bottom}
-                        locale={i18n.language}
-
-                        // 🔧 Toolbar: tek satır hizalaması + padding
-                        renderInputToolbar={(props) => (
-                            <InputToolbar
-                                {...props}
-                                containerStyle={{
-                                    borderTopWidth: 0,
-                                    paddingHorizontal: 8,
-                                    paddingVertical: 6,
-                                }}
-                                primaryStyle={{
-                                    alignItems: 'center', // 👈 send ile input aynı hizada
-                                }}
-                            />
                         )}
 
-                        // ✏️ Composer: flex:1 + sabit yükseklik, send ile yan yana sorunsuz
-                        renderComposer={() => (
+                        <Text
+                            numberOfLines={1}
+                            style={{ fontSize: 16, fontWeight: '700', color: '#111', maxWidth: '80%' }}
+                        >
+                            {otherName}
+                        </Text>
+                    </View>
+
+                    {/* Sağdaki üç nokta istersen kalsın */}
+                    {/* Sağdaki üç nokta + menü */}
+                    <View style={{ position: 'relative' }}>
+                        <TouchableOpacity
+                            onPress={() => setShowMenu(v => !v)}
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 20,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Ionicons name="ellipsis-vertical" size={20} color="#111" />
+                        </TouchableOpacity>
+
+                        {showMenu && (
                             <View
                                 style={{
-                                    flex: 1,
-                                    flexDirection: 'row',
-                                    alignItems: "flex-end",
-                                    backgroundColor: 'transparent',
+                                    position: 'absolute',
+                                    top: 44,
+                                    right: 0,
+                                    minWidth: 200,
+                                    backgroundColor: '#FFFFFF',
+                                    borderRadius: 12,
+                                    paddingVertical: 8,
+                                    shadowColor: '#000',
+                                    shadowOpacity: 0.15,
+                                    shadowRadius: 12,
+                                    shadowOffset: { width: 0, height: 6 },
+                                    elevation: 8,
+                                    borderWidth: 1,
+                                    borderColor: '#EEE',
+                                    zIndex: 1000,
                                 }}
                             >
-                                {/* <TouchableOpacity
+                                {/* Bu kullanıcıyı bildir */}
+                                <TouchableOpacity
+                                    activeOpacity={0.6}
+                                    onPress={() => {
+                                        setShowMenu(false);
+                                        setReportModalVisible(true);
+                                    }}
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        paddingHorizontal: 14,
+                                        paddingVertical: 12,
+                                        gap: 10,
+                                    }}
+                                >
+                                    <Ionicons name="flag-outline" size={18} color="#E11D48" />
+                                    <Text
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: '600',
+                                            color: '#E11D48',
+                                        }}
+                                    >
+                                        {t("anon_chat_report_title")}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                {/* divider */}
+                                <View
+                                    style={{
+                                        height: 1,
+                                        backgroundColor: '#EEE',
+                                        marginHorizontal: 12,
+                                        marginVertical: 4,
+                                    }}
+                                />
+
+                                {/* Engelle */}
+                                <TouchableOpacity
+                                    activeOpacity={0.6}
+                                    onPress={() => {
+                                        setShowMenu(false);
+                                        handleBlockUser();
+                                    }}
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        paddingHorizontal: 14,
+                                        paddingVertical: 12,
+                                        gap: 10,
+                                    }}
+                                >
+                                    <Ionicons name="close-circle-outline" size={18} color="#111" />
+                                    <Text
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: '600',
+                                            color: '#111',
+                                        }}
+                                    >
+                                        {t("anon_chat_block_menu")}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
+
+                </View>
+            </View>
+
+            <GiftedChat
+                isScrollToBottomEnabled
+                isKeyboardInternallyHandled={false}
+                messages={messages}
+                onSend={(msgs) => { onSend(msgs); setText(''); }}
+                user={user}
+                placeholder={t('chat_placeholder')}
+                alwaysShowSend
+                showUserAvatar={false}
+                renderAvatarOnTop={false}
+                renderAvatar={() => null}
+                text={text}
+                onInputTextChanged={setText}
+                bottomOffset={Platform.OS === "ios" ? -40 : 0} // ios cihazda klavye açılınca input ve klavye arasındaki boşluğu düzeltiyor
+                // bottomOffset={insets.bottom}
+                locale={i18n.language}
+
+                // 🔧 Toolbar: tek satır hizalaması + padding
+                renderInputToolbar={(props) => (
+                    <InputToolbar
+                        {...props}
+                        containerStyle={{
+                            borderTopWidth: 0,
+                            paddingHorizontal: 8,
+                            paddingVertical: 6,
+                        }}
+                        primaryStyle={{
+                            alignItems: 'center', // 👈 send ile input aynı hizada
+                        }}
+                    />
+                )}
+
+                // ✏️ Composer: flex:1 + sabit yükseklik, send ile yan yana sorunsuz
+                renderComposer={() => (
+                    <View
+                        style={{
+                            flex: 1,
+                            flexDirection: 'row',
+                            alignItems: "flex-end",
+                            backgroundColor: 'transparent',
+                        }}
+                    >
+                        {/* <TouchableOpacity
                                     onPress={() => { }}
                                     activeOpacity={0.7}
                                     style={{
@@ -536,62 +535,59 @@ export default function Chat() {
                                     <Ionicons name="add" size={28} color="#4B5563" />
                                 </TouchableOpacity> */}
 
-                                {/* 📝 Text Input */}
-                                <TextInput
-                                    value={text}
-                                    onChangeText={setText}
-                                    placeholder={t('chat_input_placeholder')}
-                                    autoFocus={false}
-                                    multiline
-                                    style={{
-                                        flex: 1,
-                                        minHeight: 40,
-                                        maxHeight: 200,
-                                        borderWidth: 1,
-                                        borderColor: '#ccc',
-                                        paddingHorizontal: 10,
-                                        paddingVertical: 6,
-                                        borderRadius: 10,
-                                        fontSize: 16,
-                                        color: '#000',
-                                        textAlignVertical: 'top',
-                                    }}
+                        {/* 📝 Text Input */}
+                        <TextInput
+                            value={text}
+                            onChangeText={setText}
+                            placeholder={t('chat_input_placeholder')}
+                            autoFocus={false}
+                            multiline
+                            style={{
+                                flex: 1,
+                                minHeight: 40,
+                                maxHeight: 200,
+                                borderWidth: 1,
+                                borderColor: '#ccc',
+                                paddingHorizontal: 10,
+                                paddingVertical: 6,
+                                borderRadius: 10,
+                                fontSize: 16,
+                                color: '#000',
+                                textAlignVertical: 'top',
+                            }}
+                        />
+                    </View>
+                )}
+                // 🚀 Send: 40x40 daire, dikeyde ortalı
+                renderSend={(props: SendProps<IMessage>) => {
+                    const canSend = ((props.text ?? '').trim().length > 0);
+                    return (
+                        <Send
+                            {...props}
+                            disabled={!canSend}
+                            containerStyle={{ marginLeft: 8, marginRight: 4, alignSelf: "flex-end", marginBottom: 10 }}
+                        >
+                            <View
+                                style={{
+                                    width: 35,
+                                    height: 35,
+                                    borderRadius: 20,
+                                    backgroundColor: canSend ? '#007AFF' : '#BDBDBD',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Ionicons
+                                    name="send"
+                                    size={18}
+                                    color="#FFF"
+                                    style={{ transform: [{ rotate: '-5deg' }] }}
                                 />
                             </View>
-                        )}
-                        // 🚀 Send: 40x40 daire, dikeyde ortalı
-                        renderSend={(props: SendProps<IMessage>) => {
-                            const canSend = ((props.text ?? '').trim().length > 0);
-                            return (
-                                <Send
-                                    {...props}
-                                    disabled={!canSend}
-                                    containerStyle={{ marginLeft: 8, marginRight: 4, alignSelf: "flex-end", marginBottom: 10 }}
-                                >
-                                    <View
-                                        style={{
-                                            width: 35,
-                                            height: 35,
-                                            borderRadius: 20,
-                                            backgroundColor: canSend ? '#007AFF' : '#BDBDBD',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
-                                    >
-                                        <Ionicons
-                                            name="send"
-                                            size={18}
-                                            color="#FFF"
-                                            style={{ transform: [{ rotate: '-5deg' }] }}
-                                        />
-                                    </View>
-                                </Send>
-                            );
-                        }}
-                    />
-                </>
-            )}
-
+                        </Send>
+                    );
+                }}
+            />
             <CModal
                 visible={reportModalVisible}
                 onClose={() => {

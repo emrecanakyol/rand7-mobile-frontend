@@ -43,9 +43,9 @@ const Header: React.FC<HeaderProps> = ({ userData, twoIcon = true }) => {
                 </TouchableOpacity>
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.notificationButton}>
+                    {/* <TouchableOpacity style={styles.notificationButton}>
                         <Ionicons name="notifications-outline" size={22} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                     {twoIcon && (
                         <TouchableOpacity
