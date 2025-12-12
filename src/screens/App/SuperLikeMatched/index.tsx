@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
@@ -7,11 +7,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const SuperLikeMatched = () => {
     const navigation: any = useNavigation();
+    const route = useRoute<any>();
+    const { user1, user2 } = route.params || {};
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
+
+    const user1Photo =
+        user1?.photos?.find((p: string) => typeof p === 'string' && p.startsWith('http')) ||
+        user1?.photos?.[0] ||
+        'https://images.pexels.com/photos/2589650/pexels-photo-2589650.jpeg';
+
+    const user2Photo =
+        user2?.photos?.find((p: string) => typeof p === 'string' && p.startsWith('http')) ||
+        user2?.photos?.[0] ||
+        'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg';
+
 
     return (
         <View style={styles.container}>
@@ -36,7 +49,7 @@ const SuperLikeMatched = () => {
                 <View style={[styles.imageWrapper, styles.leftBorder]}>
                     <Image
                         source={{
-                            uri: 'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?w=400',
+                            uri: user1Photo,
                         }}
                         style={styles.profileImage}
                     />
@@ -51,7 +64,7 @@ const SuperLikeMatched = () => {
                 <View style={[styles.imageWrapper, styles.rightBorder]}>
                     <Image
                         source={{
-                            uri: 'https://images.unsplash.com/photo-1502767089025-6572583495b0?w=400',
+                            uri: user2Photo,
                         }}
                         style={styles.profileImage}
                     />
@@ -60,12 +73,18 @@ const SuperLikeMatched = () => {
 
             {/* Butonlar */}
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.messageButton}>
+                {/* <TouchableOpacity style={styles.messageButton}>
                     <Text style={styles.messageButtonText}>{t('superLikeMatched.sendMessage')}</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.keepSwipingButton}>
+                <TouchableOpacity
+                    style={styles.keepSwipingButton}
+                    onPress={() => navigation.goBack()}>
                     <Text style={styles.keepSwipingText}>{t('superLikeMatched.keepExploring')}</Text>
+                </TouchableOpacity> */}
+
+                <TouchableOpacity style={styles.messageButton} onPress={() => navigation.goBack()}>
+                    <Text style={styles.messageButtonText}>{t('superLikeMatched.keepExploring')}</Text>
                 </TouchableOpacity>
             </View>
         </View>
