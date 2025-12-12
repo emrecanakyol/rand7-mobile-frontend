@@ -249,5 +249,10 @@
     "superLikeMatched.matched": "A mutual super match 💫",
     "superLikeMatched.sendMessage": "Send message",
     "superLikeMatched.keepExploring": "Keep exploring",
-    "loading": "Loading"
+    "loading": "Loading",
+    "hobby_category_art_creativity": "Art & Creativity",
+    "hobby_category_sports_activity": "Sports & Activity",
+    "hobby_category_life_culture": "Lifestyle & Culture",
+    "hobby_category_technology_games": "Technology & Games",
+    "hobby_category_social_daily": "Social & Daily"
 }

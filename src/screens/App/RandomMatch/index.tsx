@@ -187,7 +187,9 @@ const RandomMatch = () => {
 
     return (
         <View style={styles.container}>
-            <Header userData={userData} />
+            <Header
+                userData={userData}
+                twoIcon={false} />
 
             {matchLoading ? (
                 <View style={styles.loaderWrap}>

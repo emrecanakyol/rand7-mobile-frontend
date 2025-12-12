@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../utils/colors';
 import { responsive } from '../../../utils/responsive';
@@ -170,13 +170,101 @@ const OnBoardingOne = () => {
                 onClose={() => setTosVisible(false)}
                 modalTitle={'Genel Kullanım Koşulları'}
             >
-                <View>
+                <ScrollView>
                     <Text>
-                        Buraya kullanım koşullarınızın metnini ekleyin. Uygulamanın kullanımına ilişkin hükümler,
-                        kullanıcı yükümlülükleri, hesap güvenliği, içerik politikası ve sonlandırma koşulları gibi
-                        maddeleri listeleyin. Metni dilediğiniz kadar uzun tutabilirsiniz.
+                        1) Tanımlar
+
+                        Rand7 (“Uygulama”), mobil ve web platformlarında kullanıcıların anonim olarak eşleşmesini ve sohbet etmesini sağlayan bir hizmettir.
+                        Kullanıcı, Uygulama’ya erişim sağlayan ve kayıt olan gerçek kişidir.
+                        Bu Kullanım Şartları (“Şartlar”), Rand7 ile kullanıcı arasındaki hukuki ilişkiyi belirler.
+
+                        2) Uygulamanın Kapsamı
+
+                        Rand7, kullanıcıların anonim profiller üzerinden eşleşmesine ve 7 dakikalık süreli sohbetler ile tanışmasına imkân sağlar. Bazı özellikler ücretsiz, bazı özellikler ise premium abonelik gerektirebilir.
+
+                        3) Şartların Kabulü
+
+                        Uygulamayı kullanarak, bu Şartları okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan etmiş sayılırsınız.
+
+                        4) Yaş ve Kayıt Şartı
+
+                        Rand7 yalnızca 18 yaş ve üzeri kişilerin kullanımına açıktır. Kayıt sırasında verdiğiniz bilgilerin doğru ve güncel olmasından ve birden fazla hesap açmaktan siz sorumlusunuz.
+
+                        5) Kullanıcı Sorumlulukları
+
+                        Kullanıcılar, hizmeti kullanırken:
+
+                        Doğru ve güncel bilgi vermek,
+
+                        Başkalarını rahatsız edici davranışlarda bulunmamak,
+
+                        Yasa dışı veya uygunsuz içerik paylaşmamak,
+
+                        Başka kullanıcıların haklarına ve gizliliğine saygı göstermek zorundadır.
+
+                        6) Mesajlaşma ve İçerikten Sorumluluk
+
+                        Uygulamadaki mesajlaşma, paylaşımlar ve görüşmeler tamamen kullanıcıların sorumluluğundadır. Rand7:
+
+                        Kullanıcıların sohbetlerinden,
+
+                        Paylaşılan içeriklerden,
+
+                        Kullanıcıların aldığı kararlardan,
+
+                        Uygulama içi/gerçek hayatta gerçekleşen buluşmalardan
+
+                        hiçbir şekilde sorumlu tutulamaz.
+                        Bu sorumluluk sınırı, teknik arızalar, algoritma önerileri ve dış etkenler için de geçerlidir.
+
+                        7) Davranış Kuralları
+
+                        Uygulama’da:
+
+                        Hakaret, taciz, tehdit, nefret söylemi gibi davranışlar,
+
+                        Pornografik veya insan onurunu zedeleyen içerikler,
+
+                        Başkalarının kişisel verilerini izinsiz paylaşmak,
+
+                        Dolandırıcılık ve dolandırıcılık amaçlı içerikler,
+
+                        Uygulamanın normal kullanımını engelleyecek bot/otomasyon kullanımı
+                        gibi davranışlar yasaktır.
+
+                        Rand7 bu tür davranışları tespit ettiği takdirde kullanıcı hesabını uyarı, askıya alma veya kapatma haklarını saklı tutar.
+
+                        8) Kullanıcının Sorumluluğu
+
+                        Uygulama içerisindeki tüm etkileşimler, mesajlar, paylaşımlar ve görüşmeler tamamen kullanıcıların kendi sorumluluğundadır. Rand7; kullanıcıların yaptığı konuşmalar, paylaştığı içerikler, verdiği bilgiler, aldığı kararlar ve gerçekleştirdiği eylemler nedeniyle doğabilecek doğrudan veya dolaylı hiçbir zarardan sorumlu tutulamaz. Kısaca Rand7 uygulamasını kullanmak tamamen sizin sorumluluğunuzdadır.
+
+                        9) Sorumluluk Sınırı
+
+                        Rand7, aşağıdakilerden dolayı doğrudan, dolaylı, özel veya sonuçsal herhangi bir zarardan sorumlu tutulmaz:
+
+                        Kullanıcı etkileşimleri,
+
+                        Uygulama üzerinden gerçek hayatta yapılan görüşmeler,
+
+                        Kayıt dışı platformlarla iletişim,
+
+                        Bağlantı ve ağ sorunları,
+
+                        Veri kaybı ve üçüncü taraf erişimleri.
+
+                        10) Değişiklik Hakkı
+
+                        Rand7, bu Şartları herhangi bir zamanda uyarı yaparak veya yapmadan güncelleme hakkını saklı tutar. Güncel Şartlar, uygulama içinde ve web sitesinde yayımlanır.
+
+                        11) Şikayet ve Destek
+
+                        Herhangi bir uygunsuz davranış, dolandırıcılık veya sorun durumunda kullanıcılar Uygulama içi bildirim veya destek mekanizması ile Rand7’a bildirimde bulunabilir.
+
+                        12) Yürürlük
+
+                        Bu Şartlar, hizmeti kullanmaya başladığınız anda yürürlüğe girer ve kullanım süresi boyunca geçerlidir.
                     </Text>
-                </View>
+                </ScrollView>
             </CModal>
 
             {/* GİZLİLİK POLİTİKASI - YARIM EKRAN */}
@@ -185,13 +273,131 @@ const OnBoardingOne = () => {
                 onClose={() => setPrivacyVisible(false)}
                 modalTitle={'Gizlilik Politikası'}
             >
-                <View>
+                <ScrollView>
                     <Text>
-                        Buraya gizlilik politikanızın metnini ekleyin. Hangi verileri topladığınız, kullanım amaçları,
-                        saklama süreleri, üçüncü taraflarla paylaşım, çerezler ve kullanıcı haklarına ilişkin açıklamaları
-                        net ve anlaşılır şekilde belirtin.
+                        Rand7 (“Uygulama”), kullanıcıların gizliliğini ve kişisel verilerinin korunmasını ciddiye alır. Bu Gizlilik Politikası, Rand7’nin kişisel verilerinizi nasıl topladığını, işlediğini, kullandığını ve paylaştığını açıklar. Uygulamayı kullanarak bu politikayı kabul etmiş sayılırsınız.
+
+                        1. Topladığımız Bilgiler
+                        Zorunlu Veriler
+
+                        Aşağıdaki bilgiler, Uygulama’nın temel işlevlerini sağlayabilmek için zorunludur:
+
+                        Kayıt bilgileri (ad, e-posta veya telefon numarası)
+
+                        Doğum tarihi ve yaş doğrulaması
+
+                        Fotoğraflar
+
+                        Teknik cihaz verileri (cihaz modeli, işletim sistemi vb.)
+
+                        Uygulama kullanım verileri (bağlantı tarihleri, profil etkileşimleri)
+
+                        Bu veriler Uygulama’nın çalışması için gereklidir ve bunları sağlamadan hizmetten tam olarak faydalanamazsınız.
+                        support.happn.fr
+
+                        2. Konum Verileri
+
+                        Rand7 bazı özelliklerinde (örneğin çevrenizdeki kullanıcıları önerme) konum verilerini toplar.
+
+                        Konum verileri sadece sizin açık rızanızla toplanır.
+
+                        Konum verileri diğer kullanıcılara kesin koordinat olarak gösterilmez; yalnızca genel çevre veya mesafe bilgisi sunulur.
+
+                        Konum servisini kapatmanız halinde bu özellikler sınırlı hale gelir.
+                        support.happn.fr
+
+                        3. Profil ve Kullanıcı Tercihleri
+
+                        Kullanıcı profiline eklediğiniz tüm bilgiler isteğe bağlıdır ve tamamen sizin sorumluluğunuzdadır:
+
+                        İlgi alanları, hobiler, yaşam tarzı tercihleri
+
+                        Kısa biyografi veya açıklamalar
+
+                        Arama tercihleri (yaş aralığı, cinsiyet vb.)
+
+                        Bu bilgiler profiliniz üzerinde diğer kullanıcılar tarafından görülebilir olur.
+                        support.happn.fr
+
+                        4. Mesajlar ve Etkileşimler
+
+                        Uygulamadaki sohbetler (yazılı mesajlar, sesli mesajlar, görüntülü aramalar):
+
+                        Gizlidir ve yalnızca mesajlaşan taraflar tarafından görülebilir.
+
+                        Rand7 yetkili personeli bu mesajlara erişmez ve içeriklerini görmez.
+
+                        Hukuki zorunluluk halleri (yasal talepler) dışında üçüncü taraflarla paylaşılmaz.
+                        support.happn.fr
+
+                        5. Otomatik Toplanan Veriler
+
+                        Uygulama kullanımına ilişkin veriler arka planda otomatik olarak toplanabilir:
+
+                        Bağlantı ve kullanım süreleri
+
+                        Etkileşim geçmişi
+
+                        Uygulama içi işlem ve bildirim tercihleri
+
+                        Cihaz IP adresi ve teknik tanımlayıcılar
+                        support.happn.fr
+
+                        Bu veriler hizmet kalitesini artırmak, hataları düzeltmek ve deneyimi kişiselleştirmek için kullanılır.
+
+                        6. Verilerin Kullanım Amaçları
+
+                        Toplanan bilgiler aşağıdaki amaçlarla kullanılabilir:
+
+                        Hizmetlerin sunulması ve kullanıcı hesabının yönetimi
+
+                        Arama ve eşleştirme algoritmasının çalıştırılması
+
+                        Bildirim ve müşteri desteği
+
+                        Güvenlik ve dolandırıcılık önleme
+
+                        Pazarlama, analiz ve performans iyileştirme (izniniz varsa)
+
+                        7. Verilerin Paylaşımı
+
+                        Rand7; verilerinizi üçüncü taraflarla sadece yasal zorunluluk olduğunda, teknik hizmet sağlayıcılar veya analiz araçları ile paylaşabilir. Bunun dışındaki durumlarda verileriniz satılmaz veya izniniz olmadan üçüncü tarafa devredilmez.
+
+                        8. Çerezler ve Teknolojiler
+
+                        Uygulama, web sürümlerinde çerezler ve benzeri teknolojiler kullanabilir.
+                        Bu teknolojiler; kullanıcı deneyimini iyileştirme, analiz yapma ve reklam hedefleme gibi amaçlarla kullanılabilir.
+
+                        9. Veri Saklama Süresi
+
+                        Verileriniz, hizmetlerin sunulması için gerekli olduğu sürece tutulur.
+                        Profilinizi silme, konum verisi iznini kaldırma veya hesabınızı kapatma gibi taleplerinizde, ilgili veriler belirli sürelerle saklanabilir ya da anonim hâle getirilebilir.
+
+                        10. Haklarınız
+
+                        Kullanıcı olarak aşağıdaki haklara sahipsiniz:
+
+                        Kişisel verilerinize erişme
+
+                        Yanlış veya eksik verileri düzeltme
+
+                        Verilerin silinmesini talep etme
+
+                        İşleme sınırı veya itiraz hakkı
+
+                        Rıza geri çekme
+
+                        Bu hakları uygulama içerisinden veya destek e-posta/yardım kanalıyla talep edebilirsiniz.
+
+                        11. Güvenlik
+
+                        Rand7, verilerinizin güvenliğini sağlamak adına uygun teknik ve organizasyonel önlemleri uygular. Ancak hiçbir sistem %100 güvenli değildir ve veri güvenliği tamamen garanti edilemez.
+
+                        12. Değişiklikler
+
+                        Bu Gizlilik Politikası zaman zaman güncellenebilir. Güncel politika uygulama içi veya web sitesi üzerinden yayımlanacaktır.
                     </Text>
-                </View>
+                </ScrollView>
             </CModal>
         </View>
     );

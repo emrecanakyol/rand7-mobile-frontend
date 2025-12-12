@@ -249,5 +249,10 @@
     "superLikeMatched.matched": "Karşılıklı süper bir eşleşme 💫",
     "superLikeMatched.sendMessage": "Mesaj gönder",
     "superLikeMatched.keepExploring": "Keşfetmeye devam et",
-    "loading": "Yükleniyor"
+    "loading": "Yükleniyor",
+    "hobby_category_art_creativity": "Sanat ve Yaratıcılık",
+    "hobby_category_sports_activity": "Spor ve Aktivite",
+    "hobby_category_life_culture": "Yaşam ve Kültür",
+    "hobby_category_technology_games": "Teknoloji ve Oyunlar",
+    "hobby_category_social_daily": "Sosyal ve Günlük"
 }

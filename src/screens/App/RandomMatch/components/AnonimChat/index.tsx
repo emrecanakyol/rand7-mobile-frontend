@@ -1004,6 +1004,5 @@ export default function AnonimChat() {
             </CModal>
 
         </SafeAreaView>
-
     );
 }

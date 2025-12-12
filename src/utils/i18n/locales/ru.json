@@ -249,5 +249,10 @@
     "superLikeMatched.matched": "Взаимное супер-совпадение 💫",
     "superLikeMatched.sendMessage": "Отправить сообщение",
     "superLikeMatched.keepExploring": "Продолжить знакомиться",
-    "loading": "Загрузка"
+    "loading": "Загрузка",
+    "hobby_category_art_creativity": "Искусство и творчество",
+    "hobby_category_sports_activity": "Спорт и активность",
+    "hobby_category_life_culture": "Образ жизни и культура",
+    "hobby_category_technology_games": "Технологии и игры",
+    "hobby_category_social_daily": "Социальная жизнь и повседневность"
 }
