@@ -483,8 +483,6 @@ export default function Chat() {
             </View>
 
             <GiftedChat
-                isScrollToBottomEnabled
-                isKeyboardInternallyHandled={false}
                 messages={messages}
                 onSend={(msgs) => { onSend(msgs); setText(''); }}
                 user={user}
