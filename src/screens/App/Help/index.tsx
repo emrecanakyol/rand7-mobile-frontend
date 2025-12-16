@@ -5,7 +5,8 @@ import {
   Linking,
   TouchableOpacity,
   Platform,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native'
 import DetailHeaders from '../../../components/DetailHeaders'
 import { useTheme } from '../../../utils/colors'
@@ -19,25 +20,27 @@ import CModal from '../../../components/CModal'
 import { ToastError, ToastSuccess } from '../../../utils/toast'
 import DeviceInfo from 'react-native-device-info'
 import { useNavigation } from '@react-navigation/native'
-import { ADD_HELP } from '../../../navigators/Stack'
+import { ADD_HELP, ONEBOARDINGONE } from '../../../navigators/Stack'
 import { useTranslation } from 'react-i18next'
 import { sendAdminNotification } from '../../../constants/Notifications'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../store/Store'
+import { signOut } from '../../../store/services/authServices'
 
 const HelpSupport = () => {
+  const { t } = useTranslation();
   const navigation: any = useNavigation();
+  const dispatch = useDispatch<AppDispatch>();
   const { colors } = useTheme();
   const { width, height } = Dimensions.get('window');
   const isTablet = Math.min(width, height) >= 600;
   const styles = getStyles(colors, isTablet);
   const appVersion = DeviceInfo.getVersion();
-  const { t } = useTranslation();
-
   const [modalVisible, setModalVisible] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [contactEmail, setContactEmail] = useState('');
 
-  // 🔁 Firestore'dan "helps" verisini çek
   useEffect(() => {
     const fetchHelpData = async () => {
       try {
@@ -93,6 +96,43 @@ const HelpSupport = () => {
     }
   }
 
+  const out = async () => {
+    await signOut(dispatch);
+    await navigation.navigate(ONEBOARDINGONE);
+  }
+
+  const handleDeleteAccountPress = () => {
+    Alert.alert(
+      t('delete_account_title'),
+      t('delete_account_confirm'),
+      [
+        {
+          text: t('cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('yes'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await out();
+
+              ToastSuccess(
+                t('success'),
+                t('account_deleted_success')
+              )
+            } catch (error) {
+              ToastError(
+                t('error'),
+                t('account_deleted_failed')
+              )
+            }
+          },
+        },
+      ]
+    )
+  }
+
   return (
     <View style={styles.container}>
       <DetailHeaders
@@ -130,6 +170,15 @@ const HelpSupport = () => {
         onPress={() => setModalVisible(true)}
         style={styles.button}
       />
+
+      <TouchableOpacity
+        onPress={handleDeleteAccountPress}
+        style={styles.deleteAccountWrapper}
+      >
+        <CText style={styles.deleteAccountText}>
+          {t('delete_account') || 'Hesabımı sil'}
+        </CText>
+      </TouchableOpacity>
 
       <CModal
         visible={modalVisible}
@@ -194,6 +243,19 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     color: colors.TEXT_MAIN_COLOR,
     marginBottom: responsive(16),
   },
+  deleteAccountWrapper: {
+    marginVertical: responsive(14),
+    marginHorizontal: responsive(16),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteAccountText: {
+    fontSize: isTablet ? 18 : 14,
+    fontWeight: '700',
+    color: '#E53935',
+    textDecorationLine: 'underline',
+  },
+
 })
 
 export default HelpSupport;

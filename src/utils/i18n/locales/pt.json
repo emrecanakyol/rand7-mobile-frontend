@@ -256,5 +256,11 @@
     "hobby_category_technology_games": "Tecnologia e jogos",
     "hobby_category_social_daily": "Social e cotidiano",
     "valid_email_error": "Por favor, insira um endereço de e-mail válido.",
-    "valid_password_error": "A senha deve ter pelo menos 6 caracteres e conter pelo menos um número."
+    "valid_password_error": "A senha deve ter pelo menos 6 caracteres e conter pelo menos um número.",
+    "delete_account": "Excluir minha conta",
+    "delete_account_title": "Excluir conta",
+    "delete_account_confirm": "Tem certeza de que deseja excluir sua conta?",
+    "account_deleted_success": "Sua conta foi excluída com sucesso",
+    "account_deleted_failed": "Falha ao excluir a conta",
+    "yes": "Sim"
 }

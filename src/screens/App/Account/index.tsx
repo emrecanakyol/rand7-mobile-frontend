@@ -31,8 +31,6 @@ const Account = () => {
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
 
-    console.log(userData)
-
     useEffect(() => {
         dispatch(fetchUserData());
     }, []);

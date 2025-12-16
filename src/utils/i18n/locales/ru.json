@@ -256,5 +256,11 @@
     "hobby_category_technology_games": "Технологии и игры",
     "hobby_category_social_daily": "Социальная жизнь и повседневность",
     "valid_email_error": "Пожалуйста, введите действительный адрес электронной почты.",
-    "valid_password_error": "Пароль должен содержать не менее 6 символов и хотя бы одну цифру."
+    "valid_password_error": "Пароль должен содержать не менее 6 символов и хотя бы одну цифру.",
+    "delete_account": "Удалить мой аккаунт",
+    "delete_account_title": "Удалить аккаунт",
+    "delete_account_confirm": "Вы действительно хотите удалить свой аккаунт?",
+    "account_deleted_success": "Ваш аккаунт был успешно удалён",
+    "account_deleted_failed": "Не удалось удалить аккаунт",
+    "yes": "Да"
 }

@@ -256,5 +256,11 @@
     "hobby_category_technology_games": "Technologie & Spiele",
     "hobby_category_social_daily": "Soziales & Alltag",
     "valid_email_error": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
-    "valid_password_error": "Das Passwort muss mindestens 6 Zeichen lang sein und mindestens eine Zahl enthalten."
+    "valid_password_error": "Das Passwort muss mindestens 6 Zeichen lang sein und mindestens eine Zahl enthalten.",
+    "delete_account": "Mein Konto löschen",
+    "delete_account_title": "Konto löschen",
+    "delete_account_confirm": "Möchten Sie Ihr Konto wirklich löschen?",
+    "account_deleted_success": "Ihr Konto wurde erfolgreich gelöscht",
+    "account_deleted_failed": "Das Löschen des Kontos ist fehlgeschlagen",
+    "yes": "Ja"
 }

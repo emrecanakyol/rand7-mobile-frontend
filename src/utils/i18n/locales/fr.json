@@ -256,5 +256,11 @@
     "hobby_category_technology_games": "Technologie et jeux",
     "hobby_category_social_daily": "Social et quotidien",
     "valid_email_error": "Veuillez saisir une adresse e-mail valide.",
-    "valid_password_error": "Le mot de passe doit contenir au moins 6 caractères et au moins un chiffre."
+    "valid_password_error": "Le mot de passe doit contenir au moins 6 caractères et au moins un chiffre.",
+    "delete_account": "Supprimer mon compte",
+    "delete_account_title": "Supprimer le compte",
+    "delete_account_confirm": "Êtes-vous sûr de vouloir supprimer votre compte ?",
+    "account_deleted_success": "Votre compte a été supprimé avec succès",
+    "account_deleted_failed": "La suppression du compte a échoué",
+    "yes": "Oui"
 }

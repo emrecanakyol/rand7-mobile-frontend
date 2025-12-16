@@ -256,5 +256,11 @@
     "hobby_category_technology_games": "Technology & Games",
     "hobby_category_social_daily": "Social & Daily",
     "valid_email_error": "Please enter a valid email address.",
-    "valid_password_error": "Password must be at least 6 characters long and contain at least one number."
+    "valid_password_error": "Password must be at least 6 characters long and contain at least one number.",
+    "delete_account": "Delete my account",
+    "delete_account_title": "Delete Account",
+    "delete_account_confirm": "Are you sure you want to delete your account?",
+    "account_deleted_success": "Your account has been successfully deleted",
+    "account_deleted_failed": "Account deletion failed",
+    "yes": "Yes"
 }

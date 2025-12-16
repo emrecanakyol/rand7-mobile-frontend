@@ -256,5 +256,11 @@
     "hobby_category_technology_games": "Teknoloji ve Oyunlar",
     "hobby_category_social_daily": "Sosyal ve Günlük",
     "valid_email_error": "Geçerli bir e-posta adresi giriniz.",
-    "valid_password_error": "Şifre en az 6 karakter olmalı ve en az bir rakam içermelidir."
+    "valid_password_error": "Şifre en az 6 karakter olmalı ve en az bir rakam içermelidir.",
+    "delete_account": "Hesabımı sil",
+    "delete_account_title": "Hesabı Sil",
+    "delete_account_confirm": "Gerçekten hesabınızı silmek istiyor musunuz?",
+    "account_deleted_success": "Hesabınız başarıyla silinmiştir",
+    "account_deleted_failed": "Hesap silme işlemi başarısız oldu",
+    "yes": "Evet"
 }
