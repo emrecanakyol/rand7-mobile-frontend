@@ -525,7 +525,6 @@ export default function AnonimChat() {
                 backgroundColor: '#FFFFFF',
                 borderBottomWidth: 1,
                 borderBottomColor: '#EFEFEF',
-                paddingTop: Platform.OS === "android" ? insets.top : 0,
             }}>
                 <View style={{
                     height: 52,
@@ -672,14 +671,10 @@ export default function AnonimChat() {
                 messages={messages}
                 onSend={(msgs) => { onSend(msgs); setText(''); }}
                 user={user}
-                placeholder={t("anon_chat_input_placeholder")}
-                alwaysShowSend
                 locale={"tr-TR"} // 👈 aktif uygulama dilini otomatik alır
-                showUserAvatar={false}
-                renderAvatarOnTop={false}
                 renderAvatar={() => null}
                 text={text}
-                onInputTextChanged={setText}
+
                 bottomOffset={Platform.OS === "ios" ? -40 : 0} // ios cihazda klavye açılınca input ve klavye arasındaki boşluğu düzeltiyor
 
                 // 🔧 Toolbar: tek satır hizalaması + padding

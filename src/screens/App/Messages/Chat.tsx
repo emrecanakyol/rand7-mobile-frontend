@@ -1,6 +1,6 @@
 // Chat.tsx (CHAT_STACK ekranın)
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
+import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text, Platform, Keyboard } from 'react-native';
 import { GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { USER_PROFILE } from '../../../navigators/Stack';
 import { ToastError, ToastSuccess } from '../../../utils/toast';
 import CModal from '../../../components/CModal';
+import { responsive } from '../../../utils/responsive';
 
 type RootStackParamList = {
     Chat: {
@@ -306,13 +307,16 @@ export default function Chat() {
         );
     }
 
+    const tabbarHeight = Platform.OS === "ios" ? 30 : 85
+    const keyboardTopToolbarHeight = Platform.select({ ios: 44, default: 0 })
+    const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight
+
     return (
         <SafeAreaView edges={["bottom"]} style={{ flex: 1, backgroundColor: '#FFF' }}>
             <View style={{
                 backgroundColor: '#FFFFFF',
                 borderBottomWidth: 1,
                 borderBottomColor: '#EFEFEF',
-                paddingTop: Platform.OS === "android" ? insets.top : 0,
             }}>
                 <View style={{
                     height: 52,
@@ -483,19 +487,17 @@ export default function Chat() {
             </View>
 
             <GiftedChat
+                keyboardAvoidingViewProps={{ keyboardVerticalOffset }}
                 messages={messages}
                 onSend={(msgs) => { onSend(msgs); setText(''); }}
                 user={user}
-                placeholder={t('chat_placeholder')}
-                alwaysShowSend
-                showUserAvatar={false}
-                renderAvatarOnTop={false}
-                renderAvatar={() => null}
-                text={text}
-                onInputTextChanged={setText}
-                bottomOffset={Platform.OS === "ios" ? -40 : 0} // ios cihazda klavye açılınca input ve klavye arasındaki boşluğu düzeltiyor
-                // bottomOffset={insets.bottom}
                 locale={i18n.language}
+                textInputProps={{
+                    style: {
+                        color: "#000"
+                    }
+                }}
+                renderAvatar={() => null}
 
                 // 🔧 Toolbar: tek satır hizalaması + padding
                 renderInputToolbar={(props) => (
@@ -505,6 +507,7 @@ export default function Chat() {
                             borderTopWidth: 0,
                             paddingHorizontal: 8,
                             paddingVertical: 6,
+                            backgroundColor: "#fff",
                         }}
                         primaryStyle={{
                             alignItems: 'center', // 👈 send ile input aynı hizada
@@ -512,57 +515,12 @@ export default function Chat() {
                     />
                 )}
 
-                // ✏️ Composer: flex:1 + sabit yükseklik, send ile yan yana sorunsuz
-                renderComposer={() => (
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignItems: "flex-end",
-                            backgroundColor: 'transparent',
-                        }}
-                    >
-                        {/* <TouchableOpacity
-                                    onPress={() => { }}
-                                    activeOpacity={0.7}
-                                    style={{
-                                        width: 36,
-                                        height: 36,
-                                    }}
-                                >
-                                    <Ionicons name="add" size={28} color="#4B5563" />
-                                </TouchableOpacity> */}
-
-                        {/* 📝 Text Input */}
-                        <TextInput
-                            value={text}
-                            onChangeText={setText}
-                            placeholder={t('chat_input_placeholder')}
-                            autoFocus={false}
-                            multiline
-                            style={{
-                                flex: 1,
-                                minHeight: 40,
-                                maxHeight: 200,
-                                borderWidth: 1,
-                                borderColor: '#ccc',
-                                paddingHorizontal: 10,
-                                paddingVertical: 6,
-                                borderRadius: 10,
-                                fontSize: 16,
-                                color: '#000',
-                                textAlignVertical: 'top',
-                            }}
-                        />
-                    </View>
-                )}
                 // 🚀 Send: 40x40 daire, dikeyde ortalı
                 renderSend={(props: SendProps<IMessage>) => {
                     const canSend = ((props.text ?? '').trim().length > 0);
                     return (
                         <Send
                             {...props}
-                            disabled={!canSend}
                             containerStyle={{ marginLeft: 8, marginRight: 4, alignSelf: "flex-end", marginBottom: 10 }}
                         >
                             <View
@@ -586,6 +544,7 @@ export default function Chat() {
                     );
                 }}
             />
+
             <CModal
                 visible={reportModalVisible}
                 onClose={() => {
