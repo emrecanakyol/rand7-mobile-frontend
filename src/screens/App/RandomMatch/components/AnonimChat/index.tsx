@@ -58,6 +58,32 @@ export default function AnonimChat() {
     const [reportModalVisible, setReportModalVisible] = useState(false);
     const [reportText, setReportText] = useState('');
     const [sendingReport, setSendingReport] = useState(false);
+    const [backDeleting, setBackDeleting] = useState(false);
+    const [isBlockedByMe, setIsBlockedByMe] = useState(false);
+    const [isBlockedByOther, setIsBlockedByOther] = useState(false);
+
+    useEffect(() => {
+        if (!meId || !otherId) return;
+
+        const ref = firestore().collection('users').doc(meId);
+
+        const unsub = ref.onSnapshot((doc) => {
+            const d = doc.data() as any;
+
+            const blockersArr = Array.isArray(d?.blockers)
+                ? d.blockers
+                : [];
+
+            const blockedArr = Array.isArray(d?.blocked)
+                ? d.blocked
+                : [];
+
+            setIsBlockedByMe(blockersArr.includes(otherId));
+            setIsBlockedByOther(blockedArr.includes(otherId));
+        });
+
+        return () => unsub();
+    }, [meId, otherId]);
 
     // --- EK: geri sayım ---
     const TOTAL_SEC = 7 * 60; // 7 dakika
@@ -279,6 +305,39 @@ export default function AnonimChat() {
             console.log("wipeAnonChat error:", err);
         }
     }, [meId, otherId]);
+
+    const handleBackPress = useCallback(() => {
+        // userId resolve olmadan basılırsa
+        if (!meId || !otherId) {
+            navigation.goBack();
+            return;
+        }
+
+        Alert.alert(
+            t("common_warning_title"),
+            t("anon_chat_leave_delete_confirm"), // i18n'e ekleyeceksin
+            [
+                { text: t("common_cancel"), style: "cancel" },
+                {
+                    text: t("common_delete"),
+                    style: "destructive",
+                    onPress: async () => {
+                        if (backDeleting) return;
+
+                        try {
+                            setBackDeleting(true);
+                            await wipeAnonChat();   // ✅ iki tarafı da siliyor
+                        } catch (e) {
+                            console.log("back wipe error:", e);
+                        } finally {
+                            setBackDeleting(false);
+                            navigation.goBack();
+                        }
+                    },
+                },
+            ]
+        );
+    }, [meId, otherId, navigation, wipeAnonChat, t, backDeleting]);
 
     const handleLike = useCallback(async () => {
         if (!meId || !otherId) return;
@@ -520,7 +579,53 @@ export default function AnonimChat() {
         );
     }, [meId, otherId, other2Id, setShowMenu]);
 
-    const tabbarHeight = Platform.OS === "ios" ? 30 : 85
+    const handleUnblockUser = useCallback(() => {
+        if (!meId || !otherId) return;
+
+        Alert.alert(
+            t("anon_chat_unblock_title"),
+            t("anon_chat_unblock_message"),
+            [
+                { text: t("common_cancel"), style: "cancel" },
+                {
+                    text: t("anon_chat_unblock_confirm"),
+                    style: "default",
+                    onPress: async () => {
+                        try {
+                            await firestore()
+                                .collection('users')
+                                .doc(meId)
+                                .update({
+                                    blockers: firestore.FieldValue.arrayRemove(otherId),
+                                });
+
+                            await firestore()
+                                .collection('users')
+                                .doc(otherId)
+                                .update({
+                                    blocked: firestore.FieldValue.arrayRemove(meId),
+                                });
+
+                            ToastSuccess(
+                                t("common_success_title"),
+                                t("anon_chat_unblock_success_message")
+                            );
+                        } catch (e) {
+                            console.log("unblock error", e);
+                            ToastError(
+                                t("common_error_title"),
+                                t("anon_chat_unblock_error_message")
+                            );
+                        } finally {
+                            setShowMenu(false);
+                        }
+                    },
+                },
+            ]
+        );
+    }, [meId, otherId, t]);
+
+    const tabbarHeight = Platform.OS === "ios" ? 50 : 105
     const keyboardTopToolbarHeight = Platform.select({ ios: 44, default: 0 })
     const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight
 
@@ -539,7 +644,8 @@ export default function AnonimChat() {
                 }}>
                     {/* Back */}
                     <TouchableOpacity
-                        onPress={() => navigation.goBack()}
+                        onPress={handleBackPress}
+                        disabled={backDeleting}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         style={{
                             width: 40, height: 40, borderRadius: 20,
@@ -632,12 +738,16 @@ export default function AnonimChat() {
                                     }}
                                 />
 
-                                {/* Engelle */}
                                 <TouchableOpacity
                                     activeOpacity={0.6}
                                     onPress={() => {
                                         setShowMenu(false);
-                                        handleBlockUser();
+
+                                        if (isBlockedByMe) {
+                                            handleUnblockUser();
+                                        } else {
+                                            handleBlockUser();
+                                        }
                                     }}
                                     style={{
                                         flexDirection: 'row',
@@ -647,7 +757,11 @@ export default function AnonimChat() {
                                         gap: 10,
                                     }}
                                 >
-                                    <Ionicons name="close-circle-outline" size={18} color="#111" />
+                                    <Ionicons
+                                        name={isBlockedByMe ? "checkmark-circle-outline" : "close-circle-outline"}
+                                        size={18}
+                                        color="#111"
+                                    />
                                     <Text
                                         style={{
                                             fontSize: 14,
@@ -655,7 +769,7 @@ export default function AnonimChat() {
                                             color: '#111',
                                         }}
                                     >
-                                        {t("anon_chat_block_menu")}
+                                        {isBlockedByMe ? t("anon_chat_unblock_title") : t("anon_chat_block_menu")}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -679,10 +793,18 @@ export default function AnonimChat() {
                 user={user}
                 locale={i18n.language}
                 textInputProps={{
-                    style: {
-                        color: "#000",
-                    }
+                    editable: !(isBlockedByMe || isBlockedByOther),
+                    placeholder: isBlockedByMe
+                        ? t("anon_chat_blocked_input_you")
+                        : isBlockedByOther
+                            ? t("anon_chat_blocked_input_other")
+                            : t("chat_type_message"),
                 }}
+                // textInputProps={{
+                //     style: {
+                //         color: "#000",
+                //     }
+                // }}
                 colorScheme="light"
 
                 // 🚀 Send: 40x40 daire, dikeyde ortalı
@@ -718,7 +840,9 @@ export default function AnonimChat() {
                         </Send>
                     );
                 }}
+
             />
+
             <CModal
                 visible={timeoutModal}
                 onClose={() => setTimeoutModal(false)}

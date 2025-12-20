@@ -272,5 +272,8 @@
     "anon_chat_blocked_by_you": "Sie können keine Nachrichten senden, da Sie diesen Benutzer blockiert haben.",
     "anon_chat_blocked_by_other": "Sie können keine Nachrichten senden, da dieser Benutzer Sie blockiert hat.",
     "anon_chat_blocked_input_you": "Sie haben diesen Benutzer blockiert.",
-    "anon_chat_blocked_input_other": "Dieser Benutzer hat Sie blockiert."
+    "anon_chat_blocked_input_other": "Dieser Benutzer hat Sie blockiert.",
+    "chat_type_message": "Nachricht schreiben...",
+    "anon_chat_leave_delete_confirm": "Beim Verlassen des Chats werden alle Nachrichten gelöscht.",
+    "common_delete": "Löschen"
 }

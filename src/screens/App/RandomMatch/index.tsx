@@ -208,11 +208,11 @@ const RandomMatch = () => {
                     { merge: true }
                 );
 
+            // animasyon için random delay
+            // await new Promise(r => setTimeout(r, getRandomDelay()));
+
             // 2️⃣ tüm kullanıcıları çek
             const usersSnapshot = await firestore().collection('users').get();
-
-            // animasyon için random delay
-            await new Promise(r => setTimeout(r, getRandomDelay()));
 
             // 3️⃣ uygun adayları filtrele
             const candidates = usersSnapshot.docs

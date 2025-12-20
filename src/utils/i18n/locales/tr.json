@@ -272,5 +272,8 @@
     "anon_chat_blocked_by_you": "Bu kullanıcıyı engellediğiniz için mesaj gönderemezsiniz.",
     "anon_chat_blocked_by_other": "Bu kullanıcı sizi engellediği için mesaj gönderemezsiniz.",
     "anon_chat_blocked_input_you": "Bu kullanıcıyı engellediniz.",
-    "anon_chat_blocked_input_other": "Bu kullanıcı sizi engelledi."
+    "anon_chat_blocked_input_other": "Bu kullanıcı sizi engelledi.",
+    "chat_type_message": "Mesaj yaz...",
+    "anon_chat_leave_delete_confirm": "Sohbetten çıkarken tüm mesajlar silinecektir.",
+    "common_delete": "Sil"
 }
