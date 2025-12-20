@@ -262,5 +262,15 @@
     "delete_account_confirm": "Êtes-vous sûr de vouloir supprimer votre compte ?",
     "account_deleted_success": "Votre compte a été supprimé avec succès",
     "account_deleted_failed": "La suppression du compte a échoué",
-    "yes": "Oui"
+    "yes": "Oui",
+    "anon_chat_blocked_by_other_banner": "Vous avez été bloqué par cet utilisateur. Vous ne pouvez plus envoyer de messages.",
+    "anon_chat_unblock_title": "Débloquer l’utilisateur",
+    "anon_chat_unblock_message": "Êtes-vous sûr de vouloir débloquer cet utilisateur ?",
+    "anon_chat_unblock_confirm": "Débloquer",
+    "anon_chat_unblock_success_message": "L’utilisateur a été débloqué.",
+    "anon_chat_unblock_error_message": "Une erreur s’est produite lors du déblocage de l’utilisateur.",
+    "anon_chat_blocked_by_you": "Vous ne pouvez pas envoyer de messages car vous avez bloqué cet utilisateur.",
+    "anon_chat_blocked_by_other": "Vous ne pouvez pas envoyer de messages car cet utilisateur vous a bloqué.",
+    "anon_chat_blocked_input_you": "Vous avez bloqué cet utilisateur.",
+    "anon_chat_blocked_input_other": "Cet utilisateur vous a bloqué."
 }

@@ -262,5 +262,15 @@
     "delete_account_confirm": "Are you sure you want to delete your account?",
     "account_deleted_success": "Your account has been successfully deleted",
     "account_deleted_failed": "Account deletion failed",
-    "yes": "Yes"
+    "yes": "Yes",
+    "anon_chat_blocked_by_other_banner": "You have been blocked by this user. You can no longer send messages.",
+    "anon_chat_unblock_title": "Unblock User",
+    "anon_chat_unblock_message": "Are you sure you want to unblock this user?",
+    "anon_chat_unblock_confirm": "Unblock",
+    "anon_chat_unblock_success_message": "User has been unblocked.",
+    "anon_chat_unblock_error_message": "An error occurred while unblocking the user.",
+    "anon_chat_blocked_by_you": "You can’t send messages because you blocked this user.",
+    "anon_chat_blocked_by_other": "You can’t send messages because this user blocked you.",
+    "anon_chat_blocked_input_you": "You blocked this user.",
+    "anon_chat_blocked_input_other": "This user blocked you."
 }

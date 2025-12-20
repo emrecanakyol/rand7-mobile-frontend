@@ -262,5 +262,15 @@
     "delete_account_confirm": "Tem certeza de que deseja excluir sua conta?",
     "account_deleted_success": "Sua conta foi excluída com sucesso",
     "account_deleted_failed": "Falha ao excluir a conta",
-    "yes": "Sim"
+    "yes": "Sim",
+    "anon_chat_blocked_by_other_banner": "Você foi bloqueado por este usuário. Não é mais possível enviar mensagens.",
+    "anon_chat_unblock_title": "Desbloquear usuário",
+    "anon_chat_unblock_message": "Tem certeza de que deseja desbloquear este usuário?",
+    "anon_chat_unblock_confirm": "Desbloquear",
+    "anon_chat_unblock_success_message": "O usuário foi desbloqueado.",
+    "anon_chat_unblock_error_message": "Ocorreu um erro ao desbloquear o usuário.",
+    "anon_chat_blocked_by_you": "Você não pode enviar mensagens porque bloqueou este usuário.",
+    "anon_chat_blocked_by_other": "Você não pode enviar mensagens porque este usuário bloqueou você.",
+    "anon_chat_blocked_input_you": "Você bloqueou este usuário.",
+    "anon_chat_blocked_input_other": "Este usuário bloqueou você."
 }

@@ -1,7 +1,7 @@
 // Chat.tsx (CHAT_STACK ekranın)
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text, Platform, Keyboard } from 'react-native';
-import { GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
@@ -54,6 +54,31 @@ export default function Chat() {
     const [reportModalVisible, setReportModalVisible] = useState(false);
     const [reportText, setReportText] = useState('');
     const [sendingReport, setSendingReport] = useState(false);
+    const [isBlockedByMe, setIsBlockedByMe] = useState(false);
+    const [isBlockedByOther, setIsBlockedByOther] = useState(false);
+
+    useEffect(() => {
+        if (!meId || !otherId) return;
+
+        const ref = firestore().collection('users').doc(meId);
+
+        const unsub = ref.onSnapshot((doc) => {
+            const d = doc.data() as any;
+
+            const blockersArr = Array.isArray(d?.blockers)
+                ? d.blockers
+                : [];
+
+            const blockedArr = Array.isArray(d?.blocked)
+                ? d.blocked
+                : [];
+
+            setIsBlockedByMe(blockersArr.includes(otherId));
+            setIsBlockedByOther(blockedArr.includes(otherId));
+        });
+
+        return () => unsub();
+    }, [meId, otherId]);
 
     const handleSendReport = useCallback(async () => {
         if (!meId || !otherId) return;
@@ -142,6 +167,52 @@ export default function Chat() {
             ]
         );
     }, [meId, otherId, t, navigation]);
+
+    const handleUnblockUser = useCallback(() => {
+        if (!meId || !otherId) return;
+
+        Alert.alert(
+            t("anon_chat_unblock_title"),
+            t("anon_chat_unblock_message"),
+            [
+                { text: t("common_cancel"), style: "cancel" },
+                {
+                    text: t("anon_chat_unblock_confirm"),
+                    style: "default",
+                    onPress: async () => {
+                        try {
+                            await firestore()
+                                .collection('users')
+                                .doc(meId)
+                                .update({
+                                    blockers: firestore.FieldValue.arrayRemove(otherId),
+                                });
+
+                            await firestore()
+                                .collection('users')
+                                .doc(otherId)
+                                .update({
+                                    blocked: firestore.FieldValue.arrayRemove(meId),
+                                });
+
+                            ToastSuccess(
+                                t("common_success_title"),
+                                t("anon_chat_unblock_success_message")
+                            );
+                        } catch (e) {
+                            console.log("unblock error", e);
+                            ToastError(
+                                t("common_error_title"),
+                                t("anon_chat_unblock_error_message")
+                            );
+                        } finally {
+                            setShowMenu(false);
+                        }
+                    },
+                },
+            ]
+        );
+    }, [meId, otherId, t]);
 
     useEffect(() => {
         if (!otherId) return;
@@ -343,10 +414,11 @@ export default function Chat() {
                         {otherAvatar ? (
                             <TouchableOpacity
                                 activeOpacity={0.8}
-                                disabled={!otherUser}
+                                disabled={!otherUser || isBlockedByOther}
                                 onPress={() => {
                                     if (!otherUser) return;
-                                    // 🔻 KENDİ ROUTE ADINA GÖRE DÜZENLE
+                                    if (isBlockedByOther) return;
+
                                     navigation.navigate(USER_PROFILE, {
                                         user: otherUser,
                                     });
@@ -443,7 +515,6 @@ export default function Chat() {
                                     </Text>
                                 </TouchableOpacity>
 
-                                {/* divider */}
                                 <View
                                     style={{
                                         height: 1,
@@ -452,13 +523,16 @@ export default function Chat() {
                                         marginVertical: 4,
                                     }}
                                 />
-
-                                {/* Engelle */}
                                 <TouchableOpacity
                                     activeOpacity={0.6}
                                     onPress={() => {
                                         setShowMenu(false);
-                                        handleBlockUser();
+
+                                        if (isBlockedByMe) {
+                                            handleUnblockUser();
+                                        } else {
+                                            handleBlockUser();
+                                        }
                                     }}
                                     style={{
                                         flexDirection: 'row',
@@ -468,7 +542,11 @@ export default function Chat() {
                                         gap: 10,
                                     }}
                                 >
-                                    <Ionicons name="close-circle-outline" size={18} color="#111" />
+                                    <Ionicons
+                                        name={isBlockedByMe ? "checkmark-circle-outline" : "close-circle-outline"}
+                                        size={18}
+                                        color="#111"
+                                    />
                                     <Text
                                         style={{
                                             fontSize: 14,
@@ -476,9 +554,10 @@ export default function Chat() {
                                             color: '#111',
                                         }}
                                     >
-                                        {t("anon_chat_block_menu")}
+                                        {isBlockedByMe ? t("anon_chat_unblock_title") : t("anon_chat_block_menu")}
                                     </Text>
                                 </TouchableOpacity>
+
                             </View>
                         )}
                     </View>
@@ -493,27 +572,19 @@ export default function Chat() {
                 user={user}
                 locale={i18n.language}
                 textInputProps={{
-                    style: {
-                        color: "#000"
-                    }
+                    editable: !(isBlockedByMe || isBlockedByOther),
+                    placeholder: isBlockedByMe
+                        ? t("anon_chat_blocked_input_you")
+                        : isBlockedByOther
+                            ? t("anon_chat_blocked_input_other")
+                            : t("chat_type_message"),
                 }}
-                renderAvatar={() => null}
-
-                // 🔧 Toolbar: tek satır hizalaması + padding
-                renderInputToolbar={(props) => (
-                    <InputToolbar
-                        {...props}
-                        containerStyle={{
-                            borderTopWidth: 0,
-                            paddingHorizontal: 8,
-                            paddingVertical: 6,
-                            backgroundColor: "#fff",
-                        }}
-                        primaryStyle={{
-                            alignItems: 'center', // 👈 send ile input aynı hizada
-                        }}
-                    />
-                )}
+                // textInputProps={{
+                //     style: {
+                //         color: "#000",
+                //     }
+                // }}
+                colorScheme="light"
 
                 // 🚀 Send: 40x40 daire, dikeyde ortalı
                 renderSend={(props: SendProps<IMessage>) => {
@@ -521,7 +592,12 @@ export default function Chat() {
                     return (
                         <Send
                             {...props}
-                            containerStyle={{ marginLeft: 8, marginRight: 4, alignSelf: "flex-end", marginBottom: 10 }}
+                            containerStyle={{
+                                marginLeft: 8,
+                                marginRight: 4,
+                                alignSelf: "flex-end",
+                                marginBottom: 10,
+                            }}
                         >
                             <View
                                 style={{
@@ -543,6 +619,34 @@ export default function Chat() {
                         </Send>
                     );
                 }}
+
+                renderAvatar={() => {
+                    return (
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            disabled={!otherUser || isBlockedByOther}
+                            onPress={() => {
+                                if (!otherUser) return;
+                                if (isBlockedByOther) return;
+
+                                navigation.navigate(USER_PROFILE, { user: otherUser });
+                            }}
+                            style={{
+                                marginRight: 8,
+                                opacity: isBlockedByOther ? 0.5 : 1,
+                            }}
+                        >
+                            <CImage
+                                imgSource={{ uri: otherAvatar }}
+                                width={32}
+                                height={32}
+                                imageBorderRadius={16}
+                                disablePress={true}
+                            />
+                        </TouchableOpacity>
+                    );
+                }}
+
             />
 
             <CModal

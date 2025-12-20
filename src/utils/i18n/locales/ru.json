@@ -262,5 +262,15 @@
     "delete_account_confirm": "Вы действительно хотите удалить свой аккаунт?",
     "account_deleted_success": "Ваш аккаунт был успешно удалён",
     "account_deleted_failed": "Не удалось удалить аккаунт",
-    "yes": "Да"
+    "yes": "Да",
+    "anon_chat_blocked_by_other_banner": "Вы были заблокированы этим пользователем. Вы не можете отправлять сообщения.",
+    "anon_chat_unblock_title": "Разблокировать пользователя",
+    "anon_chat_unblock_message": "Вы уверены, что хотите разблокировать этого пользователя?",
+    "anon_chat_unblock_confirm": "Разблокировать",
+    "anon_chat_unblock_success_message": "Пользователь был разблокирован.",
+    "anon_chat_unblock_error_message": "Произошла ошибка при разблокировке пользователя.",
+    "anon_chat_blocked_by_you": "Вы не можете отправлять сообщения, потому что заблокировали этого пользователя.",
+    "anon_chat_blocked_by_other": "Вы не можете отправлять сообщения, потому что этот пользователь заблокировал вас.",
+    "anon_chat_blocked_input_you": "Вы заблокировали этого пользователя.",
+    "anon_chat_blocked_input_other": "Этот пользователь заблокировал вас."
 }

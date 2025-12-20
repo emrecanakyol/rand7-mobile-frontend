@@ -13,6 +13,7 @@ import CText from '../../../../../components/CText/CText';
 import { CHAT } from '../../../../../navigators/Stack';
 import { ToastError, ToastSuccess } from '../../../../../utils/toast';
 import { useTranslation } from "react-i18next";
+import CImage from '../../../../../components/CImage';
 
 type RootStackParamList = {
     Anonim: {
@@ -519,6 +520,10 @@ export default function AnonimChat() {
         );
     }, [meId, otherId, other2Id, setShowMenu]);
 
+    const tabbarHeight = Platform.OS === "ios" ? 30 : 85
+    const keyboardTopToolbarHeight = Platform.select({ ios: 44, default: 0 })
+    const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight
+
     return (
         <SafeAreaView edges={["bottom"]} style={{ flex: 1, backgroundColor: '#FFF' }}>
             <View style={{
@@ -668,72 +673,30 @@ export default function AnonimChat() {
             </View>
 
             <GiftedChat
+                keyboardAvoidingViewProps={{ keyboardVerticalOffset }}
                 messages={messages}
                 onSend={(msgs) => { onSend(msgs); setText(''); }}
                 user={user}
-                locale={"tr-TR"} // 👈 aktif uygulama dilini otomatik alır
-                renderAvatar={() => null}
-                text={text}
+                locale={i18n.language}
+                textInputProps={{
+                    style: {
+                        color: "#000",
+                    }
+                }}
+                colorScheme="light"
 
-                bottomOffset={Platform.OS === "ios" ? -40 : 0} // ios cihazda klavye açılınca input ve klavye arasındaki boşluğu düzeltiyor
-
-                // 🔧 Toolbar: tek satır hizalaması + padding
-                renderInputToolbar={(props) => (
-                    <InputToolbar
-                        {...props}
-                        containerStyle={{
-                            borderTopWidth: 0,
-                            paddingHorizontal: 8,
-                            paddingVertical: 6,
-                        }}
-                        primaryStyle={{
-                            alignItems: 'center', // 👈 send ile input aynı hizada
-                        }}
-                    />
-                )}
-
-                // ✏️ Composer: flex:1 + sabit yükseklik, send ile yan yana sorunsuz
-                renderComposer={() => (
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignItems: "flex-end",
-                            backgroundColor: 'transparent',
-                        }}
-                    >
-
-                        {/* 📝 Text Input */}
-                        <TextInput
-                            value={text}
-                            onChangeText={setText}
-                            placeholder={t("anon_chat_composer_placeholder")}
-                            autoFocus={false}
-                            multiline
-                            style={{
-                                flex: 1,
-                                minHeight: 40,
-                                maxHeight: 200,
-                                borderWidth: 1,
-                                borderColor: '#ccc',
-                                paddingHorizontal: 10,
-                                paddingVertical: 6,
-                                borderRadius: 10,
-                                fontSize: 16,
-                                color: '#000',
-                                textAlignVertical: 'top',
-                            }}
-                        />
-                    </View>
-                )}
                 // 🚀 Send: 40x40 daire, dikeyde ortalı
                 renderSend={(props: SendProps<IMessage>) => {
                     const canSend = ((props.text ?? '').trim().length > 0);
                     return (
                         <Send
                             {...props}
-                            disabled={!canSend}
-                            containerStyle={{ marginLeft: 8, marginRight: 4, alignSelf: "flex-end", marginBottom: 10 }}
+                            containerStyle={{
+                                marginLeft: 8,
+                                marginRight: 4,
+                                alignSelf: "flex-end",
+                                marginBottom: 10,
+                            }}
                         >
                             <View
                                 style={{
@@ -756,7 +719,6 @@ export default function AnonimChat() {
                     );
                 }}
             />
-
             <CModal
                 visible={timeoutModal}
                 onClose={() => setTimeoutModal(false)}

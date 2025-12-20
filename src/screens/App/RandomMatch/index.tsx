@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { responsive } from '../../../utils/responsive';
@@ -11,8 +11,12 @@ import { useAppSelector } from '../../../store/hooks';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MatchSearchingLoading from './components/MatchSearchingLoading';
 import { ANONIM_CHAT } from '../../../navigators/Stack';
+import { fetchUserData } from '../../../store/services/userDataService';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../store/Store';
 
 const RandomMatch = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const { userData } = useAppSelector((state) => state.userData);
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
@@ -21,6 +25,10 @@ const RandomMatch = () => {
     const navigation: any = useNavigation();
     const { t } = useTranslation();
     const [matchLoading, setMatchLoading] = useState(false);
+
+    useEffect(() => {
+        dispatch(fetchUserData());
+    }, []);
 
     // Rastgele saniye bekletmek için fonksiyon
     const getRandomDelay = () => {

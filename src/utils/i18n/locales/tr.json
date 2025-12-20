@@ -262,5 +262,15 @@
     "delete_account_confirm": "Gerçekten hesabınızı silmek istiyor musunuz?",
     "account_deleted_success": "Hesabınız başarıyla silinmiştir",
     "account_deleted_failed": "Hesap silme işlemi başarısız oldu",
-    "yes": "Evet"
+    "yes": "Evet",
+    "anon_chat_blocked_by_other_banner": "Bu kullanıcı tarafından engellendiniz. Mesaj gönderemezsiniz.",
+    "anon_chat_unblock_title": "Engeli Kaldır",
+    "anon_chat_unblock_message": "Bu kullanıcının engelini kaldırmak istediğinize emin misiniz?",
+    "anon_chat_unblock_confirm": "Engeli Kaldır",
+    "anon_chat_unblock_success_message": "Kullanıcının engeli kaldırıldı.",
+    "anon_chat_unblock_error_message": "Engel kaldırma işlemi sırasında bir hata oluştu.",
+    "anon_chat_blocked_by_you": "Bu kullanıcıyı engellediğiniz için mesaj gönderemezsiniz.",
+    "anon_chat_blocked_by_other": "Bu kullanıcı sizi engellediği için mesaj gönderemezsiniz.",
+    "anon_chat_blocked_input_you": "Bu kullanıcıyı engellediniz.",
+    "anon_chat_blocked_input_other": "Bu kullanıcı sizi engelledi."
 }

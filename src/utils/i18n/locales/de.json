@@ -262,5 +262,15 @@
     "delete_account_confirm": "Möchten Sie Ihr Konto wirklich löschen?",
     "account_deleted_success": "Ihr Konto wurde erfolgreich gelöscht",
     "account_deleted_failed": "Das Löschen des Kontos ist fehlgeschlagen",
-    "yes": "Ja"
+    "yes": "Ja",
+    "anon_chat_blocked_by_other_banner": "Du wurdest von diesem Nutzer blockiert. Du kannst keine Nachrichten mehr senden.",
+    "anon_chat_unblock_title": "Blockierung aufheben",
+    "anon_chat_unblock_message": "Möchten Sie die Blockierung dieses Benutzers wirklich aufheben?",
+    "anon_chat_unblock_confirm": "Blockierung aufheben",
+    "anon_chat_unblock_success_message": "Die Blockierung des Benutzers wurde aufgehoben.",
+    "anon_chat_unblock_error_message": "Beim Aufheben der Blockierung ist ein Fehler aufgetreten.",
+    "anon_chat_blocked_by_you": "Sie können keine Nachrichten senden, da Sie diesen Benutzer blockiert haben.",
+    "anon_chat_blocked_by_other": "Sie können keine Nachrichten senden, da dieser Benutzer Sie blockiert hat.",
+    "anon_chat_blocked_input_you": "Sie haben diesen Benutzer blockiert.",
+    "anon_chat_blocked_input_other": "Dieser Benutzer hat Sie blockiert."
 }
