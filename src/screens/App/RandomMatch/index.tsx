@@ -14,6 +14,8 @@ import { ANONIM_CHAT } from '../../../navigators/Stack';
 import { fetchUserData } from '../../../store/services/userDataService';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store/Store';
+import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
+import { calculateAge } from '../../../components/CalculateAge';
 
 const RandomMatch = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -30,6 +32,112 @@ const RandomMatch = () => {
         dispatch(fetchUserData());
     }, []);
 
+    // Rastgele 2 annonId çek — lastOnline yerine random match flag kullanarak
+    // const handlePress = async () => {
+    //     setMatchLoading(true);
+    //     let meIdForFinally: string | undefined;
+
+    //     try {
+    //         const meId = userData?.userId;
+    //         const meAnnonId = userData?.annonId;
+    //         meIdForFinally = meId;
+
+    //         if (!meId || !meAnnonId) {
+    //             throw new Error('annonId veya userId yok');
+    //         }
+
+    //         // Benim daha önce match olduğum kullanıcılar
+    //         const blockedIds = new Set([
+    //             ...(userData?.likeMatches || []),
+    //             ...(userData?.superLikeMatches || []),
+    //             ...(userData?.blockers || []),
+    //             ...(userData?.blocked || []),
+    //         ]);
+
+    //         // 1️⃣ Kendimi "Random Match arıyorum" moduna al
+    //         await firestore()
+    //             .collection('users')
+    //             .doc(meId) // doküman id’in farklıysa burayı kendi yapına göre düzenle
+    //             .set(
+    //                 {
+    //                     isRandomSearching: true,
+    //                     randomSearchingAt: firestore.FieldValue.serverTimestamp(),
+    //                 },
+    //                 { merge: true }
+    //             );
+
+
+    //         // 2️⃣ Tüm kullanıcıları çek
+    //         const usersSnapshot = await firestore().collection('users').get();
+
+    //         // 3️⃣ Random match arayan uygun adayları filtrele
+    //         const candidates = usersSnapshot.docs
+    //             .map(d => d.data() as any)
+    //             .filter(u => {
+    //                 if (!u?.userId || !u?.annonId) {
+    //                     return false;
+    //                 }
+
+    //                 // Ben değil
+    //                 if (u.userId === meId) {
+    //                     return false;
+    //                 }
+
+    //                 // Daha önce match / block ettiğim kullanıcı olmasın
+    //                 if (blockedIds.has(u.userId)) {
+    //                     return false;
+    //                 }
+
+    //                 // Sadece random match butonuna basmış olanlar
+    //                 const isSearching = !!u.isRandomSearching;
+
+    //                 // ✅ 5 dk kontrolü kaldırıldı
+    //                 return isSearching;
+    //             })
+    //             .map(u => u.annonId);
+
+    //         if (!candidates.length) {
+    //             console.log('Şu anda random match arayan başka kullanıcı yok.');
+    //             // İstersen burada kullanıcıya toast / modal ile bilgi gösterebilirsin
+    //             return;
+    //         }
+
+    //         // Rastgele 1 aday seç
+    //         const picked =
+    //             candidates[Math.floor(Math.random() * candidates.length)];
+
+    //         // Yapay gecikme (animasyon vs için)
+    //         await new Promise(r => setTimeout(r, getRandomDelay()));
+
+    //         // Eşleşme ekranına git
+    //         navigation.navigate(ANONIM_CHAT, {
+    //             annonId: meAnnonId,
+    //             other2Id: picked,
+    //         });
+    //     } catch (e) {
+    //         console.log('Annon match error:', e);
+    //     } finally {
+    //         // 4️⃣ İş bittiğinde kendimi random search modundan çıkar
+    //         try {
+    //             if (meIdForFinally) {
+    //                 await firestore()
+    //                     .collection('users')
+    //                     .doc(meIdForFinally)
+    //                     .set(
+    //                         {
+    //                             isRandomSearching: false,
+    //                         },
+    //                         { merge: true }
+    //                     );
+    //             }
+    //         } catch (innerErr) {
+    //             console.log('Random search flag reset error:', innerErr);
+    //         }
+
+    //         setMatchLoading(false);
+    //     }
+    // };
+
     // Rastgele saniye bekletmek için fonksiyon
     const getRandomDelay = () => {
         const delays = [5000, 10000, 15000, 20000]; // ms cinsinden
@@ -37,72 +145,61 @@ const RandomMatch = () => {
         return delays[randomIndex];
     };
 
-    // Rastgele 2 annonId çek
-    // const handlePress = async () => {
-    //     setMatchLoading(true);
-    //     try {
-    //         const meAnnonId = userData?.annonId; // 👈 kendi annonId
-    //         if (!meAnnonId) throw new Error('Me annonId yok');
-
-    //         // Tüm kullanıcıları çek
-    //         const usersSnapshot = await firestore().collection('users').get();
-    //         const otherAnnonIds: string[] = [];
-
-    //         usersSnapshot.forEach(doc => {
-    //             const d = doc.data() as any;
-    //             if (d?.annonId && d.annonId !== meAnnonId) {
-    //                 otherAnnonIds.push(d.annonId);
-    //             }
-    //         });
-
-    //         if (otherAnnonIds.length === 0) {
-    //             console.log('Eşleşecek başka annonId yok.');
-    //             return;
-    //         }
-
-    //         // Rastgele 1 kişi seç
-    //         const picked = otherAnnonIds[Math.floor(Math.random() * otherAnnonIds.length)];
-
-    //         // İsteğe bağlı bekletme
-    //         await new Promise(r => setTimeout(r, getRandomDelay()));
-    //         navigation.navigate(ANONIM_CHAT, {
-    //             annonId: meAnnonId,
-    //             other2Id: picked
-    //         });
-    //     } catch (e) {
-    //         console.log('Annon match error:', e);
-    //     } finally {
-    //         setMatchLoading(false);
-    //     }
-    // };
-
-    // Rastgele 2 annonId çek
-    // Rastgele 2 annonId çek — lastOnline yerine random match flag kullanarak
     const handlePress = async () => {
         setMatchLoading(true);
         let meIdForFinally: string | undefined;
 
         try {
             const meId = userData?.userId;
-            const meAnnonId = userData?.annonId;
             meIdForFinally = meId;
 
-            if (!meId || !meAnnonId) {
-                throw new Error('annonId veya userId yok');
+            if (!meId) {
+                throw new Error('userId yok');
             }
 
-            // Benim daha önce match olduğum kullanıcılar
-            const blockedIds = new Set([
-                ...(userData?.likeMatches || []),
-                ...(userData?.superLikeMatches || []),
-                ...(userData?.blockers || []),
-                ...(userData?.blocked || []),
+            // ✅ Me’yi taze çek (Filter değerleri en güncel olsun)
+            const meSnap = await firestore().collection('users').doc(meId).get();
+            const me = (meSnap.data() || {}) as any;
+
+            const meAnnonId = me?.annonId;
+            if (!meAnnonId) {
+                throw new Error('annonId yok');
+            }
+
+            // ✅ engel + match listeleri
+            const blockedIds = new Set<string>([
+                ...(me?.likeMatches || []),
+                ...(me?.superLikeMatches || []),
+                ...(me?.blockers || []),
+                ...(me?.blocked || []),
             ]);
 
-            // 1️⃣ Kendimi "Random Match arıyorum" moduna al
+            // ✅ Filter kriterleri (Discover ile aynı mantık)
+            const maxDistance = typeof me?.maxDistance === 'number' ? me.maxDistance : 150;
+
+            const minAge =
+                typeof me?.ageRange?.min === 'number'
+                    ? me.ageRange.min
+                    : 18;
+
+            const maxAge =
+                typeof me?.ageRange?.max === 'number'
+                    ? me.ageRange.max
+                    : 90;
+
+            const lookingFor = (me?.lookingFor || 'both')?.toLowerCase();
+            const myLat = me?.latitude;
+            const myLng = me?.longitude;
+
+            // konum yoksa filtre uygulamak sağlıklı değil
+            if (typeof myLat !== 'number' || typeof myLng !== 'number') {
+                throw new Error('Konum (latitude/longitude) yok');
+            }
+
+            // 1️⃣ kendimi arıyor moduna al
             await firestore()
                 .collection('users')
-                .doc(meId) // doküman id’in farklıysa burayı kendi yapına göre düzenle
+                .doc(meId)
                 .set(
                     {
                         isRandomSearching: true,
@@ -111,60 +208,74 @@ const RandomMatch = () => {
                     { merge: true }
                 );
 
-            // Son X dakika içinde random match arayanlar (örnek: 5 dk)
-            const cutoffMs = Date.now() - 5 * 60 * 1000;
-
-            // 2️⃣ Tüm kullanıcıları çek
+            // 2️⃣ tüm kullanıcıları çek
             const usersSnapshot = await firestore().collection('users').get();
 
-            // 3️⃣ Random match arayan uygun adayları filtrele
+            // animasyon için random delay
+            await new Promise(r => setTimeout(r, getRandomDelay()));
+
+            // 3️⃣ uygun adayları filtrele
             const candidates = usersSnapshot.docs
                 .map(d => d.data() as any)
                 .filter(u => {
-                    if (!u?.userId || !u?.annonId) {
-                        return false;
-                    }
+                    if (!u?.userId || !u?.annonId) return false;
 
-                    // Ben değil
-                    if (u.userId === meId) {
-                        return false;
-                    }
+                    // ben değil
+                    if (u.userId === meId) return false;
 
-                    // Daha önce match / block ettiğim kullanıcı olmasın
-                    if (blockedIds.has(u.userId)) {
-                        return false;
-                    }
+                    // block/match listesinde olmasın
+                    if (blockedIds.has(u.userId)) return false;
 
-                    // Sadece random match butonuna basmış olanlar
-                    const isSearching = !!u.isRandomSearching;
+                    // sadece random searching olanlar
+                    if (!u.isRandomSearching) return false;
 
-                    const searchingDate =
-                        u?.randomSearchingAt?.toDate
-                            ? u.randomSearchingAt.toDate()
-                            : undefined;
+                    // ✅ karşı tarafın da beni blocklamış olma ihtimali
+                    const otherBlocked = Array.isArray(u?.blocked) ? u.blocked : [];
+                    const otherBlockers = Array.isArray(u?.blockers) ? u.blockers : [];
 
-                    const isSearchingRecently = searchingDate
-                        ? searchingDate.getTime() >= cutoffMs
-                        : false;
+                    // u beni blocked listesine eklediyse veya blockers listesine eklediyse => elenir
+                    if (otherBlocked.includes(meId) || otherBlockers.includes(meId)) return false;
 
-                    return isSearching && isSearchingRecently;
+                    // ✅ filtre: distance
+                    if (typeof u?.latitude !== 'number' || typeof u?.longitude !== 'number') return false;
+
+                    const distance = getDistanceFromLatLonInKm(
+                        myLat,
+                        myLng,
+                        u.latitude,
+                        u.longitude
+                    );
+
+                    if (distance > maxDistance) return false;
+
+                    // ✅ filtre: age
+                    const age = calculateAge(u.birthDate);
+                    if (!Number.isFinite(age)) return false;
+
+                    if (age < minAge || age > maxAge) return false;
+
+                    // ✅ filtre: gender (lookingFor)
+                    const otherGender = (u?.gender || '')?.toLowerCase();
+
+                    const matchesGender =
+                        lookingFor === 'both' ||
+                        !lookingFor ||
+                        lookingFor === otherGender;
+
+                    if (!matchesGender) return false;
+
+                    return true;
                 })
                 .map(u => u.annonId);
 
             if (!candidates.length) {
-                console.log('Şu anda random match arayan başka kullanıcı yok.');
-                // İstersen burada kullanıcıya toast / modal ile bilgi gösterebilirsin
+                console.log('Filtreye uygun random match arayan kullanıcı yok.');
                 return;
             }
 
             // Rastgele 1 aday seç
-            const picked =
-                candidates[Math.floor(Math.random() * candidates.length)];
+            const picked = candidates[Math.floor(Math.random() * candidates.length)];
 
-            // Yapay gecikme (animasyon vs için)
-            await new Promise(r => setTimeout(r, getRandomDelay()));
-
-            // Eşleşme ekranına git
             navigation.navigate(ANONIM_CHAT, {
                 annonId: meAnnonId,
                 other2Id: picked,
@@ -172,16 +283,14 @@ const RandomMatch = () => {
         } catch (e) {
             console.log('Annon match error:', e);
         } finally {
-            // 4️⃣ İş bittiğinde kendimi random search modundan çıkar
+            // kendimi searching modundan çıkar
             try {
                 if (meIdForFinally) {
                     await firestore()
                         .collection('users')
                         .doc(meIdForFinally)
                         .set(
-                            {
-                                isRandomSearching: false,
-                            },
+                            { isRandomSearching: false },
                             { merge: true }
                         );
                 }
@@ -195,9 +304,7 @@ const RandomMatch = () => {
 
     return (
         <View style={styles.container}>
-            <Header
-                userData={userData}
-                twoIcon={false} />
+            <Header userData={userData} />
 
             {matchLoading ? (
                 <View style={styles.loaderWrap}>

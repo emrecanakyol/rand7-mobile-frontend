@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -69,6 +69,46 @@ const EditProfileScreen = () => {
       return [...prev, item];
     });
   };
+
+  const hobbyCategoryMap = useMemo(() => {
+    const map: Record<string, string> = {};
+
+    Object.entries(categorizedHobbies).forEach(([category, options]) => {
+      options.forEach((hobby) => {
+        map[hobby] = category;
+      });
+    });
+
+    return map;
+  }, []);
+
+  const groupedSelectedHobbies = useMemo(() => {
+    const groups: Record<string, string[]> = {};
+
+    hobbies.forEach((hobby) => {
+      const category = hobbyCategoryMap[hobby] || "other";
+      if (!groups[category]) {
+        groups[category] = [];
+      }
+      groups[category].push(hobby);
+    });
+
+    // kategori içi alfabetik (çeviriye göre değil, key'e göre)
+    Object.keys(groups).forEach((cat) => {
+      groups[cat].sort((a, b) => a.localeCompare(b));
+    });
+
+    // kategorileri, categorizedHobbies sırasına göre döndür
+    const orderedCategories = [
+      ...Object.keys(categorizedHobbies),
+      "other",
+    ].filter((c) => groups[c]?.length);
+
+    return orderedCategories.map((category) => ({
+      category,
+      items: groups[category],
+    }));
+  }, [hobbies, hobbyCategoryMap]);
 
   // küçük yardımcılar
   const isArrayEqual = (a?: any[], b?: any[]) =>
@@ -337,11 +377,40 @@ const EditProfileScreen = () => {
 
         <View style={styles.interestsContainer}>
           {hobbies.length === 0 ? (
-            <CText style={{ color: '#999', marginTop: 8 }}>{t("noInterestsSelected")}</CText>
+            <CText style={{ color: '#999', marginTop: 8 }}>
+              {t("noInterestsSelected")}
+            </CText>
           ) : (
-            hobbies.map((item, i) => (
-              <View key={`${item}_${i}`} style={styles.interestTag}>
-                <CText style={styles.interestText}>{item}</CText>
+            groupedSelectedHobbies.map((group) => (
+              <View
+                key={group.category}
+                style={{
+                  width: "100%",
+                  marginTop: 6,
+                }}
+              >
+                <CText
+                  style={{
+                    color: colors.TEXT_MAIN_COLOR,
+                    fontWeight: "700",
+                    marginBottom: 8,
+                  }}
+                >
+                  {t(`hobby_category_${group.category}`)}
+                </CText>
+
+                <View style={styles.interestsRow}>
+                  {group.items.map((hobby) => (
+                    <View
+                      key={hobby}
+                      style={styles.interestTag}
+                    >
+                      <CText style={styles.interestText}>
+                        {t(`hobby_${hobby}`)}
+                      </CText>
+                    </View>
+                  ))}
+                </View>
               </View>
             ))
           )}
@@ -443,6 +512,11 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     backgroundColor: '#FFF',
     paddingHorizontal: 20,
     paddingTop: 10,
+  },
+  interestsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
   },
   header: {
     flexDirection: 'row',

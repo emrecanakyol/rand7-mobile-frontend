@@ -38,6 +38,11 @@ const Home = () => {
 
     const [welcomeVisible, setWelcomeVisible] = useState(true);
 
+    const myBlockedSet = new Set([
+        ...(userData?.blocked || []),
+        ...(userData?.blockers || []),
+    ]);
+
     useEffect(() => {
         // Ekran açılır açılmaz modal göster
         setWelcomeVisible(true);
@@ -119,6 +124,14 @@ const Home = () => {
             const filtered = allUsers.filter((u: any) => {
                 // 🔹 Kendini listeleme
                 if (u.userId === userData.userId) return false;
+
+                // Ben engellediysem veya beni engelleyenler listemdeyse gösterme
+                if (myBlockedSet.has(u.userId)) return false;
+
+                // Karşı taraf beni engellediyse gösterme
+                const otherBlockedArr = Array.isArray(u?.blocked) ? u.blocked : [];
+                if (otherBlockedArr.includes(userData.userId)) return false;
+
 
                 // 🔹 Eğer 12 saat dolmadıysa, beğenilenleri gösterme
                 if (!shouldReset && (likedUsers.includes(u.userId) || superLikedUsers.includes(u.userId))) {

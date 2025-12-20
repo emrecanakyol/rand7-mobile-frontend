@@ -59,7 +59,9 @@ const Account = () => {
                             />
                         </View>
                     </TouchableOpacity>
-                    <Text style={styles.userName}>{userData?.firstName}, {calculateAge(userData?.birthDate)}</Text>
+                    <Text style={styles.userName}>
+                        {userData?.firstName ?? ''}{userData?.birthDate ? `, ${calculateAge(userData.birthDate)}` : ''}
+                    </Text>
                     <Text style={styles.userLocation}>{userData?.province}, {userData?.country}</Text>
                 </View>
 

@@ -95,6 +95,8 @@ const UserProfile = ({ route }: any) => {
                             );
 
                             await batch.commit();
+                            // ✅ EŞLEŞME KALDIRILINCA SOHBETİ DE TEMİZLE
+                            await deleteConversationBothSides(userData.userId, user.userId);
 
                             // Lokal state'i de güncelle ki UI hemen düşsün
                             setHasAnyMatch(false);
@@ -393,6 +395,62 @@ const UserProfile = ({ route }: any) => {
         } finally {
             setMatchLoading(false)
         }
+    };
+
+    const deleteThreadMessages = async (ownerId: string, peerId: string) => {
+        const messagesRef = firestore()
+            .collection("users")
+            .doc(ownerId)
+            .collection("chats")
+            .doc(peerId)
+            .collection("messages");
+
+        while (true) {
+            const snap = await messagesRef
+                .orderBy("createdAt", "desc")
+                .limit(400)
+                .get();
+
+            if (snap.empty) {
+                break;
+            }
+
+            const batch = firestore().batch();
+
+            snap.docs.forEach((d) => {
+                batch.delete(d.ref);
+            });
+
+            await batch.commit();
+        }
+    };
+
+    const deleteConversationBothSides = async (meId: string, otherId: string) => {
+        // 1) Mesajları sil (benim taraf)
+        await deleteThreadMessages(meId, otherId);
+
+        // 2) Mesajları sil (karşı taraf)
+        await deleteThreadMessages(otherId, meId);
+
+        // 3) Chat dokümanlarını sil
+        const batch = firestore().batch();
+
+        const myChatDoc = firestore()
+            .collection("users")
+            .doc(meId)
+            .collection("chats")
+            .doc(otherId);
+
+        const otherChatDoc = firestore()
+            .collection("users")
+            .doc(otherId)
+            .collection("chats")
+            .doc(meId);
+
+        batch.delete(myChatDoc);
+        batch.delete(otherChatDoc);
+
+        await batch.commit();
     };
 
     const handleDislike = async (userId: string) => {
