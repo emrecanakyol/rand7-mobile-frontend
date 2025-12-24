@@ -134,7 +134,12 @@ const AddProfile8 = ({ navigation, route }: any) => {
                         },
                         { merge: true },
                     );
-                await navigation.navigate(BOOTOMTABS);
+                // await navigation.navigate(BOOTOMTABS);
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: BOOTOMTABS }],
+                });
+
             } catch (error) {
                 console.log('Error saving profile: ', error);
                 ToastError(

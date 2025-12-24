@@ -30,12 +30,38 @@ const RandomMatch = () => {
     const [matchLoading, setMatchLoading] = useState(false);
 
     // Veriler eksikse yine profil oluştur ekranına yönlendir
+    // const checkUserProfile = async () => {
+    //     if (loading) {
+    //         return; // Veriler hâlâ yükleniyor, bekle
+    //     } else if (!userData.firstName || !userData.lastName || !userData.photos?.length) {
+    //         navigation.navigate(ADD_PROFILE);
+    //         return;
+    //     }
+    // };
     const checkUserProfile = async () => {
         if (loading) {
-            return; // Veriler hâlâ yükleniyor, bekle
-        } else if (!userData.firstName || !userData.lastName || !userData.photos?.length) {
-            navigation.navigate(ADD_PROFILE);
             return;
+        }
+
+        const meId = userData?.userId;
+        if (!meId) {
+            return;
+        }
+
+        const snap = await firestore().collection('users').doc(meId).get();
+        const me = snap.data() as any;
+
+        const hasProfile =
+            !!me?.firstName &&
+            !!me?.lastName &&
+            Array.isArray(me?.photos) &&
+            me.photos.length > 0;
+
+        if (!hasProfile) {
+            navigation.reset({
+                index: 0,
+                routes: [{ name: ADD_PROFILE }],
+            });
         }
     };
 
