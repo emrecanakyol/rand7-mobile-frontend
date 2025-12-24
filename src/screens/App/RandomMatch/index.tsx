@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { responsive } from '../../../utils/responsive';
 import { useTheme } from '../../../utils/colors';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import LottieView from 'lottie-react-native';
 import Header from '../../../components/Header';
 import { useAppSelector } from '../../../store/hooks';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MatchSearchingLoading from './components/MatchSearchingLoading';
-import { ANONIM_CHAT } from '../../../navigators/Stack';
+import { ADD_PROFILE, ANONIM_CHAT } from '../../../navigators/Stack';
 import { fetchUserData } from '../../../store/services/userDataService';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store/Store';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import { calculateAge } from '../../../components/CalculateAge';
+import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
 
 const RandomMatch = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { userData } = useAppSelector((state) => state.userData);
+    const { userData, loading } = useAppSelector((state) => state.userData);
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
@@ -28,115 +29,33 @@ const RandomMatch = () => {
     const { t } = useTranslation();
     const [matchLoading, setMatchLoading] = useState(false);
 
+    // Veriler eksikse yine profil oluştur ekranına yönlendir
+    const checkUserProfile = async () => {
+        if (loading) {
+            return; // Veriler hâlâ yükleniyor, bekle
+        } else if (!userData.firstName || !userData.lastName || !userData.photos?.length) {
+            navigation.navigate(ADD_PROFILE);
+            return;
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            dispatch(fetchUserData());
+        }, [dispatch])
+    );
+
     useEffect(() => {
-        dispatch(fetchUserData());
-    }, []);
+        if (!loading && userData) {
+            checkUserProfile();
+            getFcmToken();
+        }
+    }, [loading, userData]);
 
-    // Rastgele 2 annonId çek — lastOnline yerine random match flag kullanarak
-    // const handlePress = async () => {
-    //     setMatchLoading(true);
-    //     let meIdForFinally: string | undefined;
-
-    //     try {
-    //         const meId = userData?.userId;
-    //         const meAnnonId = userData?.annonId;
-    //         meIdForFinally = meId;
-
-    //         if (!meId || !meAnnonId) {
-    //             throw new Error('annonId veya userId yok');
-    //         }
-
-    //         // Benim daha önce match olduğum kullanıcılar
-    //         const blockedIds = new Set([
-    //             ...(userData?.likeMatches || []),
-    //             ...(userData?.superLikeMatches || []),
-    //             ...(userData?.blockers || []),
-    //             ...(userData?.blocked || []),
-    //         ]);
-
-    //         // 1️⃣ Kendimi "Random Match arıyorum" moduna al
-    //         await firestore()
-    //             .collection('users')
-    //             .doc(meId) // doküman id’in farklıysa burayı kendi yapına göre düzenle
-    //             .set(
-    //                 {
-    //                     isRandomSearching: true,
-    //                     randomSearchingAt: firestore.FieldValue.serverTimestamp(),
-    //                 },
-    //                 { merge: true }
-    //             );
-
-
-    //         // 2️⃣ Tüm kullanıcıları çek
-    //         const usersSnapshot = await firestore().collection('users').get();
-
-    //         // 3️⃣ Random match arayan uygun adayları filtrele
-    //         const candidates = usersSnapshot.docs
-    //             .map(d => d.data() as any)
-    //             .filter(u => {
-    //                 if (!u?.userId || !u?.annonId) {
-    //                     return false;
-    //                 }
-
-    //                 // Ben değil
-    //                 if (u.userId === meId) {
-    //                     return false;
-    //                 }
-
-    //                 // Daha önce match / block ettiğim kullanıcı olmasın
-    //                 if (blockedIds.has(u.userId)) {
-    //                     return false;
-    //                 }
-
-    //                 // Sadece random match butonuna basmış olanlar
-    //                 const isSearching = !!u.isRandomSearching;
-
-    //                 // ✅ 5 dk kontrolü kaldırıldı
-    //                 return isSearching;
-    //             })
-    //             .map(u => u.annonId);
-
-    //         if (!candidates.length) {
-    //             console.log('Şu anda random match arayan başka kullanıcı yok.');
-    //             // İstersen burada kullanıcıya toast / modal ile bilgi gösterebilirsin
-    //             return;
-    //         }
-
-    //         // Rastgele 1 aday seç
-    //         const picked =
-    //             candidates[Math.floor(Math.random() * candidates.length)];
-
-    //         // Yapay gecikme (animasyon vs için)
-    //         await new Promise(r => setTimeout(r, getRandomDelay()));
-
-    //         // Eşleşme ekranına git
-    //         navigation.navigate(ANONIM_CHAT, {
-    //             annonId: meAnnonId,
-    //             other2Id: picked,
-    //         });
-    //     } catch (e) {
-    //         console.log('Annon match error:', e);
-    //     } finally {
-    //         // 4️⃣ İş bittiğinde kendimi random search modundan çıkar
-    //         try {
-    //             if (meIdForFinally) {
-    //                 await firestore()
-    //                     .collection('users')
-    //                     .doc(meIdForFinally)
-    //                     .set(
-    //                         {
-    //                             isRandomSearching: false,
-    //                         },
-    //                         { merge: true }
-    //                     );
-    //             }
-    //         } catch (innerErr) {
-    //             console.log('Random search flag reset error:', innerErr);
-    //         }
-
-    //         setMatchLoading(false);
-    //     }
-    // };
+    useEffect(() => {
+        const unsubscribe = registerListenerWithFCM(navigation);
+        return unsubscribe;
+    }, [navigation]);
 
     // Rastgele saniye bekletmek için fonksiyon
     const getRandomDelay = () => {

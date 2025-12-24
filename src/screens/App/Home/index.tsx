@@ -35,7 +35,6 @@ const Home = () => {
     const [nearbyUsers, setNearbyUsers] = useState<any[]>([]);
     const swiperRef = useRef<any>(null);
     const [loadingData, setLoadingData] = useState(false);
-
     const [welcomeVisible, setWelcomeVisible] = useState(true);
 
     const myBlockedSet = new Set([
@@ -48,33 +47,11 @@ const Home = () => {
         setWelcomeVisible(true);
     }, []);
 
-    // Veriler eksikse yine profil oluştur ekranına yönlendir
-    const checkUserProfile = async () => {
-        if (loading) {
-            return; // Veriler hâlâ yükleniyor, bekle
-        } else if (!userData.firstName || !userData.lastName || !userData.photos?.length) {
-            navigation.navigate(ADD_PROFILE);
-            return;
-        }
-    };
-
     useFocusEffect(
         useCallback(() => {
             dispatch(fetchUserData());
         }, [dispatch])
     );
-
-    useEffect(() => {
-        if (!loading && userData) {
-            checkUserProfile();
-            getFcmToken();
-        }
-    }, [loading, userData]);
-
-    useEffect(() => {
-        const unsubscribe = registerListenerWithFCM(navigation);
-        return unsubscribe;
-    }, [navigation]);
 
     // Yakındaki kullanıcıları çek
     const fetchNearbyUsers = async () => {
