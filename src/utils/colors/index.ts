@@ -13,7 +13,8 @@ export const useTheme = () => {
         BLACK_COLOR: isDarkMode ? "#FFF" : "#0B0E11",
         PURPLE_COLOR: isDarkMode ? "#FFF" : '#3A1F4F',
 
-        GREEN_COLOR: "#8F985F",
+        GREEN_COLOR: "#21C063",
+        DARK_GREEN_COLOR: "#8F985F",
         RED_COLOR: "#E82251",
         GRAY_COLOR: "#B0B0B0",
         DARK_GRAY: "#808080",

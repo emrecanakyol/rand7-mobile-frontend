@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
-import { GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
+import { View, TextInput, TouchableOpacity, Text, Platform, ActivityIndicator } from 'react-native';
+import { Bubble, GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
@@ -15,6 +15,10 @@ import { ToastError, ToastSuccess } from '../../../../../utils/toast';
 import { useTranslation } from "react-i18next";
 import CImage from '../../../../../components/CImage';
 import { useAlert } from '../../../../../context/AlertContext';
+import { useTheme } from '../../../../../utils/colors';
+import storage from '@react-native-firebase/storage';
+import { responsive } from '../../../../../utils/responsive';
+import CPhotosAdd from '../../../../../components/CPhotosAdd';
 
 type RootStackParamList = {
     Anonim: {
@@ -36,6 +40,7 @@ export default function AnonimChat() {
     // tekrar tekrar yönlenmeyi önlemek için
     const didNavigateRef = useRef(false);
     const { showAlert } = useAlert();
+    const { colors } = useTheme();
 
     const insets = useSafeAreaInsets();
 
@@ -63,6 +68,18 @@ export default function AnonimChat() {
     const [backDeleting, setBackDeleting] = useState(false);
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
     const [isBlockedByOther, setIsBlockedByOther] = useState(false);
+    const [photoAddVisible, setPhotoAddVisible] = useState(false);
+    const [photos, setPhotos] = useState<string[]>(['']); // Tek fotoğraf için array
+    const [sending, setSending] = useState(false);
+
+    const uploadImage = async (uri: string, roomId: string) => {
+        const fileName = `${nanoid()}.jpg`;
+        const path = `users/chat_images/${roomId}/${fileName}`;
+        const reference = storage().ref(path);
+        await reference.putFile(uri); // React Native uri
+        const url = await reference.getDownloadURL();
+        return url;
+    };
 
     useEffect(() => {
         if (!meId || !otherId) return;
@@ -156,6 +173,7 @@ export default function AnonimChat() {
                             text: d.text || '',
                             createdAt: d.createdAt?.toDate ? d.createdAt.toDate() : new Date(),
                             user: d.user,
+                            image: d.image,
                         });
                     });
                     setMessages(list);
@@ -192,8 +210,6 @@ export default function AnonimChat() {
     }, [meId, otherId]);
 
 
-
-    // -------- Mesaj gönder (fan-out: her iki kullanıcı path’ine de yaz)
     const onSend = useCallback(async (newMessages: IMessage[] = []) => {
         if (!meId || !otherId || newMessages.length === 0) return;
 
@@ -203,9 +219,9 @@ export default function AnonimChat() {
         const batch = firestore().batch();
         const serverTime = firestore.FieldValue.serverTimestamp();
 
-        const baseMsg = {
+        const baseMsg: any = {
             _id: id,
-            text: m.text,
+            text: m.text || '',
             createdAt: serverTime,
             user: {
                 _id: meId,
@@ -213,51 +229,86 @@ export default function AnonimChat() {
             },
         };
 
+        // Eğer m.image varsa ekle
+        if (m.image) {
+            baseMsg.image = m.image;
+        }
+
         // my thread
         const myMsgRef = msgsCol(meId, otherId).doc(id);
         batch.set(myMsgRef, baseMsg);
 
-        // other thread (ayna kayıt)
+        // other thread
         const otherMsgRef = msgsCol(otherId, meId).doc(id);
         batch.set(otherMsgRef, {
             ...baseMsg,
             user: { _id: meId, name: meName },
         });
 
-        // lastMessage metadata (benim taraf)
-        batch.set(
-            chatPath(meId, otherId),
-            {
-                lastMessage: m.text,
-                lastMessageAt: serverTime,
-                unreadCount: 0, // gönderirken bende unread artmaz
-                otherUser: firestore.FieldValue.delete(), // istersen burada tutma
-            },
-            { merge: true }
-        );
+        // lastMessage metadata
+        batch.set(chatPath(meId, otherId), {
+            lastMessage: m.text,
+            lastMessageAt: serverTime,
+            unreadCount: 0,
+        }, { merge: true });
 
-        // lastMessage metadata (karşı taraf)
-        batch.set(
-            chatPath(otherId, meId),
-            {
-                lastMessage: m.text,
-                lastMessageAt: serverTime,
-                unreadCount: firestore.FieldValue.increment(1),
-                otherUser: firestore.FieldValue.delete(),
-            },
-            { merge: true }
-        );
+        batch.set(chatPath(otherId, meId), {
+            lastMessage: m.text,
+            lastMessageAt: serverTime,
+            unreadCount: firestore.FieldValue.increment(1),
+        }, { merge: true });
 
         try {
             await batch.commit();
         } catch (e) {
             console.log('send error', e);
-            ToastError(
-                t("common_error_title"),
-                t("anon_chat_send_error")
-            );
+            ToastError(t('chat_error_title'), t('chat_error_message'));
         }
     }, [meId, otherId, meName]);
+
+    // onSend fonksiyonunu güncelle
+    const handleSend = async (msgs: IMessage[] = []) => {
+        if (!meId || !otherId) return;
+
+        const textMsg = msgs[0]?.text?.trim() || '';
+        const localImage = photos[0];
+
+        if (!textMsg && !localImage) return;
+
+        setSending(true); // ⬅️ Gönderme başladı
+
+        const roomId = [meId, otherId].sort().join('_');
+        let imageUrl: string | undefined;
+
+        if (localImage) {
+            try {
+                imageUrl = await uploadImage(localImage, roomId);
+            } catch (e) {
+                console.log('Image upload error', e);
+                setSending(false);
+                return;
+            }
+        }
+
+        const msg: IMessage = {
+            _id: nanoid(),
+            text: textMsg,
+            createdAt: new Date(),
+            user: { _id: meId, name: meName },
+            image: imageUrl,
+        };
+
+        try {
+            await onSend([msg]); // fan-out gönder
+        } catch (e) {
+            console.log('Send error', e);
+        } finally {
+            setSending(false); // ⬅️ Gönderme bitti
+            setText('');
+            setPhotos(['']);
+            setPhotoAddVisible(false);
+        }
+    };
 
     // -------- GiftedChat current user
     const user = useMemo(
@@ -273,36 +324,44 @@ export default function AnonimChat() {
         if (!meId || !otherId) return;
 
         try {
-            // 1) benim tarafımdaki mesajları çek
             const myMsgsSnap = await msgsCol(meId, otherId).get();
-            // 2) karşı tarafın tarafındaki mesajları çek
             const otherMsgsSnap = await msgsCol(otherId, meId).get();
 
-            // 3) batch başlat
             const batch = firestore().batch();
 
-            // 4) benim tarafımdaki her mesajı sil
+            // --- Storage silme ---
+            const imagesToDelete: string[] = [];
+
             myMsgsSnap.forEach(doc => {
-                batch.delete(
-                    msgsCol(meId, otherId).doc(doc.id)
-                );
+                const d = doc.data() as any;
+                if (d.image) imagesToDelete.push(d.image);
+                batch.delete(msgsCol(meId, otherId).doc(doc.id));
             });
 
-            // 5) diğer tarafın aynalı mesajlarını sil
             otherMsgsSnap.forEach(doc => {
-                batch.delete(
-                    msgsCol(otherId, meId).doc(doc.id)
-                );
+                const d = doc.data() as any;
+                if (d.image) imagesToDelete.push(d.image);
+                batch.delete(msgsCol(otherId, meId).doc(doc.id));
             });
 
-            // 6) sohbet metadata dokümanlarını da sil (anonim-chats/{otherId} ve anonim-chats/{meId})
             batch.delete(chatPath(meId, otherId));
             batch.delete(chatPath(otherId, meId));
 
-            // 7) commit
             await batch.commit();
 
-            console.log("Anonim chat silindi.");
+            // --- Storage'dan sil ---
+            await Promise.all(
+                imagesToDelete.map(async (url) => {
+                    try {
+                        const ref = storage().refFromURL(url);
+                        await ref.delete();
+                    } catch (e) {
+                        console.log("Storage delete error:", e);
+                    }
+                })
+            );
+
+            console.log("Anonim chat ve tüm görseller silindi.");
         } catch (err) {
             console.log("wipeAnonChat error:", err);
         }
@@ -639,6 +698,34 @@ export default function AnonimChat() {
         });
     }, [meId, otherId, t]);
 
+    const renderAccessoryMemo = useCallback(() => {
+        if (!photoAddVisible) return null;
+
+        return (
+            <View
+                style={{
+                    position: "absolute",
+                    left: 10,
+                    bottom: responsive(50),
+                    borderColor: colors.GRAY_COLOR,
+                    borderWidth: 0.5,
+                    borderRadius: 14,
+                }}
+            >
+                <CPhotosAdd
+                    index={0}
+                    photos={photos}
+                    setPhotos={setPhotos}
+                    width={100}
+                    height={100}
+                    borderRadius={12}
+                    imageBorderRadius={12}
+                    resizeMode="cover"
+                />
+            </View>
+        );
+    }, [photoAddVisible, photos, colors.GRAY_COLOR]);
+
     const tabbarHeight = Platform.OS === "ios" ? 50 : 105
     const keyboardTopToolbarHeight = Platform.select({ ios: 44, default: 0 })
     const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight
@@ -733,7 +820,7 @@ export default function AnonimChat() {
                                     <Ionicons name="flag-outline" size={18} color="#E11D48" />
                                     <Text
                                         style={{
-                                            fontSize: 14,
+                                            fontSize: 16,
                                             fontWeight: '600',
                                             color: '#E11D48',
                                         }}
@@ -778,7 +865,7 @@ export default function AnonimChat() {
                                     />
                                     <Text
                                         style={{
-                                            fontSize: 14,
+                                            fontSize: 16,
                                             fontWeight: '600',
                                             color: '#111',
                                         }}
@@ -803,58 +890,134 @@ export default function AnonimChat() {
             <GiftedChat
                 keyboardAvoidingViewProps={{ keyboardVerticalOffset }}
                 messages={messages}
-                onSend={(msgs) => { onSend(msgs); setText(''); }}
+                // onSend={(msgs) => { onSend(msgs); setText(''); }}
+                onSend={(msgs) => handleSend(msgs)}
                 user={user}
                 locale={i18n.language}
                 textInputProps={{
+                    maxLength: 2000,
                     editable: !(isBlockedByMe || isBlockedByOther),
                     placeholder: isBlockedByMe
                         ? t("anon_chat_blocked_input_you")
                         : isBlockedByOther
                             ? t("anon_chat_blocked_input_other")
                             : t("chat_type_message"),
+                    style: {
+                        color: colors.BLACK_COLOR,
+                        fontSize: 16,
+                        fontWeight: '500',
+                    },
                 }}
-                // textInputProps={{
-                //     style: {
-                //         color: "#000",
-                //     }
-                // }}
                 colorScheme="light"
+
+                renderBubble={(props) => {
+                    return (
+                        <Bubble
+                            {...props}
+                            wrapperStyle={{
+                                right: { // Sağdaki, yani senin mesajların
+                                    backgroundColor: colors.GREEN_COLOR,
+                                },
+                                left: { // Sol taraftaki mesajlar (karşı taraf)
+                                    backgroundColor: colors.EXTRA_LIGHT_GRAY,
+                                    // backgroundColor: colors.LIGHT_GRAY,
+                                },
+                            }}
+                            textStyle={{
+                                right: {
+                                    // yeşil arkaplan için beyaz yazı
+                                    color: '#fff',
+                                    fontSize: 16,
+                                    fontWeight: '500',
+                                },
+                                left: {
+                                    // sol taraf için siyah yazı
+                                    color: '#000',
+                                    fontSize: 16,
+                                    fontWeight: '500',
+                                },
+                            }}
+                        />
+                    );
+                }}
+
+                renderMessageImage={(props) => {
+                    const imageUri = props.currentMessage?.image;
+                    if (!imageUri) return null;
+
+                    return (
+                        <View style={{ margin: 4 }}>
+                            <CImage
+                                imgSource={{ uri: imageUri }}
+                                width={250}
+                                height={350}
+                                resizeMode="cover"
+                                borderRadius={14}
+                                imageBorderRadius={14}
+                            />
+                        </View>
+                    );
+                }}
+
+                // + butonu
+                renderActions={() => (
+                    <TouchableOpacity
+                        onPress={() => setPhotoAddVisible(prev => !prev)}
+                        style={{
+                            width: 35,
+                            height: 35,
+                            marginLeft: 8,
+                            marginRight: 3,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Ionicons name="add" size={24} color="#000" />
+                    </TouchableOpacity>
+                )}
+
+                // inputun üstünde ve sola hizalı fotoğraf ekleme alanı
+                renderAccessory={renderAccessoryMemo}
 
                 // 🚀 Send: 40x40 daire, dikeyde ortalı
                 renderSend={(props: SendProps<IMessage>) => {
-                    const canSend = ((props.text ?? '').trim().length > 0);
+                    const hasText = (props.text ?? '').trim().length > 0;
+                    const hasPhoto = photos[0] && photos[0] !== '';
+                    const canSend = hasText || hasPhoto;
+
                     return (
-                        <Send
-                            {...props}
-                            containerStyle={{
-                                marginLeft: 8,
-                                marginRight: 4,
-                                alignSelf: "flex-end",
-                                marginBottom: 10,
+                        <TouchableOpacity
+                            disabled={!canSend || sending} // Gönderirken disable
+                            onPress={() => {
+                                if (canSend && !sending) props.onSend && props.onSend({ text: props.text || '' }, true);
                             }}
                         >
                             <View
                                 style={{
                                     width: 35,
                                     height: 35,
-                                    borderRadius: 20,
-                                    backgroundColor: canSend ? '#007AFF' : '#BDBDBD',
+                                    borderRadius: 35,
+                                    marginLeft: 3,
+                                    marginRight: 8,
+                                    backgroundColor: (canSend && !sending) ? "#21C063" : '#BDBDBD',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}
                             >
-                                <Ionicons
-                                    name="send"
-                                    size={18}
-                                    color="#FFF"
-                                    style={{ transform: [{ rotate: '-5deg' }] }}
-                                />
+                                {sending ? (
+                                    <ActivityIndicator size="small" color="#FFF" />
+                                ) : (
+                                    <Ionicons
+                                        name="send"
+                                        size={18}
+                                        color="#FFF"
+                                        style={{ transform: [{ rotate: '-5deg' }] }}
+                                    />
+                                )}
                             </View>
-                        </Send>
+                        </TouchableOpacity>
                     );
                 }}
-
             />
 
             <CModal
@@ -1024,7 +1187,7 @@ export default function AnonimChat() {
                             style={{
                                 minHeight: 80,
                                 maxHeight: 140,
-                                fontSize: 14,
+                                fontSize: 16,
                                 color: '#000',
                                 textAlignVertical: 'top',
                             }}
@@ -1061,7 +1224,7 @@ export default function AnonimChat() {
                         >
                             <Text
                                 style={{
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     fontWeight: '600',
                                     color: '#111',
                                 }}
@@ -1086,7 +1249,7 @@ export default function AnonimChat() {
                         >
                             <Text
                                 style={{
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     fontWeight: '700',
                                     color: '#FFF',
                                 }}

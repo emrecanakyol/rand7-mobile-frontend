@@ -22,6 +22,7 @@ import CLoading from '../../../components/CLoading';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import { useTranslation } from 'react-i18next';
 import { useAlert } from '../../../context/AlertContext';
+import storage from '@react-native-firebase/storage';
 
 const UserProfile = ({ route }: any) => {
     const { t } = useTranslation();
@@ -60,6 +61,7 @@ const UserProfile = ({ route }: any) => {
         showAlert({
             title: t('remove_match_title'),
             message: t('remove_match_message', { name: user?.firstName }),
+            layout: 'row',
             buttons: [
                 {
                     text: t('remove_match_cancel'),
@@ -395,6 +397,7 @@ const UserProfile = ({ route }: any) => {
         }
     };
 
+    // Tek taraflı mesajları sil ve içindeki resimleri Storage'dan sil
     const deleteThreadMessages = async (ownerId: string, peerId: string) => {
         const messagesRef = firestore()
             .collection("users")
@@ -409,17 +412,30 @@ const UserProfile = ({ route }: any) => {
                 .limit(400)
                 .get();
 
-            if (snap.empty) {
-                break;
-            }
+            if (snap.empty) break;
 
             const batch = firestore().batch();
+            const imagesToDelete: string[] = [];
 
             snap.docs.forEach((d) => {
+                const data = d.data() as any;
+                if (data.image) imagesToDelete.push(data.image);
                 batch.delete(d.ref);
             });
 
             await batch.commit();
+
+            // Storage'daki resimleri sil
+            await Promise.all(
+                imagesToDelete.map(async (url) => {
+                    try {
+                        const ref = storage().refFromURL(url);
+                        await ref.delete();
+                    } catch (e) {
+                        console.log("Storage delete error:", e);
+                    }
+                })
+            );
         }
     };
 

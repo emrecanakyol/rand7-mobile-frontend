@@ -2,7 +2,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import EmailLogin from '../../screens/Auth/Login/EmailLogin';
-import GroupDetail from '../../screens/App/GroupDetail';
 import OnBoardingOne from '../../screens/Auth/OnBoardings/OnBoardingOne';
 import Register from '../../screens/Auth/Register';
 import ResetPassword from '../../screens/Auth/ResetPassword';
@@ -44,7 +43,6 @@ export const RESET_PASSWORD = "Reset Password";
 export const PHONE_VERIFICATION = "Phone Verification";
 export const SETTINGS = "Settings";
 export const HOME = "Home";
-export const GROUP_DETAIL = "Group Detail";
 export const EDIT_PROFILE = "Edit Profile";
 export const HELP = "Help";
 export const ADD_HELP = "Add Help";
@@ -79,7 +77,6 @@ export default function StackNavigator() {
                     }}>
                     <Stack.Screen name={BOOTOMTABS} component={BottomTabs} />
                     <Stack.Screen name={HOME} component={Home} />
-                    <Stack.Screen name={GROUP_DETAIL} component={GroupDetail} />
                     <Stack.Screen name={EDIT_PROFILE} component={EditProfile} />
                     <Stack.Screen name={SETTINGS} component={Settings} />
                     <Stack.Screen name={HELP} component={Help} />
