@@ -14,6 +14,7 @@ import VersionCheck from 'react-native-version-check';
 import Store, { persistor, RootState } from './store/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import i18n from './utils/i18n';
+import { AlertProvider } from './context/AlertContext';
 
 function AppContent() {
   const { t } = useTranslation();
@@ -72,7 +73,9 @@ function App() {
     <SafeAreaProvider>
       <Provider store={Store}>
         <PersistGate loading={null} persistor={persistor}>
-          <AppContent />
+          <AlertProvider>
+            <AppContent />
+          </AlertProvider>
         </PersistGate>
       </Provider>
     </SafeAreaProvider>

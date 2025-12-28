@@ -209,6 +209,7 @@
     "helpSupport": "Aide / Support",
     "settings": "Paramètres",
     "logout": "Se déconnecter",
+    "logout_confirm_message": "Voulez-vous vraiment vous déconnecter ?",
     "editProfileTitle": "Modifier le profil",
     "personalDetails": "DÉTAILS PERSONNELS",
     "myHobbies": "Mes loisirs",

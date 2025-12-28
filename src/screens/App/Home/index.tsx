@@ -68,8 +68,8 @@ const Home = () => {
                 : null;
 
             const now = new Date();
-            const twelveHoursAgo = new Date(now.getTime() - 0 * 1000); // ⏱ Test için 10 saniye
-            // const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000); // 12 saat sonra görüntülensin
+            // const twelveHoursAgo = new Date(now.getTime() - 0 * 1000); // ⏱ Test için 10 saniye
+            const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000); // 12 saat sonra görüntülensin
 
             let shouldReset = false;
 
@@ -80,16 +80,23 @@ const Home = () => {
                     shouldReset &&
                         await currentUserRef.update({
                             lastDiscoverRefresh: firestore.Timestamp.fromDate(now),
+                            dislikedUsers: [], // ✅ X basılanlar resetlenir
                         });
                 }
                 console.log("🕒 Discover listesi sıfırlandı (12 saat dolmuş).");
             }
 
-            const likedUsers = currentUserData?.likedUsers || [];
-            const superLikedUsers = currentUserData?.superLikedUsers || [];
+            // const likedUsers = currentUserData?.likedUsers || [];
+            // const superLikedUsers = currentUserData?.superLikedUsers || [];
+            // const likeMatches = userData?.likeMatches || [];
+            // const superLikeMatches = userData?.superLikeMatches || [];
 
-            const likeMatches = userData?.likeMatches || [];
-            const superLikeMatches = userData?.superLikeMatches || [];
+            const firestoreLikedUsers = currentUserData?.likedUsers || [];
+            const firestoreSuperLikedUsers = currentUserData?.superLikedUsers || [];
+            const firestoreLikeMatches = currentUserData?.likeMatches || [];
+            const firestoreSuperLikeMatches = currentUserData?.superLikeMatches || [];
+
+            const firestoreDislikedUsers = currentUserData?.dislikedUsers || [];
 
             // 🔹 Yakındaki kullanıcıları çek
             const snapshot = await firestore().collection("users").get();
@@ -109,16 +116,28 @@ const Home = () => {
                 const otherBlockedArr = Array.isArray(u?.blocked) ? u.blocked : [];
                 if (otherBlockedArr.includes(userData.userId)) return false;
 
+                // ❌ Eğer 12 saat dolmadıysa, X basılan kullanıcıyı reset gelene kadar gösterme
+                if (!shouldReset && firestoreDislikedUsers.includes(u.userId)) {
+                    return false;
+                }
 
                 // 🔹 Eğer 12 saat dolmadıysa, beğenilenleri gösterme
-                if (!shouldReset && (likedUsers.includes(u.userId) || superLikedUsers.includes(u.userId))) {
+                if (
+                    !shouldReset &&
+                    firestoreLikedUsers.includes(u.userId) ||
+                    firestoreSuperLikedUsers.includes(u.userId)
+                ) {
                     return false;
                 }
 
                 // ❌ Eşleşmiş kullanıcıları gösterme
-                if (likeMatches.includes(u.userId) || superLikeMatches.includes(u.userId)) {
+                if (
+                    firestoreLikeMatches.includes(u.userId) ||
+                    firestoreSuperLikeMatches.includes(u.userId)
+                ) {
                     return false;
                 }
+
                 // 🔹 Mesafe
                 const distance = getDistanceFromLatLonInKm(
                     userData.latitude,
@@ -488,6 +507,7 @@ const Home = () => {
                 // superLikedUsers: firestore.FieldValue.arrayRemove(userId),
                 likers: firestore.FieldValue.arrayRemove(userId),
                 superLikers: firestore.FieldValue.arrayRemove(userId),
+                dislikedUsers: firestore.FieldValue.arrayUnion(userId),
             });
 
             setNearbyUsers(prev => prev.filter(user => user.userId !== userId));
@@ -495,6 +515,16 @@ const Home = () => {
             console.error("❌ Dislike işleminde hata:", err);
         }
     };
+
+    const chunkIntoRows = (list: any[], size = 2) => {
+        const rows = [];
+        for (let i = 0; i < list.length; i += size) {
+            rows.push(list.slice(i, i + size));
+        }
+        return rows;
+    };
+
+    const likeRows = chunkIntoRows(nearbyUsers, 2);
 
     return (
         <View style={styles.container}>
@@ -669,76 +699,75 @@ const Home = () => {
                         <View style={styles.likesContainer}>
                             {nearbyUsers.length > 0 ? (
                                 <View style={styles.matchesGrid}>
-                                    {nearbyUsers.map((u, index) => (
-                                        <TouchableWithoutFeedback
-                                            key={index}
-                                            onPress={() => navigation.navigate(USER_PROFILE, { user: u })}
-                                        >
-                                            <View
-                                                style={[
-                                                    styles.matchCard,
-                                                    u.likeType === "superLike"
-                                                        ? { borderWidth: 2, borderColor: colors.BLUE_COLOR }
-                                                        : u.likeType === "like"
-                                                            ? { borderWidth: 2, borderColor: colors.RED_COLOR }
-                                                            : null,
-                                                ]}
-                                            >
-                                                <Image
-                                                    source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
-                                                    style={styles.matchImage}
-                                                />
-                                                <TouchableOpacity
-                                                    style={styles.closeIcon}
-                                                    onPress={() => {
-                                                        handleDislike(u.userId);
-                                                    }}
+                                    {likeRows.map((row, rowIndex) => (
+                                        <View key={rowIndex} style={styles.row}>
+                                            {row.map((u: any, index: number) => (
+                                                <TouchableWithoutFeedback
+                                                    key={u.userId}
+                                                    onPress={() => navigation.navigate(USER_PROFILE, { user: u })}
                                                 >
-                                                    <Ionicons name="close-circle" size={22} color={colors.WHITE_COLOR} />
-                                                </TouchableOpacity>
-                                                <View style={[
-                                                    styles.matchBadge,
-                                                    u.likeType === "superLike"
-                                                        ? { backgroundColor: colors.BLUE_COLOR }
-                                                        : u.likeType === "like"
-                                                            ? { backgroundColor: colors.RED_COLOR }
-                                                            : null,
-                                                ]}>
-                                                    {u.likeType === "superLike" && (
-                                                        <Ionicons
-                                                            name="star"
-                                                            size={18}
-                                                            color={colors.WHITE_COLOR}
-                                                            style={{ marginLeft: 5 }}
+                                                    <View
+                                                        style={[
+                                                            styles.matchCard,
+                                                            u.likeType === "superLike"
+                                                                ? { borderWidth: 2, borderColor: colors.BLUE_COLOR }
+                                                                : u.likeType === "like"
+                                                                    ? { borderWidth: 2, borderColor: colors.RED_COLOR }
+                                                                    : null,
+                                                        ]}
+                                                    >
+                                                        <Image
+                                                            source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                                            style={styles.matchImage}
                                                         />
-                                                    )}
 
-                                                    {u.likeType === "like" && (
-                                                        <Ionicons
-                                                            name="heart"
-                                                            size={18}
-                                                            color={colors.WHITE_COLOR}
-                                                            style={{ marginLeft: 5 }}
-                                                        />
-                                                    )}
-                                                </View>
-                                                <View style={styles.matchInfo}>
-                                                    <Text style={styles.likesDistanceText}>
-                                                        {t('distance_km_away', {
-                                                            distance: getDistanceFromLatLonInKm(
-                                                                userData.latitude,
-                                                                userData.longitude,
-                                                                u.latitude,
-                                                                u.longitude
-                                                            ).toFixed(1),
-                                                        })}
-                                                    </Text>
-                                                    <Text style={styles.likesUserName}>{u.firstName}, {calculateAge(u.birthDate)}</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableWithoutFeedback>
+                                                        <TouchableOpacity
+                                                            style={styles.closeIcon}
+                                                            onPress={() => handleDislike(u.userId)}
+                                                        >
+                                                            <Ionicons name="close-circle" size={22} color={colors.WHITE_COLOR} />
+                                                        </TouchableOpacity>
+
+                                                        <View style={[
+                                                            styles.matchBadge,
+                                                            u.likeType === "superLike"
+                                                                ? { backgroundColor: colors.BLUE_COLOR }
+                                                                : { backgroundColor: colors.RED_COLOR },
+                                                        ]}>
+                                                            <Ionicons
+                                                                name={u.likeType === "superLike" ? "star" : "heart"}
+                                                                size={18}
+                                                                color={colors.WHITE_COLOR}
+                                                            />
+                                                        </View>
+
+                                                        <View style={styles.matchInfo}>
+                                                            <Text style={styles.likesDistanceText}>
+                                                                {t('distance_km_away', {
+                                                                    distance: getDistanceFromLatLonInKm(
+                                                                        userData.latitude,
+                                                                        userData.longitude,
+                                                                        u.latitude,
+                                                                        u.longitude
+                                                                    ).toFixed(1),
+                                                                })}
+                                                            </Text>
+                                                            <Text style={styles.likesUserName}>
+                                                                {u.firstName}, {calculateAge(u.birthDate)}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                </TouchableWithoutFeedback>
+                                            ))}
+
+                                            {/* 👇 EĞER SATIR TEK KARTSA BOŞ SAĞ KOLON */}
+                                            {row.length === 1 && (
+                                                <View style={[styles.matchCard, styles.emptyCard]} />
+                                            )}
+                                        </View>
                                     ))}
                                 </View>
+
                             ) : (
                                 <Text style={{ textAlign: "center", color: colors.TEXT_MAIN_COLOR, marginTop: 50, }}>
                                     {t('no_likes_yet')}
@@ -904,6 +933,14 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     matchImage: {
         width: '100%',
         height: '100%',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+    },
+    emptyCard: {
+        backgroundColor: 'transparent',
     },
     matchBadge: {
         position: 'absolute',

@@ -209,6 +209,7 @@
     "helpSupport": "Hilfe / Support",
     "settings": "Einstellungen",
     "logout": "Abmelden",
+    "logout_confirm_message": "Möchtest du dich wirklich abmelden?",
     "editProfileTitle": "Profil bearbeiten",
     "personalDetails": "PERSÖNLICHE ANGABEN",
     "myHobbies": "Meine Hobbys",

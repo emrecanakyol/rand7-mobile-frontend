@@ -209,6 +209,7 @@
     "helpSupport": "Yardım / Destek",
     "settings": "Ayarlar",
     "logout": "Çıkış yap",
+    "logout_confirm_message": "Gerçekten çıkış yapmak istiyor musun?",
     "editProfileTitle": "Profili Düzenle",
     "personalDetails": "KİŞİSEL BİLGİLER",
     "myHobbies": "Hobilerim",

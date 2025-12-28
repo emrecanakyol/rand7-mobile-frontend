@@ -198,6 +198,8 @@ const Match: React.FC = () => {
                                                         disablePress={true}
                                                         imgSource={{ uri: user.photos[0] }}
                                                         borderWidth={2}
+                                                        width={80}
+                                                        height={80}
                                                         borderColor={
                                                             user.isSuper
                                                                 ? colors.BLUE_COLOR
@@ -331,6 +333,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     },
     statItem: {
         alignItems: "center",
+        marginRight: 10,
     },
     blurOverlay: {
         position: "absolute",

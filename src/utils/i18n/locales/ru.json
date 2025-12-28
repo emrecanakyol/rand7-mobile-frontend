@@ -209,6 +209,7 @@
     "helpSupport": "Помощь / Поддержка",
     "settings": "Настройки",
     "logout": "Выйти",
+    "logout_confirm_message": "Вы действительно хотите выйти?",
     "editProfileTitle": "Редактировать профиль",
     "personalDetails": "ЛИЧНЫЕ ДАННЫЕ",
     "myHobbies": "Мои хобби",

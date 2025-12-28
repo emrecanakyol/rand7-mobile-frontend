@@ -22,14 +22,15 @@ import { CHAT, LIKE_MATCHED, SUPER_LIKE_MATCHED } from '../../../navigators/Stac
 import CLoading from '../../../components/CLoading';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import { useTranslation } from 'react-i18next';
+import { useAlert } from '../../../context/AlertContext';
 
 const UserProfile = ({ route }: any) => {
     const { t } = useTranslation();
     const { user } = route.params || {};
     const { userData, loading } = useAppSelector((state) => state.userData);
+    const { showAlert } = useAlert();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const swiperRef = useRef<any>(null);
 
     const [activeIndex, setActiveIndex] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
@@ -57,14 +58,17 @@ const UserProfile = ({ route }: any) => {
     const handleRemoveMatch = () => {
         if (!userData?.userId || !user?.userId) return;
 
-        Alert.alert(
-            t('remove_match_title'),
-            t('remove_match_message', { name: user?.firstName }),
-            [
-                { text: t('remove_match_cancel'), style: 'cancel' },
+        showAlert({
+            title: t('remove_match_title'),
+            message: t('remove_match_message', { name: user?.firstName }),
+            buttons: [
+                {
+                    text: t('remove_match_cancel'),
+                    type: 'cancel',
+                },
                 {
                     text: t('remove_match_confirm'),
-                    style: 'destructive',
+                    type: 'destructive',
                     onPress: async () => {
                         try {
                             setMatchLoading(true);
@@ -74,7 +78,6 @@ const UserProfile = ({ route }: any) => {
 
                             const batch = firestore().batch();
 
-                            // Benim hesabımdan bu kişiyi kaldır
                             batch.set(
                                 meRef,
                                 {
@@ -84,7 +87,6 @@ const UserProfile = ({ route }: any) => {
                                 { merge: true }
                             );
 
-                            // Onun hesabından beni kaldır
                             batch.set(
                                 otherRef,
                                 {
@@ -95,22 +97,20 @@ const UserProfile = ({ route }: any) => {
                             );
 
                             await batch.commit();
-                            // ✅ EŞLEŞME KALDIRILINCA SOHBETİ DE TEMİZLE
                             await deleteConversationBothSides(userData.userId, user.userId);
 
-                            // Lokal state'i de güncelle ki UI hemen düşsün
                             setHasAnyMatch(false);
                             setIsLiked(false);
                             setIsSuperLiked(false);
                         } catch (err) {
-                            console.error('❌ Eşleşme kaldırılırken hata:', err);
+                            console.error(err);
                         } finally {
                             setMatchLoading(false);
                         }
                     },
                 },
-            ]
-        );
+            ],
+        });
     };
 
     const handleMomentumScrollEnd = (
@@ -121,7 +121,6 @@ const UserProfile = ({ route }: any) => {
         setActiveIndex(index);
     };
 
-    // İlişki tipi -> görünen etiket
     // İlişki tipi -> i18n key
     const RELATIONSHIP_LABEL_KEYS: Record<string, string> = {
         long: 'relationship_long',
@@ -470,6 +469,7 @@ const UserProfile = ({ route }: any) => {
             await currentUserRef.update({
                 likers: firestore.FieldValue.arrayRemove(userId),
                 superLikers: firestore.FieldValue.arrayRemove(userId),
+                dislikedUsers: firestore.FieldValue.arrayUnion(userId),
             });
 
             setIsDisliked(true);

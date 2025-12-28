@@ -20,11 +20,13 @@ import CImage from '../../../components/CImage';
 import { calculateAge } from '../../../components/CalculateAge';
 import { signOut } from '../../../store/services/authServices';
 import { useTranslation } from 'react-i18next';
+import { useAlert } from '../../../context/AlertContext';
 
 const Account = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch<AppDispatch>();
     const { userData, loading } = useAppSelector((state) => state?.userData);
+    const { showAlert } = useAlert();
     const navigation: any = useNavigation();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
@@ -35,10 +37,26 @@ const Account = () => {
         dispatch(fetchUserData());
     }, []);
 
-    const out = async () => {
-        await signOut(dispatch);
-        await navigation.navigate(ONEBOARDINGONE);
-    }
+    const out = () => {
+        showAlert({
+            title: t('logout'),
+            message: t('logout_confirm_message'),
+            buttons: [
+                {
+                    text: t('cancel'),
+                    type: 'cancel',
+                },
+                {
+                    text: t('logout'),
+                    type: 'destructive',
+                    onPress: async () => {
+                        await signOut(dispatch);
+                        navigation.navigate(ONEBOARDINGONE);
+                    },
+                },
+            ],
+        });
+    };
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>

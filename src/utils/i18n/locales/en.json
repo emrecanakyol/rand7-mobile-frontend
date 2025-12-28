@@ -209,6 +209,7 @@
     "helpSupport": "Help / Support",
     "settings": "Settings",
     "logout": "Log out",
+    "logout_confirm_message": "Are you sure you want to log out?",
     "editProfileTitle": "Edit Profile",
     "personalDetails": "PERSONAL DETAILS",
     "myHobbies": "My Hobbies",

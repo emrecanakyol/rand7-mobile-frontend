@@ -209,6 +209,7 @@
     "helpSupport": "Ajuda / Suporte",
     "settings": "Configurações",
     "logout": "Sair",
+    "logout_confirm_message": "Tem certeza de que deseja sair?",
     "editProfileTitle": "Editar perfil",
     "personalDetails": "DADOS PESSOAIS",
     "myHobbies": "Meus hobbies",
