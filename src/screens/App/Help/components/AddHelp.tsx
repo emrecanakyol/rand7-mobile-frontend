@@ -1,4 +1,4 @@
-import { View, StyleSheet, Alert, ScrollView } from 'react-native'
+import { View, StyleSheet, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import firestore from '@react-native-firebase/firestore'
 import DetailHeaders from '../../../../components/DetailHeaders'

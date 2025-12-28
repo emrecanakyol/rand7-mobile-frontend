@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Alert, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
 import { GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -14,6 +14,7 @@ import { CHAT } from '../../../../../navigators/Stack';
 import { ToastError, ToastSuccess } from '../../../../../utils/toast';
 import { useTranslation } from "react-i18next";
 import CImage from '../../../../../components/CImage';
+import { useAlert } from '../../../../../context/AlertContext';
 
 type RootStackParamList = {
     Anonim: {
@@ -34,6 +35,7 @@ export default function AnonimChat() {
     const { annonId, other2Id } = route.params ?? {};
     // tekrar tekrar yönlenmeyi önlemek için
     const didNavigateRef = useRef(false);
+    const { showAlert } = useAlert();
 
     const insets = useSafeAreaInsets();
 
@@ -313,20 +315,24 @@ export default function AnonimChat() {
             return;
         }
 
-        Alert.alert(
-            t("common_warning_title"),
-            t("anon_chat_leave_delete_confirm"), // i18n'e ekleyeceksin
-            [
-                { text: t("common_cancel"), style: "cancel" },
+        showAlert({
+            title: t("common_warning_title"),
+            message: t("anon_chat_leave_delete_confirm"), // i18n'e ekle
+            layout: 'row', // Cancel ve Delete yan yana
+            buttons: [
+                {
+                    text: t("common_cancel"),
+                    type: "cancel",
+                },
                 {
                     text: t("common_delete"),
-                    style: "destructive",
+                    type: "destructive",
                     onPress: async () => {
                         if (backDeleting) return;
 
                         try {
                             setBackDeleting(true);
-                            await wipeAnonChat();   // ✅ iki tarafı da siliyor
+                            await wipeAnonChat(); // iki tarafı da siliyor
                         } catch (e) {
                             console.log("back wipe error:", e);
                         } finally {
@@ -335,8 +341,8 @@ export default function AnonimChat() {
                         }
                     },
                 },
-            ]
-        );
+            ],
+        });
     }, [meId, otherId, navigation, wipeAnonChat, t, backDeleting]);
 
     const handleLike = useCallback(async () => {
@@ -531,14 +537,18 @@ export default function AnonimChat() {
     const handleBlockUser = useCallback(() => {
         if (!meId || !otherId) return;
 
-        Alert.alert(
-            t("anon_chat_block_title"),
-            t("anon_chat_block_message"),
-            [
-                { text: t("common_cancel"), style: "cancel" },
+        showAlert({
+            title: t("anon_chat_block_title"),
+            message: t("anon_chat_block_message"),
+            layout: 'row', // Cancel ve Block yan yana
+            buttons: [
+                {
+                    text: t("common_cancel"),
+                    type: "cancel",
+                },
                 {
                     text: t("anon_chat_block_confirm"),
-                    style: "destructive",
+                    type: "destructive",
                     onPress: async () => {
                         try {
                             // meId kullanıcısının altındaki blocked koleksiyonuna yazıyoruz
@@ -556,11 +566,11 @@ export default function AnonimChat() {
                                     blocked: firestore.FieldValue.arrayUnion(meId),
                                 });
 
-
                             ToastSuccess(
                                 t("anon_chat_block_success_title"),
                                 t("anon_chat_block_success_message")
                             );
+
                             // istersen burada sohbete geri dönüp ekranı kapatabiliriz:
                             navigation.goBack();
                         } catch (e) {
@@ -575,21 +585,25 @@ export default function AnonimChat() {
                         }
                     },
                 },
-            ]
-        );
+            ],
+        });
     }, [meId, otherId, other2Id, setShowMenu]);
 
     const handleUnblockUser = useCallback(() => {
         if (!meId || !otherId) return;
 
-        Alert.alert(
-            t("anon_chat_unblock_title"),
-            t("anon_chat_unblock_message"),
-            [
-                { text: t("common_cancel"), style: "cancel" },
+        showAlert({
+            title: t("anon_chat_unblock_title"),
+            message: t("anon_chat_unblock_message"),
+            layout: 'row', // Cancel ve Unblock yan yana
+            buttons: [
+                {
+                    text: t("common_cancel"),
+                    type: "cancel",
+                },
                 {
                     text: t("anon_chat_unblock_confirm"),
-                    style: "default",
+                    type: "default",
                     onPress: async () => {
                         try {
                             await firestore()
@@ -621,8 +635,8 @@ export default function AnonimChat() {
                         }
                     },
                 },
-            ]
-        );
+            ],
+        });
     }, [meId, otherId, t]);
 
     const tabbarHeight = Platform.OS === "ios" ? 50 : 105

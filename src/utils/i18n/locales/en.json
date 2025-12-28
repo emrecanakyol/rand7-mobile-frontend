@@ -276,5 +276,8 @@
     "anon_chat_blocked_input_other": "This user blocked you.",
     "chat_type_message": "Type a message...",
     "anon_chat_leave_delete_confirm": "All messages will be deleted when you leave the chat.",
-    "common_delete": "Delete"
+    "common_delete": "Delete",
+    "update_alert_title": "🌟 New Update Available",
+    "update_alert_message": "We aim to provide you with a better experience through new features and performance improvements. Please update the app.",
+    "update_alert_button": "Update Now"
 }

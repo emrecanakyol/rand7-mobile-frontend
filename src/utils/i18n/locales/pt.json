@@ -276,5 +276,8 @@
     "anon_chat_blocked_input_other": "Este usuário bloqueou você.",
     "chat_type_message": "Digite uma mensagem...",
     "anon_chat_leave_delete_confirm": "Ao sair da conversa, todas as mensagens serão apagadas.",
-    "common_delete": "Excluir"
+    "common_delete": "Excluir",
+    "update_alert_title": "🌟 Nova atualização disponível",
+    "update_alert_message": "Queremos oferecer uma melhor experiência com novos recursos e melhorias de desempenho. Por favor, atualize o aplicativo.",
+    "update_alert_button": "Atualizar agora"
 }

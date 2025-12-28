@@ -53,6 +53,7 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     borderBottomRightRadius={30}
                     closeButton={false}
                     animationType="none"
+                    paddingTop={0}
                 >
                     <View style={styles.content}>
                         <CText style={styles.title}>{alertData.title}</CText>
@@ -66,7 +67,7 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         <View
                             style={[
                                 styles.buttons,
-                                { flexDirection: alertData.layout ?? 'row' },
+                                { flexDirection: alertData.layout ?? "column" },
                             ]}
                         >
                             {alertData.buttons.map((btn, index) => (
@@ -74,7 +75,7 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                                     key={index}
                                     style={[
                                         styles.button,
-                                        alertData.layout !== 'column' && { flex: 1 },
+                                        alertData.layout === 'row' && { flex: 1 },
                                         btn.type === 'destructive' && { backgroundColor: colors.RED_COLOR },
                                         btn.type === 'cancel' && { backgroundColor: colors.BLACK_COLOR },
                                     ]}

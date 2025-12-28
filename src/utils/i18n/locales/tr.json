@@ -276,5 +276,8 @@
     "anon_chat_blocked_input_other": "Bu kullanıcı sizi engelledi.",
     "chat_type_message": "Mesaj yaz...",
     "anon_chat_leave_delete_confirm": "Sohbetten çıkarken tüm mesajlar silinecektir.",
-    "common_delete": "Sil"
+    "common_delete": "Sil",
+    "update_alert_title": "🌟 Yeni Güncelleme",
+    "update_alert_message": "Yeni özellikler ve performans iyileştirmeleriyle sizlere daha iyi bir deneyim sunmayı hedefliyoruz. Lütfen uygulamayı güncelleyiniz.",
+    "update_alert_button": "Şimdi Güncelle"
 }

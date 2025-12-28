@@ -276,5 +276,8 @@
     "anon_chat_blocked_input_other": "Dieser Benutzer hat Sie blockiert.",
     "chat_type_message": "Nachricht schreiben...",
     "anon_chat_leave_delete_confirm": "Beim Verlassen des Chats werden alle Nachrichten gelöscht.",
-    "common_delete": "Löschen"
+    "common_delete": "Löschen",
+    "update_alert_title": "🌟 Neues Update verfügbar",
+    "update_alert_message": "Mit neuen Funktionen und Leistungsverbesserungen möchten wir Ihnen ein besseres Erlebnis bieten. Bitte aktualisieren Sie die App.",
+    "update_alert_button": "Jetzt aktualisieren"
 }

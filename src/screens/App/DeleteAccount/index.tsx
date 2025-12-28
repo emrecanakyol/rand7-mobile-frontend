@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { signOut } from "../../../store/services/authServices";
-import { Alert, StyleSheet, View, ScrollView, Dimensions } from "react-native";
+import { StyleSheet, View, ScrollView, Dimensions } from "react-native";
 import { ToastSuccess } from "../../../utils/toast";
 import { responsive } from "../../../utils/responsive";
 import { useTheme } from "../../../utils/colors";
@@ -13,10 +13,12 @@ import { useTranslation } from "react-i18next";
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { sendAdminNotification } from "../../../constants/Notifications";
+import { useAlert } from "../../../context/AlertContext";
 
 const DeleteAccount = ({ navigation }: any) => {
   const { colors } = useTheme();
   const { width, height } = Dimensions.get('window');
+  const { showAlert } = useAlert();
   const isTablet = Math.min(width, height) >= 600;
   const styles = getStyles(colors, isTablet);
   const dispatch = useDispatch();
@@ -55,7 +57,17 @@ const DeleteAccount = ({ navigation }: any) => {
       await sendAdminNotification("Hesap Silme Talebi !", `${userId}${"\n"}${confirmationMessage}`);   //Admine hesap silindiğinde bildirim gönder.
       await signOut(dispatch);
       await navigation.navigate(ONEBOARDINGONE);
-      Alert.alert(t("success"), t("delete_account_request_success"), [{ text: t("okay"), style: 'cancel' }])
+      showAlert({
+        title: t("success"),
+        message: t("delete_account_request_success"),
+        buttons: [
+          {
+            text: t("okay"),
+            type: 'cancel',
+          },
+        ],
+      });
+
     } catch (error) {
       console.log('Sign Out Error:', error);
     } finally {
@@ -64,23 +76,23 @@ const DeleteAccount = ({ navigation }: any) => {
   };
 
   const handleSubmit = () => {
-    Alert.alert(
-      t("delete_account_request_title"),
-      t("delete_account_request_confirm"),
-      [
+    showAlert({
+      title: t("delete_account_request_title"),
+      message: t("delete_account_request_confirm"),
+      buttons: [
         {
           text: t("no"),
-          style: 'cancel',
+          type: 'cancel',
         },
         {
           text: t("yes"),
-          onPress: () => {
-            handleSignOut();
-          },
+          type: 'destructive',
+          onPress: handleSignOut,
         },
       ],
-      { cancelable: false },
-    );
+      // default zaten row → onay dialogları için ideal
+      // buttonsLayout: 'row',
+    });
   };
 
   return (

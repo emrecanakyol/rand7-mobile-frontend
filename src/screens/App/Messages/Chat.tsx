@@ -1,6 +1,6 @@
 // Chat.tsx (CHAT_STACK ekranın)
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, ActivityIndicator, Alert, TextInput, TouchableOpacity, Text, Platform, Keyboard } from 'react-native';
+import { View, ActivityIndicator, TextInput, TouchableOpacity, Text, Platform, Keyboard } from 'react-native';
 import { Bubble, GiftedChat, IMessage, InputToolbar, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -15,6 +15,7 @@ import { USER_PROFILE } from '../../../navigators/Stack';
 import { ToastError, ToastSuccess } from '../../../utils/toast';
 import CModal from '../../../components/CModal';
 import { responsive } from '../../../utils/responsive';
+import { useAlert } from '../../../context/AlertContext';
 
 type RootStackParamList = {
     Chat: {
@@ -33,6 +34,7 @@ export default function Chat() {
     const { t, i18n } = useTranslation();
     const route = useRoute<RouteProp<RootStackParamList, 'Chat'>>();
     const { userId, user2Id } = route.params ?? {};
+    const { showAlert } = useAlert();
 
     const insets = useSafeAreaInsets();
 
@@ -124,14 +126,18 @@ export default function Chat() {
     const handleBlockUser = useCallback(() => {
         if (!meId || !otherId) return;
 
-        Alert.alert(
-            t("anon_chat_block_title"),
-            t("anon_chat_block_message"),
-            [
-                { text: t("common_cancel"), style: "cancel" },
+        showAlert({
+            title: t("anon_chat_block_title"),
+            message: t("anon_chat_block_message"),
+            layout: 'row', // iptal + onay yan yana
+            buttons: [
+                {
+                    text: t("common_cancel"),
+                    type: 'cancel',
+                },
                 {
                     text: t("anon_chat_block_confirm"),
-                    style: "destructive",
+                    type: 'destructive',
                     onPress: async () => {
                         try {
                             await firestore()
@@ -152,6 +158,7 @@ export default function Chat() {
                                 t("anon_chat_block_success_title"),
                                 t("anon_chat_block_success_message")
                             );
+
                             navigation.goBack();
                         } catch (e) {
                             console.log("block error", e);
@@ -164,21 +171,25 @@ export default function Chat() {
                         }
                     },
                 },
-            ]
-        );
+            ],
+        });
     }, [meId, otherId, t, navigation]);
 
     const handleUnblockUser = useCallback(() => {
         if (!meId || !otherId) return;
 
-        Alert.alert(
-            t("anon_chat_unblock_title"),
-            t("anon_chat_unblock_message"),
-            [
-                { text: t("common_cancel"), style: "cancel" },
+        showAlert({
+            title: t("anon_chat_unblock_title"),
+            message: t("anon_chat_unblock_message"),
+            layout: 'row', // İptal + Onay yan yana
+            buttons: [
+                {
+                    text: t("common_cancel"),
+                    type: 'cancel',
+                },
                 {
                     text: t("anon_chat_unblock_confirm"),
-                    style: "default",
+                    type: 'default',
                     onPress: async () => {
                         try {
                             await firestore()
@@ -210,8 +221,8 @@ export default function Chat() {
                         }
                     },
                 },
-            ]
-        );
+            ],
+        });
     }, [meId, otherId, t]);
 
     useEffect(() => {
@@ -357,7 +368,7 @@ export default function Chat() {
             await batch.commit();
         } catch (e) {
             console.log('send error', e);
-            Alert.alert(t('chat_error_title'), t('chat_error_message'));
+            ToastError(t('chat_error_title'), t('chat_error_message'));
         }
     }, [meId, otherId, meName]);
 

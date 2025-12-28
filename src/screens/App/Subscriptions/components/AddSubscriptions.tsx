@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button, Alert, ScrollView } from 'react-native';
+import { Button, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import CBackButton from '../../../../components/CBackButton';
+import { ToastError, ToastSuccess } from '../../../../utils/toast';
 
 //dilleri tek butonla kaydet
 const SaveEnPlansButton = () => {
@@ -550,10 +551,10 @@ const SaveEnPlansButton = () => {
 
             await Promise.all(savePromises);
 
-            Alert.alert('Başarılı', 'Tüm diller Firestore\'a kaydedildi!');
+            ToastSuccess('Başarılı', 'Tüm diller Firestore\'a kaydedildi!');
         } catch (error) {
             console.error('Firestore kaydetme hatası:', error);
-            Alert.alert('Hata', 'Planlar kaydedilirken bir sorun oluştu.');
+            ToastError('Hata', 'Planlar kaydedilirken bir sorun oluştu.');
         }
     };
 

@@ -9,7 +9,6 @@ import {
     NativeScrollEvent,
     NativeSyntheticEvent,
     TouchableOpacity,
-    Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';

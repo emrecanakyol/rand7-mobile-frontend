@@ -276,5 +276,8 @@
     "anon_chat_blocked_input_other": "Cet utilisateur vous a bloqué.",
     "chat_type_message": "Écrire un message...",
     "anon_chat_leave_delete_confirm": "En quittant la conversation, tous les messages seront supprimés.",
-    "common_delete": "Supprimer"
+    "common_delete": "Supprimer",
+    "update_alert_title": "🌟 Nouvelle mise à jour",
+    "update_alert_message": "Nous souhaitons vous offrir une meilleure expérience grâce à de nouvelles fonctionnalités et des améliorations de performance. Veuillez mettre à jour l’application.",
+    "update_alert_button": "Mettre à jour"
 }

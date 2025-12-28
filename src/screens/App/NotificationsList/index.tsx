@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert, Dimensions, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import DetailHeaders from '../../../components/DetailHeaders'
 import { useTheme } from '../../../utils/colors'
@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import CLoading from '../../../components/CLoading'
 import i18n from '../../../utils/i18n'
 import { ToastSuccess } from '../../../utils/toast'
+import { useAlert } from '../../../context/AlertContext'
 
 // Bildirim tipi tanımı
 interface NotificationItem {
@@ -27,6 +28,7 @@ interface NotificationItem {
 }
 
 const NotificationsScreen = () => {
+  const { showAlert } = useAlert();
   const { colors } = useTheme();
   const { width, height } = Dimensions.get('window');
   const isTablet = Math.min(width, height) >= 600;
@@ -85,69 +87,94 @@ const NotificationsScreen = () => {
   const handleDeleteSelected = () => {
     if (selectedItems.length === 0) return;
 
-    Alert.alert(
-      t('delete_notification_title'),
-      t('delete_notification_message'),
-      [
-        { text: t("cancel"), style: "cancel" },
+    showAlert({
+      title: t('delete_notification_title'),
+      message: t('delete_notification_message'),
+      layout: 'row', // İptal + Sil yan yana
+      buttons: [
         {
-          text: t("delete"),
-          style: "destructive",
+          text: t('cancel'),
+          type: 'cancel',
+        },
+        {
+          text: t('delete'),
+          type: 'destructive',
           onPress: async () => {
             try {
               setDeleting(true);
+
               const userId = auth().currentUser?.uid;
               if (!userId) return;
 
               const batch = firestore().batch();
+
               selectedItems.forEach(id => {
                 const ref = firestore()
-                  .collection("users")
+                  .collection('users')
                   .doc(userId)
-                  .collection("sentNotifications")
+                  .collection('sentNotifications')
                   .doc(id);
+
                 batch.delete(ref);
               });
+
               await batch.commit();
 
               setSentNotificationsList(prev =>
                 prev.filter(item => !selectedItems.includes(item.id))
               );
+
               setSelectedItems([]);
-              ToastSuccess(t('success'), t('notification_deleted_successfully'));
+
+              ToastSuccess(
+                t('success'),
+                t('notification_deleted_successfully')
+              );
             } catch (e) {
-              console.log("Silme hatası:", e);
+              console.log('Silme hatası:', e);
             } finally {
               setDeleting(false);
             }
           },
         },
-      ]
-    );
+      ],
+    });
   };
 
   const handleDelete = async (item: NotificationItem) => {
-    Alert.alert(
-      t('delete_notification_title'),
-      t('delete_notification_message'),
-      [
-        { text: t('cancel'), style: 'cancel' },
+    showAlert({
+      title: t('delete_notification_title'),
+      message: t('delete_notification_message'),
+      layout: 'row', // Cancel + Delete yan yana
+      buttons: [
+        {
+          text: t('cancel'),
+          type: 'cancel',
+        },
         {
           text: t('delete'),
-          style: 'destructive',
+          type: 'destructive',
           onPress: async () => {
             try {
               setDeleting(true);
+
               await firestore()
                 .collection('users')
                 .doc(item.userId)
                 .collection('sentNotifications')
                 .doc(item.id)
                 .delete();
-              setSentNotificationsList(prev => prev.filter(n => n.id !== item.id));
-              ToastSuccess(t('success'), t('notification_deleted_successfully'));
+
+              setSentNotificationsList(prev =>
+                prev.filter(n => n.id !== item.id)
+              );
+
+              ToastSuccess(
+                t('success'),
+                t('notification_deleted_successfully')
+              );
             } catch (e) {
-              console.log("Error", e);
+              console.log('Error', e);
             } finally {
               setTimeout(() => {
                 setDeleting(false);
@@ -155,8 +182,8 @@ const NotificationsScreen = () => {
             }
           },
         },
-      ]
-    );
+      ],
+    });
   };
 
   const renderItem = (data: { item: NotificationItem }) => (

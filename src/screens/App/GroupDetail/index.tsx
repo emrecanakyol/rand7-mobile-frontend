@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Button, TextInput, TouchableOpacity, Alert, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Button, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { responsive } from '../../../utils/responsive';
 import { useTheme } from '../../../utils/colors';
@@ -22,6 +22,7 @@ import { SUBSCRIPTONS } from '../../../navigators/Stack';
 import CLoading from '../../../components/CLoading';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
+import { useAlert } from '../../../context/AlertContext';
 
 interface RouteParams {
     groupId: string;
@@ -69,6 +70,7 @@ const GroupDetail = () => {
     const route = useRoute<GroupDetailRouteProp>();
     const navigation: any = useNavigation();
     const { groupId, groupName } = route.params;
+    const { showAlert } = useAlert();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
@@ -143,16 +145,21 @@ const GroupDetail = () => {
     };
 
     const handleDeleteNotifications = async (notificationId: string) => {
-        Alert.alert(
-            t('delete_notification_title'),
-            t('delete_notification_message'),
-            [
-                { text: t('cancel'), style: 'cancel' },
+        showAlert({
+            title: t('delete_notification_title'),
+            message: t('delete_notification_message'),
+            buttons: [
+                {
+                    text: t('cancel'),
+                    type: 'cancel',
+                },
                 {
                     text: t('delete'),
+                    type: 'destructive',
                     onPress: async () => {
                         try {
                             setDeleting(true);
+
                             const userId = auth().currentUser?.uid;
                             if (!userId) {
                                 ToastError(t('error'), t('user_not_logged_in'));
@@ -160,7 +167,7 @@ const GroupDetail = () => {
                                 return;
                             }
 
-                            // Önce fotoğrafı sil
+                            // 📸 Önce fotoğrafı sil
                             const notifDoc = await firestore()
                                 .collection('users')
                                 .doc(userId)
@@ -169,8 +176,9 @@ const GroupDetail = () => {
                                 .collection('notifications')
                                 .doc(notificationId)
                                 .get();
+
                             const notifData = notifDoc.data();
-                            if (notifData && notifData.photo) {
+                            if (notifData?.photo) {
                                 await deletePhotoFromStorage(notifData.photo);
                             }
 
@@ -183,19 +191,30 @@ const GroupDetail = () => {
                                 .doc(notificationId)
                                 .delete();
 
-                            setNotifications(prev => prev.filter(notification => notification.notificationsId !== notificationId));
-                            ToastSuccess(t('success'), t('notification_deleted_successfully'));
+                            setNotifications(prev =>
+                                prev.filter(
+                                    notification => notification.notificationsId !== notificationId
+                                )
+                            );
+
+                            ToastSuccess(
+                                t('success'),
+                                t('notification_deleted_successfully')
+                            );
                         } catch (error) {
-                            ToastError(t('error'), t('failed_to_delete_notification'));
+                            ToastError(
+                                t('error'),
+                                t('failed_to_delete_notification')
+                            );
                         } finally {
                             setDeleting(false);
                         }
                     },
-                    style: 'destructive',
                 },
-            ]
-        );
+            ],
+        });
     };
+
 
     // Edit yani pencil butonuna basıldığında ilk 2 bildirim serbest ancak 3 ve sonrası diğer bildirimleri düzenleyebilmesi için premium olması gerekiyor
     const handleEditNotification = (notification: Notification) => {

@@ -26,11 +26,13 @@ import { sendAdminNotification } from '../../../constants/Notifications'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store/Store'
 import { signOut } from '../../../store/services/authServices'
+import { useAlert } from '../../../context/AlertContext'
 
 const HelpSupport = () => {
   const { t } = useTranslation();
   const navigation: any = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
+  const { showAlert } = useAlert();
   const { colors } = useTheme();
   const { width, height } = Dimensions.get('window');
   const isTablet = Math.min(width, height) >= 600;
@@ -102,17 +104,18 @@ const HelpSupport = () => {
   }
 
   const handleDeleteAccountPress = () => {
-    Alert.alert(
-      t('delete_account_title'),
-      t('delete_account_confirm'),
-      [
+    showAlert({
+      title: t('delete_account_title'),
+      message: t('delete_account_confirm'),
+      layout: 'row', // yan yana olsun
+      buttons: [
         {
           text: t('cancel'),
-          style: 'cancel',
+          type: 'cancel',
         },
         {
           text: t('yes'),
-          style: 'destructive',
+          type: 'destructive',
           onPress: async () => {
             try {
               await out();
@@ -120,18 +123,18 @@ const HelpSupport = () => {
               ToastSuccess(
                 t('success'),
                 t('account_deleted_success')
-              )
+              );
             } catch (error) {
               ToastError(
                 t('error'),
                 t('account_deleted_failed')
-              )
+              );
             }
           },
         },
-      ]
-    )
-  }
+      ],
+    });
+  };
 
   return (
     <View style={styles.container}>

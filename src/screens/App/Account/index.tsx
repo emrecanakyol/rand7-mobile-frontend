@@ -41,6 +41,7 @@ const Account = () => {
         showAlert({
             title: t('logout'),
             message: t('logout_confirm_message'),
+            layout: 'row',
             buttons: [
                 {
                     text: t('cancel'),

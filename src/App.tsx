@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Alert, Linking, StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import { Linking, StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -14,27 +14,29 @@ import VersionCheck from 'react-native-version-check';
 import Store, { persistor, RootState } from './store/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import i18n from './utils/i18n';
-import { AlertProvider } from './context/AlertContext';
+import { AlertProvider, useAlert } from './context/AlertContext';
 
 function AppContent() {
   const { t } = useTranslation();
+  const { showAlert } = useAlert();
   const safeAreaInsets = useSafeAreaInsets();
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
 
   const CheckVersion = async () => {
     const updateNeeded = await VersionCheck.needUpdate({ depth: 2 });
-    if (updateNeeded && updateNeeded.isNeeded) {
-      Alert.alert(
-        t('update_alert_title'),
-        t('update_alert_message'),
-        [
+
+    if (updateNeeded?.isNeeded) {
+      showAlert({
+        title: t('update_alert_title'),
+        message: t('update_alert_message'),
+        layout: 'column', // tek buton, ortalı ve full width
+        buttons: [
           {
             text: t('update_alert_button'),
             onPress: () => Linking.openURL(updateNeeded.storeUrl),
           },
         ],
-        { cancelable: false }
-      );
+      });
     }
   };
 
