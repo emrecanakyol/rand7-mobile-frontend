@@ -36,17 +36,11 @@ const Home = () => {
     const [nearbyUsers, setNearbyUsers] = useState<any[]>([]);
     const swiperRef = useRef<any>(null);
     const [loadingData, setLoadingData] = useState(false);
-    const [welcomeVisible, setWelcomeVisible] = useState(true);
 
     const myBlockedSet = new Set([
         ...(userData?.blocked || []),
         ...(userData?.blockers || []),
     ]);
-
-    useEffect(() => {
-        // Ekran açılır açılmaz modal göster
-        setWelcomeVisible(true);
-    }, []);
 
     useFocusEffect(
         useCallback(() => {
@@ -559,10 +553,6 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            {/* <WelcomeModal
-                visible={welcomeVisible}
-                onClose={() => setWelcomeVisible(false)}
-            /> */}
             <Header
                 userData={userData}
             />

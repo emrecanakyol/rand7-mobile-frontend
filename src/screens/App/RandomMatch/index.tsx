@@ -17,6 +17,7 @@ import { AppDispatch } from '../../../store/Store';
 import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import { calculateAge } from '../../../components/CalculateAge';
 import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
+import WelcomeModal from '../../../components/WelcomeModal';
 
 const RandomMatch = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -28,16 +29,47 @@ const RandomMatch = () => {
     const navigation: any = useNavigation();
     const { t } = useTranslation();
     const [matchLoading, setMatchLoading] = useState(false);
+    const [welcomeVisible, setWelcomeVisible] = useState(false);
+
+    // Hoş geldin sadece bir kere gösterme ve ardından modalını kapatma ve firestoreye kaydetme
+    const handleWelcomeModal = async (type: 'check' | 'close') => {
+        try {
+            const meId = userData?.userId;
+            if (!meId) return;
+
+            // 🔍 EKRAN AÇILIŞI
+            if (type === 'check') {
+                const snap = await firestore()
+                    .collection('users')
+                    .doc(meId)
+                    .get();
+
+                const me = snap.data() as any;
+
+                if (me?.welcomeModal !== false) {
+                    setWelcomeVisible(true);
+                }
+                return;
+            }
+
+            // ❌ KAPATMA
+            if (type === 'close') {
+                setWelcomeVisible(false);
+
+                await firestore()
+                    .collection('users')
+                    .doc(meId)
+                    .set(
+                        { welcomeModal: false },
+                        { merge: true }
+                    );
+            }
+        } catch (e) {
+            console.log('Welcome modal error:', e);
+        }
+    };
 
     // Veriler eksikse yine profil oluştur ekranına yönlendir
-    // const checkUserProfile = async () => {
-    //     if (loading) {
-    //         return; // Veriler hâlâ yükleniyor, bekle
-    //     } else if (!userData.firstName || !userData.lastName || !userData.photos?.length) {
-    //         navigation.navigate(ADD_PROFILE);
-    //         return;
-    //     }
-    // };
     const checkUserProfile = async () => {
         if (loading) {
             return;
@@ -75,6 +107,7 @@ const RandomMatch = () => {
         if (!loading && userData) {
             checkUserProfile();
             getFcmToken();
+            handleWelcomeModal('check');
         }
     }, [loading, userData]);
 
@@ -283,6 +316,11 @@ const RandomMatch = () => {
                     </TouchableOpacity>
                 </View>
             )}
+
+            <WelcomeModal
+                visible={welcomeVisible}
+                onClose={() => handleWelcomeModal('close')}
+            />
         </View>
     );
 };

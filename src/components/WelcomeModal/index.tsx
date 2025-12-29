@@ -37,24 +37,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({
                         lineHeight: responsive(20),
                     }}
                 >
-                    Merhabalar 😊{'\n'}
-                    <CText style={{ fontWeight: '700' }}>
-                        Rand7 – Anonim Sohbet & Eşleşme
-                    </CText>{' '}
-                    uygulamamıza hoş geldin 🎉
-                </CText>
-
-                <CText
-                    style={{
-                        fontSize: 16,
-                        color: colors.TEXT_MAIN_COLOR,
-                        lineHeight: responsive(20),
-                    }}
-                >
-                    Ekiplerimiz uygulamayı sürekli geliştiriyor. Herhangi bir sorun yaşarsan lütfen{"\n"}
+                    Merhabalar 😊{'\n'}{'\n'}Ekiplerimiz uygulamayı sürekli geliştiriyor.{"\n"}Herhangi bir sorun yaşarsanız lütfen{"\n"}
                     <CText style={{ fontWeight: '700' }}>
                         Hesabım &gt; Yardım & Destek
-                    </CText>{" "}bölümünden bize bildir.
+                    </CText>{" "}bölümünden bize bildiriniz.
                 </CText>
 
                 <CText
@@ -66,7 +52,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({
                 >
                     Her zaman{' '}
                     <CText style={{ fontWeight: '700' }}>
-                        Türkiye’nin en uygun dating uygulaması
+                        Türkiye’nin en uygun fiyatlı dating uygulaması
                     </CText>{' '}
                     olacağımıza söz veriyoruz.
                 </CText>
@@ -77,7 +63,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({
                         color: colors.TEXT_MAIN_COLOR,
                     }}
                 >
-                    Keyifli sohbetler, bol eşleşmeler ve iyi eğlenceler 😍✨
+                    Keyifli sohbetler ve iyi eğlenceler dileriz 😍✨
                 </CText>
 
                 <View style={{ marginTop: responsive(10) }}>
