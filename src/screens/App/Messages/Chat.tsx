@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, ActivityIndicator, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
+import { View, ActivityIndicator, TextInput, TouchableOpacity, Text, Platform, AppState } from 'react-native';
 import { Bubble, GiftedChat, IMessage, Send, SendProps } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -72,6 +72,37 @@ export default function Chat() {
         const url = await reference.getDownloadURL();
         return url;
     };
+
+    //Chat ekranı açıldığında activeChatWith firestoreye ekliyor ve chat ekranından çıkınca da null yapıyor.
+    useEffect(() => {
+        if (!meId || !otherId) return;
+
+        const updateActiveChat = async (value: string | null) => {
+            await firestore()
+                .collection('users')
+                .doc(meId)
+                .set(
+                    { activeChatWith: value },
+                    { merge: true }
+                );
+        };
+
+        updateActiveChat(otherId);
+
+        //uygulama arka plana alınırsa veya kapatılırsa activeChatWith null yap
+        const sub = AppState.addEventListener('change', (state) => {
+            if (state !== 'active') {
+                updateActiveChat(null);
+            } else {
+                updateActiveChat(otherId);
+            }
+        });
+
+        return () => {
+            sub.remove();
+            updateActiveChat(null);
+        };
+    }, [meId, otherId]);
 
     useEffect(() => {
         if (!meId || !otherId) return;
@@ -384,6 +415,11 @@ export default function Chat() {
 
             const otherData = otherUserSnap.data() as any;
             const tokens: string[] = otherData?.fcmTokens || [];
+
+            // ❌ Karşı taraf şu an benimle chat ekranındaysa
+            if (otherData?.activeChatWith === meId) {
+                return;
+            }
 
             if (tokens.length > 0) {
                 const title = meName;

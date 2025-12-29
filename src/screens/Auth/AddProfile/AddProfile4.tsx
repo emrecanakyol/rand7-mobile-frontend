@@ -1,6 +1,4 @@
-
 // ------- Bu hem input ile aramalı hemde tam konum bul butonu vardır. haritada gösterir ------------
-
 import React, { useState } from "react";
 import { View, Text, PermissionsAndroid, Platform, StyleSheet, ScrollView, TouchableOpacity, FlatList } from "react-native";
 import Geolocation from "@react-native-community/geolocation";
@@ -14,11 +12,14 @@ import CText from "../../../components/CText/CText";
 import { useNavigation } from "@react-navigation/native";
 import CTextInput from "../../../components/CTextInput";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { GOOGLE_API_KEY } from "../../../constants/key";
 import { useTranslation } from "react-i18next";
 import { ADD_PROFILE_5 } from "../../../navigators/Stack";
+import { GOOGLE_API_KEY } from "../../../constants/Keys";
+import { AppDispatch } from "../../../store/Store";
+import { useDispatch } from "react-redux";
 
 const AddProfile4 = ({ route }: any) => {
+    const dispatch = useDispatch<AppDispatch>();
     const { t } = useTranslation();
     const navigation: any = useNavigation()
     const { colors } = useTheme();
@@ -63,7 +64,7 @@ const AddProfile4 = ({ route }: any) => {
                     const response = await fetch(
                         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}&language=tr`
                     );
-                    const data = await response.json();
+                    const data: any = await response.json();
 
                     if (data.status === "OK") {
                         const result = data.results[0];
@@ -117,7 +118,7 @@ const AddProfile4 = ({ route }: any) => {
             const response = await fetch(
                 `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${manualLocation}&key=${GOOGLE_API_KEY}&language=tr`
             );
-            const data = await response.json();
+            const data: any = await response.json();
 
             if (data.status === "OK") {
                 setLocationResults(data.predictions);
@@ -139,7 +140,7 @@ const AddProfile4 = ({ route }: any) => {
             const placeDetailsResponse = await fetch(
                 `https://maps.googleapis.com/maps/api/place/details/json?placeid=${place_id}&key=${GOOGLE_API_KEY}`
             );
-            const placeDetailsData = await placeDetailsResponse.json();
+            const placeDetailsData: any = await placeDetailsResponse.json();
 
             if (placeDetailsData.status === "OK") {
                 const { lat, lng } = placeDetailsData.result.geometry.location;
@@ -176,7 +177,50 @@ const AddProfile4 = ({ route }: any) => {
         }
     };
 
+    const fetchAddress = async (latitude: number, longitude: number) => {
+        setLoading(true);
+        try {
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}&language=tr`
+            );
+            const data: any = await response.json();
 
+            if (data.status === "OK") {
+                const result = data.results[0];
+                const formattedAddress = result.formatted_address;
+                setAddress(formattedAddress);
+
+                const components = result.address_components;
+
+                let foundProvince = "";
+                let foundCountry = "";
+
+                components.forEach((component: any) => {
+                    if (component.types.includes("administrative_area_level_1")) {
+                        foundProvince = component.long_name;
+                    }
+                    if (component.types.includes("country")) {
+                        foundCountry = component.long_name;
+                    }
+                });
+
+                setProvince(foundProvince);
+                setCountry(foundCountry);
+            } else {
+                setAddress(t("map_address_not_found"));
+            }
+        } catch (err) {
+            setAddress(t("map_address_error"));
+        }
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 saniye beklet
+        setLoading(false);
+    };
+
+    const handleMarkerDragEnd = (e: any) => {
+        const { latitude, longitude } = e.nativeEvent.coordinate;
+        setCoords({ latitude, longitude });
+        fetchAddress(latitude, longitude);
+    };
 
     const next = () => {
         if (!coords) return;
@@ -197,93 +241,104 @@ const AddProfile4 = ({ route }: any) => {
             {loading ? (
                 <CLoading visible={loading} />
             ) : (
-                <View style={styles.container}>
-                    <View>
-                        <CustomBackButton />
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <View style={styles.container}>
+                        <View>
+                            <CustomBackButton />
 
-                        <CText style={styles.title}>{t("location_question_title")}</CText>
-                        <CText style={styles.description}>
-                            {t("location_question_description")}
-                        </CText>
+                            <CText style={styles.title}>{t("map_where_do_you_live")}</CText>
+                            <CText style={styles.description}>
+                                {t("map_location_change_info")}
+                            </CText>
 
-                        <View style={styles.inputContainer}>
-                            <View style={{ flex: 1 }}>
-                                <CTextInput
-                                    label={t("location_title")}
-                                    value={manualLocation}
-                                    onChangeText={setManualLocation}
-                                    placeholder={t("location_info")}
-                                    maxLength={100}
-                                />
-                            </View>
-
-                            <TouchableOpacity
-                                style={styles.locateButton}
-                                onPress={handleManualLocation}
-                                disabled={loading}
-                            >
-                                <Ionicons name="search" size={24} color={colors.WHITE_COLOR} />
-                            </TouchableOpacity>
-                        </View>
-
-                        {searched && !loading && locationResults.length === 0 && (
-                            <CText style={styles.noResultsText}>{t("location_not_found")}</CText>
-                        )}
-
-                        {locationResults.length > 0 && (
-                            <FlatList
-                                data={locationResults}
-                                keyExtractor={(item, index) => item.place_id + index}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.suggestionItem}
-                                        onPress={() => handleSelectLocation(item)}
-                                    >
-                                        <CText style={styles.suggestionText}>{item.description}</CText>
-                                    </TouchableOpacity>
-                                )}
-                                style={styles.suggestionList}
-                                scrollEnabled={false}
-                            />
-                        )}
-
-                        {coords && (
-                            <>
-                                <MapView
-                                    style={styles.map}
-                                    initialRegion={{
-                                        latitude: coords.latitude,
-                                        longitude: coords.longitude,
-                                        latitudeDelta: 0.01,
-                                        longitudeDelta: 0.01,
-                                    }}
-                                    region={{
-                                        latitude: coords.latitude,
-                                        longitude: coords.longitude,
-                                        latitudeDelta: 0.01,
-                                        longitudeDelta: 0.01,
-                                    }}
-                                >
-                                    <Marker coordinate={{ latitude: coords.latitude, longitude: coords.longitude }} />
-                                </MapView>
-
-                                <View style={styles.addressContainer}>
-                                    <CText style={styles.addressText}>{address}</CText>
+                            <View style={styles.inputContainer}>
+                                <View style={{ flex: 1 }}>
+                                    <CTextInput
+                                        label={t("location_title")}
+                                        value={manualLocation}
+                                        onChangeText={setManualLocation}
+                                        placeholder={t("location_info")}
+                                        maxLength={100}
+                                    />
                                 </View>
 
-                            </>
-                        )}
+                                <TouchableOpacity
+                                    style={styles.locateButton}
+                                    onPress={handleManualLocation}
+                                    disabled={loading}
+                                >
+                                    <Ionicons name="search" size={24} color={colors.WHITE_COLOR} />
+                                </TouchableOpacity>
+                            </View>
 
-                        <CButton title={t("find_my_location")} onPress={getLocation} disabled={loading} />
+                            {searched && !loading && locationResults.length === 0 && (
+                                <CText style={styles.noResultsText}>{t("location_not_found")}</CText>
+                            )}
+
+                            {locationResults.length > 0 && (
+                                <FlatList
+                                    data={locationResults}
+                                    keyExtractor={(item, index) => item.place_id + index}
+                                    renderItem={({ item }) => (
+                                        <TouchableOpacity
+                                            style={styles.suggestionItem}
+                                            onPress={() => handleSelectLocation(item)}
+                                        >
+                                            <CText style={styles.suggestionText}>{item.description}</CText>
+                                        </TouchableOpacity>
+                                    )}
+                                    style={styles.suggestionList}
+                                    scrollEnabled={false}
+                                />
+                            )}
+
+                            {coords && (
+                                <>
+                                    <MapView
+                                        style={styles.map}
+                                        initialRegion={{
+                                            latitude: coords.latitude,
+                                            longitude: coords.longitude,
+                                            latitudeDelta: 0.01,
+                                            longitudeDelta: 0.01,
+                                        }}
+                                        region={{
+                                            latitude: coords.latitude,
+                                            longitude: coords.longitude,
+                                            latitudeDelta: 0.01,
+                                            longitudeDelta: 0.01,
+                                        }}
+                                    >
+                                        <Marker
+                                            coordinate={{ latitude: coords.latitude, longitude: coords.longitude }}
+                                            draggable
+                                            onDragEnd={handleMarkerDragEnd}
+                                        />
+                                    </MapView>
+
+                                    {/* <CButton title={t("map_find_my_location")} onPress={getLocation} disabled={loading} /> */}
+
+                                    <View style={styles.addressContainer}>
+                                        <CText style={styles.addressText}>{address}</CText>
+                                    </View>
+                                    <View style={styles.noteContainer}>
+                                        <CText style={styles.noteText}>
+                                            {t("map_drag_pin_info")}
+                                        </CText>
+                                    </View>
+
+                                </>
+                            )}
+                        </View>
+
+                        <CButton
+                            title={t("next")}
+                            onPress={next}
+                            disabled={!coords}
+                            style={styles.nextButton}
+                        />
                     </View>
-
-                    <CButton
-                        title={t("next")}
-                        onPress={next}
-                        disabled={!coords}
-                        style={styles.nextButton}
-                    />
-                </View>
+                </ScrollView>
             )}
         </>
     );
@@ -344,6 +399,15 @@ const getStyles = (colors: any) =>
             alignItems: "center",
             backgroundColor: colors.BLACK_COLOR,
         },
+        noteContainer: {
+            marginTop: responsive(10),
+            paddingHorizontal: responsive(10),
+        },
+        noteText: {
+            fontSize: responsive(13),
+            color: colors.GRAY_COLOR,
+            textAlign: "center",
+        },
         suggestionList: {
             marginBottom: responsive(20),
             borderWidth: 0.5,
@@ -369,242 +433,3 @@ const getStyles = (colors: any) =>
     });
 
 export default AddProfile4;
-
-
-//---------------- Sadece Konumumu Bul butonu ile konum buluyor ve haritada gösteriyor. Ayrıca kullanıcı isterse imlece tıklayarak konumu düzenleyebiliyor. ----------------------
-
-// import React, { useState } from "react";
-// import { View, PermissionsAndroid, Platform, StyleSheet } from "react-native";
-// import Geolocation from "@react-native-community/geolocation";
-// import MapView, { Marker } from "react-native-maps";
-// import CButton from "../../../components/CButton";
-// import { responsive } from "../../../utils/responsive";
-// import { useTheme } from "../../../utils/colors";
-// import CustomBackButton from "../../../components/CBackButton";
-// import CLoading from "../../../components/CLoading";
-// import CText from "../../../components/CText/CText";
-// import { GOOGLE_API_KEY } from "../../../constants/key";
-// import { ADD_PROFILE_5 } from "../../../navigators/Stack";
-// import { useTranslation } from "react-i18next";
-
-// const AddProfile4 = ({ navigation, route }: any) => {
-//     const { t } = useTranslation();
-//     const { colors } = useTheme();
-//     const styles = getStyles(colors);
-
-//     const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
-//     const [address, setAddress] = useState<string>("");
-//     const [loading, setLoading] = useState(false);
-//     const [province, setProvince] = useState<string>("");
-//     const [country, setCountry] = useState<string>("");
-
-//     const requestLocationPermission = async () => {
-//         if (Platform.OS === "android") {
-//             const granted = await PermissionsAndroid.request(
-//                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-//                 {
-//                     title: t("location_permission_title"),
-//                     message: t("location_permission_message"),
-//                     buttonPositive: t("location_permission_allow"),
-//                 }
-//             );
-//             return granted === PermissionsAndroid.RESULTS.GRANTED;
-//         }
-//         return true;
-//     };
-
-//     const fetchAddress = async (latitude: number, longitude: number) => {
-//         setLoading(true);
-//         try {
-//             const response = await fetch(
-//                 `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}&language=tr`
-//             );
-//             const data = await response.json();
-
-//             if (data.status === "OK") {
-//                 const result = data.results[0];
-//                 const formattedAddress = result.formatted_address;
-//                 setAddress(formattedAddress);
-
-//                 const components = result.address_components;
-
-//                 let foundProvince = "";
-//                 let foundCountry = "";
-
-//                 components.forEach((component: any) => {
-//                     if (component.types.includes("administrative_area_level_1")) {
-//                         foundProvince = component.long_name;
-//                     }
-//                     if (component.types.includes("country")) {
-//                         foundCountry = component.long_name;
-//                     }
-//                 });
-
-//                 setProvince(foundProvince);
-//                 setCountry(foundCountry);
-//             } else {
-//                 setAddress(t("address_not_found"));
-//             }
-//         } catch (err) {
-//             setAddress(t("address_fetch_error"));
-//         }
-//         await new Promise(resolve => setTimeout(resolve, 5000)); // 5 saniye beklet
-//         setLoading(false);
-//     };
-
-//     const getLocation = async () => {
-//         const hasPermission = await requestLocationPermission();
-//         if (!hasPermission) return;
-
-//         setLoading(true);
-
-//         Geolocation.getCurrentPosition(
-//             async (position) => {
-//                 const { latitude, longitude } = position.coords;
-//                 setCoords({ latitude, longitude });
-//                 fetchAddress(latitude, longitude);
-//             },
-//             (error) => {
-//                 console.log("Location error:", error);
-//                 setLoading(false);
-//             },
-//             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-//         );
-//     };
-
-//     const handleMarkerDragEnd = (e: any) => {
-//         const { latitude, longitude } = e.nativeEvent.coordinate;
-//         setCoords({ latitude, longitude });
-//         fetchAddress(latitude, longitude);
-//     };
-
-//     const next = () => {
-//         if (!coords) return;
-//         navigation.navigate(ADD_PROFILE_5, {
-//             ...route.params,
-//             location: address,
-//             latitude: coords.latitude,
-//             longitude: coords.longitude,
-//             province,
-//             country,
-//         });
-//     };
-
-//     // console.log(coords?.latitude, coords?.longitude, province, country, address)
-
-//     return (
-//         <>
-//             {loading ? (
-//                 <CLoading visible={loading} />
-//             ) : (
-//                 <View style={styles.container}>
-//                     <View>
-//                         <CustomBackButton />
-
-//                         <CText style={styles.title}>{t("location_question_title")}</CText>
-//                         <CText style={styles.description}>
-//                             {t("location_question_description")}
-//                         </CText>
-
-//                         <CButton title={t("find_my_location")} onPress={getLocation} disabled={loading} />
-
-//                         {coords && (
-//                             <>
-//                                 <MapView
-//                                     style={styles.map}
-//                                     initialRegion={{
-//                                         latitude: coords.latitude,
-//                                         longitude: coords.longitude,
-//                                         latitudeDelta: 0.01,
-//                                         longitudeDelta: 0.01,
-//                                     }}
-//                                     region={{
-//                                         latitude: coords.latitude,
-//                                         longitude: coords.longitude,
-//                                         latitudeDelta: 0.01,
-//                                         longitudeDelta: 0.01,
-//                                     }}
-//                                 >
-//                                     <Marker
-//                                         coordinate={{ latitude: coords.latitude, longitude: coords.longitude }}
-//                                         draggable
-//                                         onDragEnd={handleMarkerDragEnd}
-//                                     />
-//                                 </MapView>
-
-//                                 <View style={styles.addressContainer}>
-//                                     <CText style={styles.addressText}>{address}</CText>
-//                                 </View>
-//                                 <View style={styles.noteContainer}>
-//                                     <CText style={styles.noteText}>
-//                                         {t("location_drag_note")}
-//                                     </CText>
-//                                 </View>
-
-//                             </>
-//                         )}
-//                     </View>
-
-//                     <CButton
-//                         title={t("next")}
-//                         onPress={next}
-//                         disabled={!coords}
-//                         style={styles.nextButton}
-//                     />
-//                 </View>
-//             )}
-//         </>
-//     );
-// };
-
-// const getStyles = (colors: any) =>
-//     StyleSheet.create({
-//         container: {
-//             flex: 1,
-//             padding: responsive(20),
-//             backgroundColor: colors.BACKGROUND_COLOR,
-//             justifyContent: "space-between",
-//         },
-//         title: {
-//             fontSize: responsive(28),
-//             fontWeight: "700",
-//             color: colors.TEXT_MAIN_COLOR,
-//             marginTop: responsive(50),
-//             marginBottom: responsive(8),
-//         },
-//         description: {
-//             fontSize: responsive(16),
-//             color: colors.GRAY_COLOR,
-//             marginBottom: responsive(25),
-//         },
-//         map: {
-//             width: "100%",
-//             height: responsive(350),
-//             marginTop: responsive(20),
-//         },
-//         addressContainer: {
-//             marginTop: responsive(15),
-//             paddingHorizontal: responsive(10),
-//         },
-//         addressText: {
-//             fontSize: responsive(14),
-//             color: colors.TEXT_MAIN_COLOR,
-//             textAlign: "center",
-//         },
-//         noteContainer: {
-//             marginTop: responsive(10),
-//             paddingHorizontal: responsive(10),
-//         },
-//         noteText: {
-//             fontSize: responsive(13),
-//             color: colors.GRAY_COLOR,
-//             textAlign: "center",
-//         },
-//         nextButton: {
-//             width: responsive(100),
-//             alignSelf: "flex-end",
-//             marginBottom: responsive(23),
-//         },
-//     });
-
-// export default AddProfile4;

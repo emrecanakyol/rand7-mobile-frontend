@@ -158,7 +158,7 @@
     "map_where_do_you_live": "Où habites-tu ?",
     "map_location_change_info": "Si tu modifies ta localisation ici, elle sera également mise à jour sur ton profil.",
     "map_find_my_location": "Trouver ma position",
-    "map_drag_pin_info": "Tu peux aussi déplacer le repère sur la carte pour définir ta position manuellement.",
+    "map_drag_pin_info": "Si vous le souhaitez, vous pouvez appuyer une fois sur le marqueur sur la carte, puis maintenir et glisser pour ajuster sa position",
     "common_back": "Retour",
     "match_likes_title": "Mentions J'aime",
     "match_matches_title": "Matchs",
