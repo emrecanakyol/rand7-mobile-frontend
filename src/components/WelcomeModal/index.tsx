@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../utils/colors';
 import CModal from '../CModal';
@@ -16,18 +16,44 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({
     onClose,
 }) => {
     const { colors } = useTheme();
+    const [secondsLeft, setSecondsLeft] = useState(15);
+
+    useEffect(() => {
+        let timer: ReturnType<typeof setInterval>;
+
+        if (visible) {
+            setSecondsLeft(15);
+
+            timer = setInterval(() => {
+                setSecondsLeft(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+
+        return () => {
+            if (timer) clearInterval(timer);
+        };
+    }, [visible]);
+
+
 
     return (
         <CModal
             visible={visible}
             onClose={onClose}
-            modalTitle="Hoş Geldin 👋✨"
+            modalTitle="Hoş Geldiniz 👋"
             justifyContent="center"
             width="90%"
             height="auto"
             paddingTop={0}
             borderBottomLeftRadius={30}
             borderBottomRightRadius={30}
+            closeButton={false}
         >
             <View style={{ gap: responsive(14) }}>
                 <CText
@@ -37,7 +63,20 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({
                         lineHeight: responsive(20),
                     }}
                 >
-                    Merhabalar 😊{'\n'}{'\n'}Ekiplerimiz uygulamayı sürekli geliştiriyor.{"\n"}Herhangi bir sorun yaşarsanız lütfen{"\n"}
+                    Merhabalar 😊{'\n'}{'\n'}Ekiplerimiz uygulamamızı sürekli geliştiriyor. Daha bir sürü{" "}
+                    <CText style={{ fontWeight: '700' }}>
+                        ek özellik
+                    </CText>{" "}yolda geliyor. 🚀
+                </CText>
+
+                <CText
+                    style={{
+                        fontSize: 16,
+                        color: colors.TEXT_MAIN_COLOR,
+                        lineHeight: responsive(20),
+                    }}
+                >
+                    Lütfen herhangi bir sorun yaşarsanız{"\n"}
                     <CText style={{ fontWeight: '700' }}>
                         Hesabım &gt; Yardım & Destek
                     </CText>{" "}bölümünden bize bildiriniz.
@@ -54,7 +93,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({
                     <CText style={{ fontWeight: '700' }}>
                         Türkiye’nin en uygun fiyatlı dating uygulaması
                     </CText>{' '}
-                    olacağımıza söz veriyoruz.
+                    olmaya çalışacağımıza söz veriyoruz.
                 </CText>
 
                 <CText
@@ -68,11 +107,17 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({
 
                 <View style={{ marginTop: responsive(10) }}>
                     <CButton
-                        title="Tamam 👍"
+                        title={
+                            secondsLeft > 0
+                                ? `Tamam (${secondsLeft})`
+                                : 'Tamam 👍'
+                        }
                         onPress={onClose}
                         borderRadius={28}
+                        disabled={secondsLeft > 0}
                     />
                 </View>
+
             </View>
         </CModal>
     );

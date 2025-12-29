@@ -71,14 +71,10 @@ const RandomMatch = () => {
 
     // Veriler eksikse yine profil oluştur ekranına yönlendir
     const checkUserProfile = async () => {
-        if (loading) {
-            return;
-        }
+        if (loading) return false;
 
         const meId = userData?.userId;
-        if (!meId) {
-            return;
-        }
+        if (!meId) return false;
 
         const snap = await firestore().collection('users').doc(meId).get();
         const me = snap.data() as any;
@@ -94,7 +90,9 @@ const RandomMatch = () => {
                 index: 0,
                 routes: [{ name: ADD_PROFILE }],
             });
+            return false; // ❌ profil yok
         }
+        return true; // ✅ profil tamam
     };
 
     useFocusEffect(
@@ -105,9 +103,14 @@ const RandomMatch = () => {
 
     useEffect(() => {
         if (!loading && userData) {
-            checkUserProfile();
-            getFcmToken();
-            handleWelcomeModal('check');
+            (async () => {
+                const hasProfile = await checkUserProfile();
+
+                if (!hasProfile) return; // 🚫 AddProfile eksik, burada dur !
+
+                getFcmToken();
+                handleWelcomeModal('check');
+            })();
         }
     }, [loading, userData]);
 
