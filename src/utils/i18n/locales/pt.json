@@ -279,5 +279,14 @@
     "common_delete": "Excluir",
     "update_alert_title": "🌟 Nova atualização disponível",
     "update_alert_message": "Queremos oferecer uma melhor experiência com novos recursos e melhorias de desempenho. Por favor, atualize o aplicativo.",
-    "update_alert_button": "Atualizar agora"
+    "update_alert_button": "Atualizar agora",
+    "newLikeMatchNotificationTitle": "Nova Combinação 🎉",
+    "newLikeMatchNotificationDesc": "Incrível! Você tem uma nova combinação.",
+    "newSuperLikeMatchNotificationTitle": "Combinação Super Like ⭐",
+    "newSuperLikeMatchNotificationDesc": "Incrível! Você tem uma nova combinação Super Like.",
+    "newLikeNotificationTitle": "Novo Like ❤️",
+    "newLikeNotificationDesc": "Alguém curtiu você.",
+    "newSuperLikeNotificationTitle": "Super Like ⭐",
+    "newSuperLikeNotificationDesc": "Alguém enviou um super like para você!",
+    "photograph": "Fotografia"
 }

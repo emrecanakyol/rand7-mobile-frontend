@@ -102,17 +102,17 @@ export const checkApplicationNotificationPermission = async () => {
 //method was called to listener events from firebase for notification triger
 export const registerListenerWithFCM = (navigation) => {
     messaging().onNotificationOpenedApp(remoteMessage => {
-        const { id, type } = remoteMessage?.data || {};
+        const { type } = remoteMessage?.data || {};
         setTimeout(() => {
-            handleNotificationNavigation(navigation, { id, type });
+            handleNotificationNavigation(navigation, { type });
         }, 1500);
     });
 
     messaging().getInitialNotification().then(remoteMessage => {
         if (remoteMessage) {
-            const { id, type } = remoteMessage?.data || {};
+            const { type } = remoteMessage?.data || {};
             setTimeout(() => {
-                handleNotificationNavigation(navigation, { id, type });
+                handleNotificationNavigation(navigation, { type });
             }, 1500);
         }
     });
@@ -133,9 +133,9 @@ export const registerListenerWithFCM = (navigation) => {
 
     notifee.onForegroundEvent(({ type, detail }) => {
         if (type === EventType.PRESS) {
-            const { id, type: notiType } = detail.notification?.data || {};
+            const { type: notiType } = detail.notification?.data || {};
             setTimeout(() => {
-                handleNotificationNavigation(navigation, { id, type: notiType });
+                handleNotificationNavigation(navigation, { type: notiType });
             }, 1500);
         }
     });

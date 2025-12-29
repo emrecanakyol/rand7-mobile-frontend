@@ -279,5 +279,14 @@
     "common_delete": "Sil",
     "update_alert_title": "🌟 Yeni Güncelleme",
     "update_alert_message": "Yeni özellikler ve performans iyileştirmeleriyle sizlere daha iyi bir deneyim sunmayı hedefliyoruz. Lütfen uygulamayı güncelleyiniz.",
-    "update_alert_button": "Şimdi Güncelle"
+    "update_alert_button": "Şimdi Güncelle",
+    "newLikeMatchNotificationTitle": "Yeni Eşleşme 🎉",
+    "newLikeMatchNotificationDesc": "Harika! Yeni bir eşleşmen var.",
+    "newSuperLikeMatchNotificationTitle": "Süper Like Eşleşmesi ⭐",
+    "newSuperLikeMatchNotificationDesc": "Harika! Süper Like ile yeni bir eşleşmen var.",
+    "newLikeNotificationTitle": "Yeni Beğeni ❤️",
+    "newLikeNotificationDesc": "Birisi seni beğendi.",
+    "newSuperLikeNotificationTitle": "Süper Beğeni ⭐",
+    "newSuperLikeNotificationDesc": "Birisi sana süper beğeni gönderdi!",
+    "photograph": "Fotoğraf"
 }

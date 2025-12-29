@@ -20,6 +20,7 @@ import Header from '../../../components/Header';
 import CImage from '../../../components/CImage';
 import CText from '../../../components/CText/CText';
 import WelcomeModal from '../../../components/WelcomeModal';
+import { sendNotification } from '../../../constants/Notifications';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -312,6 +313,23 @@ const Home = () => {
             // 🔹 Karşı taraf beni önceden beğenmiş mi?
             const theyLikedMe = likedUserData.likedUsers?.includes(userData.userId);
 
+            // 🔔 Eğer karşı taraf beni henüz beğenmediyse → LIKE bildirimi gönder
+            if (!theyLikedMe) {
+                const targetTokens: string[] = likedUserData?.fcmTokens || [];
+
+                if (targetTokens.length > 0) {
+                    await sendNotification(
+                        targetTokens,
+                        t('newLikeNotificationTitle'),
+                        t('newLikeNotificationDesc'),
+                        {
+                            type: 'like',
+                            fromUserId: userData.userId,
+                        }
+                    );
+                }
+            }
+
             // 🔹 Karşı tarafın 'likers' listesine beni ekle
             await userRef.update({
                 likers: firestore.FieldValue.arrayUnion(userData.userId),
@@ -436,6 +454,21 @@ const Home = () => {
             const theyLikedMe =
                 superLikedUserData.likedUsers?.includes(userData.userId) ||
                 superLikedUserData.superLikedUsers?.includes(userData.userId);
+
+            // 🔔 SuperLike bildirimi (eşleşme olmasa bile gider)
+            const targetTokens: string[] = superLikedUserData?.fcmTokens || [];
+
+            if (targetTokens.length > 0) {
+                await sendNotification(
+                    targetTokens,
+                    t('newSuperLikeNotificationTitle'),
+                    t('newSuperLikeNotificationDesc'),
+                    {
+                        type: 'superlike',
+                        fromUserId: userData.userId,
+                    }
+                );
+            }
 
             // 🔹 Karşı tarafın 'superLikers' listesine beni ekle
             await userRef.update({

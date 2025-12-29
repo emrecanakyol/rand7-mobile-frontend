@@ -4,7 +4,6 @@ import { useTheme } from "../../utils/colors";
 import CText from "../CText/CText";
 import CustomBackButton from "../CBackButton";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ADMIN } from "../../constants/Admin";
 
 interface DetailHeadersProps {
     title: string;
@@ -30,15 +29,13 @@ const DetailHeaders = ({
             {showRightIcon && rightIconName ? (
                 <View style={styles.btnContainer}>
                     {/* Admin özellikleri buraya ekle */}
-                    {ADMIN && (
-                        <TouchableOpacity
-                            style={styles.rightIconButton}
-                            onPress={rightIconOnPress}
-                            activeOpacity={0.7}
-                        >
-                            <MaterialIcons name={rightIconName} size={isTablet ? 32 : 22} color={colors.BACKGROUND_COLOR} />
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity
+                        style={styles.rightIconButton}
+                        onPress={rightIconOnPress}
+                        activeOpacity={0.7}
+                    >
+                        <MaterialIcons name={rightIconName} size={isTablet ? 32 : 22} color={colors.BACKGROUND_COLOR} />
+                    </TouchableOpacity>
                 </View>
             ) : (
                 <View style={{ width: 28 }} />

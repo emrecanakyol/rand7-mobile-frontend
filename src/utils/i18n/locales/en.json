@@ -279,5 +279,14 @@
     "common_delete": "Delete",
     "update_alert_title": "🌟 New Update Available",
     "update_alert_message": "We aim to provide you with a better experience through new features and performance improvements. Please update the app.",
-    "update_alert_button": "Update Now"
+    "update_alert_button": "Update Now",
+    "newLikeMatchNotificationTitle": "New Match 🎉",
+    "newLikeMatchNotificationDesc": "Awesome! You have a new match.",
+    "newSuperLikeMatchNotificationTitle": "Super Like Match ⭐",
+    "newSuperLikeMatchNotificationDesc": "Awesome! You have a new Super Like match.",
+    "newLikeNotificationTitle": "New Like ❤️",
+    "newLikeNotificationDesc": "Someone liked you.",
+    "newSuperLikeNotificationTitle": "Super Like ⭐",
+    "newSuperLikeNotificationDesc": "Someone sent you a super like!",
+    "photograph": "Photograph"
 }

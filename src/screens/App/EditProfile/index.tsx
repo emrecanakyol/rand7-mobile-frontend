@@ -19,13 +19,13 @@ import CText from '../../../components/CText/CText';
 import DateFormatter from '../../../components/DateFormatter';
 import DatePicker from 'react-native-date-picker';
 import i18n from '../../../utils/i18n';
-import { categorizedHobbies } from '../../../constants/constant';
 import CModal from '../../../components/CModal';
 import firestore from '@react-native-firebase/firestore';
 import CButton from '../../../components/CButton';
 import auth from '@react-native-firebase/auth';
 import { ToastError, ToastSuccess } from '../../../utils/toast';
 import storage from '@react-native-firebase/storage';
+import { categorizedHobbies } from '../../../constants/CategorizedHobbies';
 
 const EditProfileScreen = () => {
   const { userData } = useAppSelector((state) => state.userData);

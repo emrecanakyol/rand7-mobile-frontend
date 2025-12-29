@@ -279,5 +279,14 @@
     "common_delete": "Supprimer",
     "update_alert_title": "🌟 Nouvelle mise à jour",
     "update_alert_message": "Nous souhaitons vous offrir une meilleure expérience grâce à de nouvelles fonctionnalités et des améliorations de performance. Veuillez mettre à jour l’application.",
-    "update_alert_button": "Mettre à jour"
+    "update_alert_button": "Mettre à jour",
+    "newLikeMatchNotificationTitle": "Nouveau Match 🎉",
+    "newLikeMatchNotificationDesc": "Génial ! Tu as un nouveau match.",
+    "newSuperLikeMatchNotificationTitle": "Match Super Like ⭐",
+    "newSuperLikeMatchNotificationDesc": "Génial ! Tu as un nouveau match Super Like.",
+    "newLikeNotificationTitle": "Nouveau Like ❤️",
+    "newLikeNotificationDesc": "Quelqu’un t’a aimé.",
+    "newSuperLikeNotificationTitle": "Super Like ⭐",
+    "newSuperLikeNotificationDesc": "Quelqu’un t’a envoyé un super like !",
+    "photograph": "Photographie"
 }

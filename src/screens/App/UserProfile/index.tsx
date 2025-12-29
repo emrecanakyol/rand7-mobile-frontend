@@ -23,6 +23,7 @@ import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import { useTranslation } from 'react-i18next';
 import { useAlert } from '../../../context/AlertContext';
 import storage from '@react-native-firebase/storage';
+import { sendNotification } from '../../../constants/Notifications';
 
 const UserProfile = ({ route }: any) => {
     const { t } = useTranslation();
@@ -230,6 +231,23 @@ const UserProfile = ({ route }: any) => {
             const theyLikedMe = likedUserData.likedUsers?.includes(userData.userId);
             const theySuperLikedMe = likedUserData.superLikedUsers?.includes(userData.userId);
 
+            // 🔔 LIKE bildirimi (eşleşme yoksa)
+            if (!theyLikedMe && !theySuperLikedMe) {
+                const targetTokens: string[] = likedUserData?.fcmTokens || [];
+
+                if (targetTokens.length > 0) {
+                    await sendNotification(
+                        targetTokens,
+                        t('newLikeNotificationTitle'),
+                        t('newLikeNotificationDesc'),
+                        {
+                            type: 'like',
+                            fromUserId: userData.userId,
+                        }
+                    );
+                }
+            }
+
             await userRef.update({
                 likers: firestore.FieldValue.arrayUnion(userData.userId),
                 superLikers: firestore.FieldValue.arrayRemove(userData.userId),
@@ -348,6 +366,21 @@ const UserProfile = ({ route }: any) => {
             const theyLikedMe =
                 superLikedUserData.likedUsers?.includes(userData.userId) ||
                 superLikedUserData.superLikedUsers?.includes(userData.userId);
+
+            // 🔔 SUPER LIKE bildirimi (her zaman gider)
+            const targetTokens: string[] = superLikedUserData?.fcmTokens || [];
+
+            if (targetTokens.length > 0) {
+                await sendNotification(
+                    targetTokens,
+                    t('newSuperLikeNotificationTitle'),
+                    t('newSuperLikeNotificationDesc'),
+                    {
+                        type: 'superlike',
+                        fromUserId: userData.userId,
+                    }
+                );
+            }
 
             await userRef.update({
                 superLikers: firestore.FieldValue.arrayUnion(userData.userId),

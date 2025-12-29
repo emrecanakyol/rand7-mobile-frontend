@@ -1,9 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { useTheme } from '../../../utils/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { sendNotification } from '../../../constants/Notifications';
 
 const SuperLikeMatched = () => {
     const navigation: any = useNavigation();
@@ -14,6 +15,7 @@ const SuperLikeMatched = () => {
     const { width, height } = Dimensions.get('window');
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
+    const notificationSentRef = useRef(false);
 
     const user1Photo =
         user1?.photos?.find((p: string) => typeof p === 'string' && p.startsWith('http')) ||
@@ -25,6 +27,40 @@ const SuperLikeMatched = () => {
         user2?.photos?.[0] ||
         'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg';
 
+    useEffect(() => {
+        if (notificationSentRef.current) return;
+
+        const sendMatchNotifications = async () => {
+            try {
+                const user1Tokens: string[] = user1?.fcmTokens || [];
+                const user2Tokens: string[] = user2?.fcmTokens || [];
+
+                // Aynı token 2 kere gitmesin
+                const allTokens = Array.from(
+                    new Set([...user1Tokens, ...user2Tokens])
+                );
+
+                if (!allTokens.length) return;
+
+                await sendNotification(
+                    allTokens,
+                    t('newSuperLikeMatchNotificationTitle'),
+                    t('newSuperLikeMatchNotificationDesc'),
+                    {
+                        type: 'superlike_matched',
+                        user1Id: user1?.id ?? '',
+                        user2Id: user2?.id ?? '',
+                    }
+                );
+
+                notificationSentRef.current = true;
+            } catch (err) {
+                console.log('Match notification error:', err);
+            }
+        };
+
+        sendMatchNotifications();
+    }, []);
 
     return (
         <View style={styles.container}>

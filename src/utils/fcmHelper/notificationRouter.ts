@@ -1,8 +1,6 @@
 import { NavigationContainerRef } from '@react-navigation/native';
-import { GROUP_DETAIL } from '../../navigators/Stack';
 
 export type NotificationPayload = {
-    id: string;
     type: string;
 };
 
@@ -10,13 +8,13 @@ export function handleNotificationNavigation(
     navigation: NavigationContainerRef<any>,
     payload: NotificationPayload
 ) {
-    if (!payload?.id || !payload?.type) return;
+    if (!payload?.type) return;
 
-    const { id, type } = payload;
+    const { type } = payload;
 
     switch (type) {
         case 'group':
-            navigation.navigate(GROUP_DETAIL, { groupId: id });
+            navigation.navigate(type);
             break;
 
         default:

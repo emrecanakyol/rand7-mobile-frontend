@@ -17,6 +17,7 @@ import { useTheme } from '../../../utils/colors';
 import storage from '@react-native-firebase/storage';
 import CPhotosAdd from '../../../components/CPhotosAdd';
 import { responsive } from '../../../utils/responsive';
+import { sendNotification } from '../../../constants/Notifications';
 
 type RootStackParamList = {
     Chat: {
@@ -374,6 +375,36 @@ export default function Chat() {
 
         try {
             await batch.commit();
+
+            // 🔔 PUSH NOTIFICATION
+            const otherUserSnap = await firestore()
+                .collection('users')
+                .doc(otherId)
+                .get();
+
+            const otherData = otherUserSnap.data() as any;
+            const tokens: string[] = otherData?.fcmTokens || [];
+
+            if (tokens.length > 0) {
+                const title = meName;
+
+                const body = m.image
+                    ? t('photograpy')
+                    : (m.text?.trim() || '');
+
+                await sendNotification(
+                    tokens,
+                    title,
+                    body,
+                    {
+                        type: 'chat_message',
+                        fromUserId: meId,
+                        toUserId: otherId,
+                    }
+                );
+            }
+
+
         } catch (e) {
             console.log('send error', e);
             ToastError(t('chat_error_title'), t('chat_error_message'));

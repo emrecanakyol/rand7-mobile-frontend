@@ -6,7 +6,7 @@ import CText from "../../../components/CText/CText";
 import CButton from "../../../components/CButton";
 import { ADD_PROFILE_8 } from "../../../navigators/Stack";
 import CustomBackButton from "../../../components/CBackButton";
-import { categorizedHobbies } from "../../../constants/constant";
+import { categorizedHobbies } from "../../../constants/CategorizedHobbies";
 import { useTranslation } from "react-i18next";
 
 const AddProfile7 = ({ navigation, route }: any) => {
