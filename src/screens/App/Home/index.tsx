@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, ScrollView
 import { useTheme } from '../../../utils/colors';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ADD_PROFILE, LIKE_MATCHED, SUPER_LIKE_MATCHED, USER_PROFILE } from '../../../navigators/Stack';
-import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
@@ -324,7 +323,6 @@ const Home = () => {
                         t('newLikeNotificationDesc'),
                         {
                             type: 'like',
-                            fromUserId: userData.userId,
                         }
                     );
                 }
@@ -465,7 +463,6 @@ const Home = () => {
                     t('newSuperLikeNotificationDesc'),
                     {
                         type: 'superlike',
-                        fromUserId: userData.userId,
                     }
                 );
             }

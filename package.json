@@ -39,7 +39,7 @@
     "react": "19.1.0",
     "react-i18next": "^15.5.3",
     "react-native": "0.81.4",
-    "react-native-date-picker": "^5.0.12",
+    "react-native-date-picker": "^5.0.13",
     "react-native-deck-swiper": "^2.0.19",
     "react-native-device-info": "^14.0.4",
     "react-native-element-dropdown": "^2.12.4",

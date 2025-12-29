@@ -1,7 +1,11 @@
 import { NavigationContainerRef } from '@react-navigation/native';
+import { CHAT } from '../../navigators/Stack';
+import { MATCH } from '../../navigators/BottomTabs';
 
 export type NotificationPayload = {
     type: string;
+    senderId?: string;
+    receiverId?: string;
 };
 
 export function handleNotificationNavigation(
@@ -10,15 +14,31 @@ export function handleNotificationNavigation(
 ) {
     if (!payload?.type) return;
 
-    const { type } = payload;
+    switch (payload.type) {
+        case 'chat_message':
+            if (payload.senderId && payload.receiverId) {
+                navigation.navigate(CHAT, {
+                    userId: payload.receiverId, // Kendi id
+                    user2Id: payload.senderId,  // Karşı taraf id
+                });
+            }
+            break;
 
-    switch (type) {
-        case 'group':
-            navigation.navigate(type);
+        case 'like':
+            navigation.navigate(MATCH);
+            break;
+        case 'superlike':
+            navigation.navigate(MATCH);
+            break;
+        case 'like_matched':
+            navigation.navigate(MATCH);
+            break;
+        case 'superlike_matched':
+            navigation.navigate(MATCH);
             break;
 
         default:
-            console.warn('Bilinmeyen bildirim türü:', type);
+            console.warn('Bilinmeyen bildirim türü:', payload.type);
     }
 }
 

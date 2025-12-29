@@ -398,8 +398,8 @@ export default function Chat() {
                     body,
                     {
                         type: 'chat_message',
-                        fromUserId: meId,
-                        toUserId: otherId,
+                        senderId: meId, // Mesajı gönderen
+                        receiverId: otherId, // Mesajı alan
                     }
                 );
             }
