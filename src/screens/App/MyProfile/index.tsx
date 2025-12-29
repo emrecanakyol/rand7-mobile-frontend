@@ -21,6 +21,7 @@ import { AppDispatch } from '../../../store/Store';
 import { useAppSelector } from '../../../store/hooks';
 import { fetchUserData } from '../../../store/services/userDataService';
 import { calculateAge } from '../../../components/CalculateAge';
+import FastImage from 'react-native-fast-image';
 
 const Profile = () => {
     const { t } = useTranslation();
@@ -74,9 +75,10 @@ const Profile = () => {
                     onMomentumScrollEnd={handleMomentumScrollEnd}
                     renderItem={({ item }) => (
                         <View style={{ width, height: height * 0.75 }}>
-                            <Image
+                            <FastImage
                                 source={{ uri: item }}
                                 style={styles.profileImage}
+                                resizeMode={FastImage.resizeMode.cover}
                             />
                             <LinearGradient
                                 colors={['transparent', 'rgba(0,0,0,0.7)']}

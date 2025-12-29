@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useAlert } from '../../../context/AlertContext';
 import storage from '@react-native-firebase/storage';
 import { sendNotification } from '../../../constants/Notifications';
+import FastImage from 'react-native-fast-image';
 
 const UserProfile = ({ route }: any) => {
     const { t } = useTranslation();
@@ -567,9 +568,10 @@ const UserProfile = ({ route }: any) => {
                                         height: height * 0.75,
                                     }}
                                 >
-                                    <Image
+                                    <FastImage
                                         source={{ uri: item }}
                                         style={styles.profileImage}
+                                        resizeMode={FastImage.resizeMode.cover}
                                     />
                                     <LinearGradient
                                         colors={['transparent', 'rgba(0,0,0,0.7)']}

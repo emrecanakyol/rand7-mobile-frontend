@@ -17,6 +17,7 @@ import { useTheme } from '../../../utils/colors';
 import { useAppSelector } from '../../../store/hooks';
 import { CHAT } from '../../../navigators/Stack';
 import { useTranslation } from 'react-i18next';
+import FastImage from 'react-native-fast-image';
 
 type RowItem = {
     id: string;
@@ -184,7 +185,11 @@ function Row({
             >
                 <View style={styles.avatarWrap}>
                     {item.avatar ? (
-                        <Image source={{ uri: item.avatar }} style={styles.avatar} />
+                        <FastImage
+                            source={{ uri: item.avatar }}
+                            style={styles.avatar}
+                            resizeMode={FastImage.resizeMode.cover}
+                        />
                     ) : (
                         <View style={[styles.avatar, { alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1F1F1' }]}>
                             <Ionicons name="person" size={22} color="#9AA0A6" />

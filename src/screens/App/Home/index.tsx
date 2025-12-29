@@ -20,6 +20,7 @@ import CImage from '../../../components/CImage';
 import CText from '../../../components/CText/CText';
 import WelcomeModal from '../../../components/WelcomeModal';
 import { sendNotification } from '../../../constants/Notifications';
+import FastImage from 'react-native-fast-image';
 
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -640,8 +641,11 @@ const Home = () => {
                                         onPress={() => navigation.navigate(USER_PROFILE, { user: u })}
                                     >
                                         <View style={styles.cardContainer}>
-                                            <Image
-                                                source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+                                            <FastImage
+                                                source={{
+                                                    uri: u?.photos?.[0],
+                                                    priority: FastImage.priority.high,
+                                                }}
                                                 style={styles.profileImage}
                                             />
                                             <LinearGradient
@@ -746,11 +750,21 @@ const Home = () => {
                                                                     : null,
                                                         ]}
                                                     >
-                                                        <Image
-                                                            source={{ uri: u?.photos?.[0] || 'https://placehold.co/400' }}
+
+                                                        <FastImage
+                                                            source={{
+                                                                uri: u?.photos?.[0],
+                                                                priority: FastImage.priority.high,
+                                                            }}
                                                             style={styles.matchImage}
                                                         />
 
+                                                        <LinearGradient
+                                                            colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.0)']}
+                                                            start={{ x: 0.5, y: 1 }}
+                                                            end={{ x: 0.5, y: 0 }}
+                                                            style={styles.bottomInnerShadow}
+                                                        />
                                                         <TouchableOpacity
                                                             style={styles.closeIcon}
                                                             onPress={() => handleDislike(u.userId)}
@@ -958,11 +972,19 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         overflow: 'hidden',
         marginBottom: 16,
         position: 'relative',
-        backgroundColor: '#000',
     },
     matchImage: {
         width: '100%',
         height: '100%',
+    },
+    bottomInnerShadow: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 90,
+        borderBottomLeftRadius: 18,
+        borderBottomRightRadius: 18,
     },
     row: {
         flexDirection: 'row',

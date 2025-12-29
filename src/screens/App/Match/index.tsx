@@ -23,6 +23,8 @@ import { USER_PROFILE } from "../../../navigators/Stack";
 import CImage from "../../../components/CImage";
 import CText from "../../../components/CText/CText";
 import CLoading from "../../../components/CLoading";
+import LinearGradient from "react-native-linear-gradient";
+import FastImage from "react-native-fast-image";
 
 const Match: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -248,7 +250,17 @@ const Match: React.FC = () => {
                                                         },
                                                     ]}
                                                 >
-                                                    <Image source={{ uri: user.photos[0] }} style={styles.image} />
+                                                    <FastImage
+                                                        source={{ uri: user.photos[0] }}
+                                                        style={styles.image}
+                                                        resizeMode={FastImage.resizeMode.cover}
+                                                    />
+                                                    <LinearGradient
+                                                        colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.0)']}
+                                                        start={{ x: 0.5, y: 1 }}
+                                                        end={{ x: 0.5, y: 0 }}
+                                                        style={styles.bottomInnerShadow}
+                                                    />
                                                     <View style={[
                                                         styles.matchBadge,
                                                         { backgroundColor: user.isSuper ? colors.BLUE_COLOR : colors.RED_COLOR }
@@ -347,6 +359,15 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         shadowColor: "#000",
         shadowOpacity: 0.3,
         shadowRadius: 8,
+    },
+    bottomInnerShadow: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 90, // gölgenin yüksekliği
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
     },
     statText: {
         fontSize: 14,
