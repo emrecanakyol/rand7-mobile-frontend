@@ -18,6 +18,7 @@ import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import { calculateAge } from '../../../components/CalculateAge';
 import { getFcmToken, registerListenerWithFCM } from '../../../utils/fcmHelper';
 import WelcomeModal from '../../../components/WelcomeModal';
+import UserVisitsCounter from '../../../components/AdminPanelComponents/UserVisitCounter';
 
 const RandomMatch = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -320,6 +321,7 @@ const RandomMatch = () => {
                 </View>
             )}
 
+            <UserVisitsCounter />
             <WelcomeModal
                 visible={welcomeVisible}
                 onClose={() => handleWelcomeModal('close')}

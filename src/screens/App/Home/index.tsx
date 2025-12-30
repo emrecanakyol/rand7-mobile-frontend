@@ -18,7 +18,6 @@ import { getDistanceFromLatLonInKm } from '../../../components/KmLocation';
 import Header from '../../../components/Header';
 import CImage from '../../../components/CImage';
 import CText from '../../../components/CText/CText';
-import WelcomeModal from '../../../components/WelcomeModal';
 import { sendNotification } from '../../../constants/Notifications';
 import FastImage from 'react-native-fast-image';
 

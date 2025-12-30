@@ -49,11 +49,19 @@ function AppContent() {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 1500);
-    loadLanguage();
-    CheckVersion();
+    const initApp = async () => {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 1500);
+
+      // 1️⃣ Önce dili yükle
+      await loadLanguage();
+
+      // 2️⃣ Sonra versiyon kontrolü
+      await CheckVersion();
+    };
+
+    initApp();
   }, []);
 
   return (
@@ -70,7 +78,6 @@ function AppContent() {
 }
 
 function App() {
-
   return (
     <SafeAreaProvider>
       <Provider store={Store}>
