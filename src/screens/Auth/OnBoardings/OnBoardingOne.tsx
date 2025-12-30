@@ -163,6 +163,49 @@ const OnBoardingOne = () => {
                 </View>
             </View>
 
+            {/* <CModal
+                visible={tosVisible}
+                onClose={() => setTosVisible(false)}
+            >
+                <View style={{ flex: 1 }}>
+                    <WebView
+                        source={{ uri: "https://rand7.com/terms/" }}
+                        startInLoadingState
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        renderLoading={() => (
+                            <ActivityIndicator
+                                size="large"
+                                color={colors.TEXT_MAIN_COLOR}
+                                style={{ marginTop: 20 }}
+                            />
+                        )}
+                    />
+                </View>
+
+            </CModal>
+
+            <CModal
+                visible={privacyVisible}
+                onClose={() => setPrivacyVisible(false)}
+            >
+                <View style={{ flex: 1 }}>
+                    <WebView
+                        source={{ uri: "https://rand7.com/privacy-policy/" }}
+                        startInLoadingState
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        renderLoading={() => (
+                            <ActivityIndicator
+                                size="large"
+                                color={colors.TEXT_MAIN_COLOR}
+                                style={{ marginTop: 20 }}
+                            />
+                        )}
+                    />
+                </View>
+            </CModal> */}
+
 
             {/* GENEL KULLANIM KOŞULLARI - YARIM EKRAN */}
             <CModal

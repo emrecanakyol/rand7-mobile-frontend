@@ -288,5 +288,6 @@
     "newLikeNotificationDesc": "Quelqu’un t’a aimé.",
     "newSuperLikeNotificationTitle": "Super Like ⭐",
     "newSuperLikeNotificationDesc": "Quelqu’un t’a envoyé un super like !",
-    "photograph": "Photographie"
+    "photograph": "Photographie",
+    "phone_verification_title": "Vérifiez votre numéro de téléphone"
 }

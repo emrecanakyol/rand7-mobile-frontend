@@ -288,5 +288,6 @@
     "newLikeNotificationDesc": "Кто-то поставил тебе лайк.",
     "newSuperLikeNotificationTitle": "Супер лайк ⭐",
     "newSuperLikeNotificationDesc": "Кто-то отправил тебе супер лайк!",
-    "photograph": "Фотография"
+    "photograph": "Фотография",
+    "phone_verification_title": "Подтвердите номер телефона"
 }

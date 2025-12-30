@@ -196,7 +196,7 @@ import { ToastError } from '../../utils/toast';
 // Initialize GoogleSignin
 GoogleSignin.configure({
     webClientId:
-        '516391638484-qsqgdcv9tqve4lst8ot4gcdqpl996rq8.apps.googleusercontent.com',
+        '675062613189-teu1gjf3ckltf7mp3es7dg3q3jug9vcl.apps.googleusercontent.com',
     offlineAccess: true,
 });
 

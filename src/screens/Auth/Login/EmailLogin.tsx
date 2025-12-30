@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { signIn } from '../../../store/services/authServices';
+import { signIn, signInWithGoogle } from '../../../store/services/authServices';
 import { PHONE_LOGIN, REGISTER, RESET_PASSWORD } from '../../../navigators/Stack';
 import { ToastError } from '../../../utils/toast';
 import CTextInput from '../../../components/CTextInput';
@@ -11,6 +11,7 @@ import { useTheme } from '../../../utils/colors';
 import CButton from '../../../components/CButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CText from '../../../components/CText/CText';
+import { GoogleSigninButton } from '@react-native-google-signin/google-signin';
 
 const EmailLogin = ({ navigation }: any) => {
     const { colors } = useTheme();
@@ -99,6 +100,24 @@ const EmailLogin = ({ navigation }: any) => {
                         </TouchableOpacity>
                     </View>
 
+                    <View style={styles.googleFooter}>
+                        <GoogleSigninButton
+                            style={{ width: responsive(192), height: responsive(48), marginTop: responsive(10) }}
+                            size={GoogleSigninButton.Size.Wide}
+                            color={GoogleSigninButton.Color.Dark}
+                            disabled={loading}
+                            onPress={async () => {
+                                try {
+                                    setLoading(true);
+                                    await signInWithGoogle(dispatch);
+                                } catch (error) {
+                                    ToastError(t('login_failed_title'), t('login_failed_message'));
+                                }
+                                setLoading(false);
+                            }}
+                        />
+                    </View>
+
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -154,6 +173,10 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         borderRadius: responsive(28),
         width: responsive(350),
         gap: responsive(7)
+    },
+    googleFooter: {
+        marginTop: responsive(20),
+        alignItems: 'center',
     },
 });
 

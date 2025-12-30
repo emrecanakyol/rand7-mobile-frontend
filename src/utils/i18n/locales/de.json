@@ -288,5 +288,6 @@
     "newLikeNotificationDesc": "Jemand hat dich geliked.",
     "newSuperLikeNotificationTitle": "Super Like ⭐",
     "newSuperLikeNotificationDesc": "Jemand hat dir ein Super Like gesendet!",
-    "photograph": "Foto"
+    "photograph": "Foto",
+    "phone_verification_title": "Telefonnummer bestätigen"
 }
