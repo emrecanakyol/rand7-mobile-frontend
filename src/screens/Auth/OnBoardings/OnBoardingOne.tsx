@@ -86,7 +86,7 @@ const OnBoardingOne = () => {
                         marginBottom: 5,
                     }}
                 >
-                    {t('onboarding_title')}
+                    ✨Random 7•7•7✨{"\n"}{"\n"}{t('onboarding_title')}
                 </CText>
                 <CText
                     style={{
