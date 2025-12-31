@@ -100,7 +100,7 @@ const EmailLogin = ({ navigation }: any) => {
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.googleFooter}>
+                    {/* <View style={styles.googleFooter}>
                         <GoogleSigninButton
                             style={{ width: responsive(192), height: responsive(48), marginTop: responsive(10) }}
                             size={GoogleSigninButton.Size.Wide}
@@ -116,7 +116,7 @@ const EmailLogin = ({ navigation }: any) => {
                                 setLoading(false);
                             }}
                         />
-                    </View>
+                    </View> */}
 
                 </View>
             </ScrollView>

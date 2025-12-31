@@ -2175,10 +2175,10 @@
   resolved "https://registry.npmjs.org/@react-native-firebase/storage/-/storage-22.4.0.tgz"
   integrity sha512-dUPnVRJb4NNsZeLHJqbQvYveq+mWKC4UL0L+OJIUstxGoYlIBu1uvltZoLBw8n7A6CYE/V93jUrTXfKEBEcw1A==
 
-"@react-native-google-signin/google-signin@^14.0.1":
-  version "14.0.2"
-  resolved "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-14.0.2.tgz"
-  integrity sha512-L23SBl30VGVjxdX3jb9PZJHuuitsSU/aMGWCNQqSx69PrUqGcP2gkcUeOsK6VPFadPbjh+4ml+0UoAEzZGA3dQ==
+"@react-native-google-signin/google-signin@^16.1.1":
+  version "16.1.1"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-16.1.1.tgz#40b9f8458a09cf8933132efd8a68f0a573167e92"
+  integrity sha512-lcHBnZ7uvCJiWtGooKOklo/4okqszWvJ0BatW1UaIe+ynmpVpp1lyJkvv1Mj08d39k4soaWuhZVNKjD/RFL34Q==
 
 "@react-native-masked-view/masked-view@^0.3.2":
   version "0.3.2"

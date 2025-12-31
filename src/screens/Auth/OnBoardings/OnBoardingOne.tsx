@@ -118,13 +118,13 @@ const OnBoardingOne = () => {
                         borderRadius={28}
                     />
 
-                    <CButton
+                    {/* <CButton
                         title={t('register')}
                         onPress={() => navigation.navigate(REGISTER)}
                         borderRadius={28}
                         backgroundColor={colors.LIGHT_PINK}
                         textColor={colors.TEXT_MAIN_COLOR}
-                    />
+                    /> */}
                 </View>
 
                 <View style={{
