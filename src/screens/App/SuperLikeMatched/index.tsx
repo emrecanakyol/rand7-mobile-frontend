@@ -66,7 +66,7 @@ const SuperLikeMatched = () => {
         <View style={styles.container}>
             {/* Geri Butonu */}
             <View style={styles.closeButtonContainer}>
-                <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.closeButton} onPress={() => navigation.pop(2)}>
                     <Ionicons name="close" size={22} color={colors.BLACK_COLOR} />
                 </TouchableOpacity>
             </View>
@@ -115,11 +115,11 @@ const SuperLikeMatched = () => {
 
                 <TouchableOpacity
                     style={styles.keepSwipingButton}
-                    onPress={() => navigation.goBack()}>
+                    onPress={() => navigation.pop(2)}>
                     <Text style={styles.keepSwipingText}>{t('superLikeMatched.keepExploring')}</Text>
                 </TouchableOpacity> */}
 
-                <TouchableOpacity style={styles.messageButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.messageButton} onPress={() => navigation.pop(2)}>
                     <Text style={styles.messageButtonText}>{t('superLikeMatched.keepExploring')}</Text>
                 </TouchableOpacity>
             </View>

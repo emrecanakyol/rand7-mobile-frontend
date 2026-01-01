@@ -148,8 +148,7 @@ const EditProfileScreen = () => {
     if (isRemoteUrl(uri)) return uri;
 
     const filePath = normalizeLocalPathForPutFile(uri);
-    const fileName = `photo_${index}_${Date.now()}.jpg`;
-    const ref = storage().ref(`users/${userId}/photos/${fileName}`);
+    const ref = storage().ref(`users/profile-photos/${userId}/${Date.now()}`);
 
     await ref.putFile(filePath);
 

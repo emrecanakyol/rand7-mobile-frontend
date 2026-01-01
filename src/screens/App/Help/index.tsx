@@ -22,7 +22,6 @@ import DeviceInfo from 'react-native-device-info'
 import { useNavigation } from '@react-navigation/native'
 import { ADD_HELP, ONEBOARDINGONE } from '../../../navigators/Stack'
 import { useTranslation } from 'react-i18next'
-import { sendAdminNotification } from '../../../constants/Notifications'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../store/Store'
 import { signOut } from '../../../store/services/authServices'
@@ -85,8 +84,6 @@ const HelpSupport = () => {
         userId,
       });
 
-
-      await sendAdminNotification("Yeni Geri Bildirim & Öneri", message);
       setMessage('');
       setModalVisible(false);
       ToastSuccess(t('success'), t("feedback_sent_success"));
@@ -140,9 +137,7 @@ const HelpSupport = () => {
     <View style={styles.container}>
       <DetailHeaders
         title={t('help_support_title') /* "Help / Support" */}
-        showRightIcon={true}
         rightIconOnPress={() => navigation.navigate(ADD_HELP)}
-        rightIconName={"add"}
       />
 
       <View style={styles.inContainer}>

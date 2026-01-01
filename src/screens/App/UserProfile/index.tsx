@@ -9,6 +9,7 @@ import {
     NativeScrollEvent,
     NativeSyntheticEvent,
     TouchableOpacity,
+    TextInput,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -25,6 +26,8 @@ import { useAlert } from '../../../context/AlertContext';
 import storage from '@react-native-firebase/storage';
 import { sendNotification } from '../../../constants/Notifications';
 import FastImage from 'react-native-fast-image';
+import CModal from '../../../components/CModal';
+import { ToastSuccess } from '../../../utils/toast';
 
 const UserProfile = ({ route }: any) => {
     const { t } = useTranslation();
@@ -47,6 +50,147 @@ const UserProfile = ({ route }: any) => {
     const isTablet = Math.min(width, height) >= 600;
     const styles = getStyles(colors, isTablet, height);
     const [hasAnyMatch, setHasAnyMatch] = useState(false);
+
+    const [showMenu, setShowMenu] = useState(false);
+    const [reportModalVisible, setReportModalVisible] = useState(false);
+    const [reportText, setReportText] = useState('');
+    const [sendingReport, setSendingReport] = useState(false);
+    const [isBlockedByMe, setIsBlockedByMe] = useState(false);
+    const [isBlockedByOther, setIsBlockedByOther] = useState(false);
+    const actionsDisabled = isBlockedByMe || isBlockedByOther;
+
+    useEffect(() => {
+        if (!userData?.userId || !user?.userId) return;
+
+        const ref = firestore().collection('users').doc(userData.userId);
+
+        const unsub = ref.onSnapshot((doc) => {
+            const d = doc.data() as any;
+
+            const blockersArr = Array.isArray(d?.blockers) ? d.blockers : [];
+            const blockedArr = Array.isArray(d?.blocked) ? d.blocked : [];
+
+            setIsBlockedByMe(blockersArr.includes(user.userId));
+            setIsBlockedByOther(blockedArr.includes(user.userId));
+        });
+
+        return () => unsub();
+    }, [userData?.userId, user?.userId]);
+
+    const handleBlockUser = () => {
+        if (!userData?.userId || !user?.userId) return;
+
+        showAlert({
+            title: t("anon_chat_block_title"),
+            message: t("anon_chat_block_message"),
+            layout: 'row',
+            buttons: [
+                {
+                    text: t("common_cancel"),
+                    type: 'cancel',
+                },
+                {
+                    text: t("anon_chat_block_confirm"),
+                    type: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await firestore()
+                                .collection('users')
+                                .doc(userData.userId)
+                                .update({
+                                    blockers: firestore.FieldValue.arrayUnion(user.userId),
+                                });
+
+                            await firestore()
+                                .collection('users')
+                                .doc(user.userId)
+                                .update({
+                                    blocked: firestore.FieldValue.arrayUnion(userData.userId),
+                                });
+
+                            navigation.goBack();
+                        } catch (e) {
+                            console.log("block error", e);
+                        } finally {
+                            setShowMenu(false);
+                        }
+                    },
+                },
+            ],
+        });
+    };
+
+    const handleUnblockUser = () => {
+        if (!userData?.userId || !user?.userId) return;
+
+        showAlert({
+            title: t("anon_chat_unblock_title"),
+            message: t("anon_chat_unblock_message"),
+            layout: 'row',
+            buttons: [
+                {
+                    text: t("common_cancel"),
+                    type: 'cancel',
+                },
+                {
+                    text: t("anon_chat_unblock_confirm"),
+                    type: 'default',
+                    onPress: async () => {
+                        try {
+                            await firestore()
+                                .collection('users')
+                                .doc(userData.userId)
+                                .update({
+                                    blockers: firestore.FieldValue.arrayRemove(user.userId),
+                                });
+
+                            await firestore()
+                                .collection('users')
+                                .doc(user.userId)
+                                .update({
+                                    blocked: firestore.FieldValue.arrayRemove(userData.userId),
+                                });
+                        } catch (e) {
+                            console.log("unblock error", e);
+                        } finally {
+                            setShowMenu(false);
+                        }
+                    },
+                },
+            ],
+        });
+    };
+
+    const handleSendReport = async () => {
+        if (!userData?.userId || !user?.userId) return;
+        if (!reportText.trim()) return;
+
+        try {
+            setSendingReport(true);
+
+            await firestore()
+                .collection('users')
+                .doc(userData.userId)
+                .collection("reports")
+                .add({
+                    reporterId: userData.userId,
+                    reportedId: user.userId,
+                    message: reportText.trim(),
+                    createdAt: firestore.FieldValue.serverTimestamp(),
+                });
+
+            setReportText('');
+            setReportModalVisible(false);
+            ToastSuccess(
+                t("common_thanks_title"),
+                t("anon_chat_report_success")
+            );
+        } catch (e) {
+            console.log('report error', e);
+        } finally {
+            setSendingReport(false);
+        }
+    };
 
     const handleOpenChat = () => {
         if (!userData?.userId || !user?.userId) return;
@@ -541,7 +685,8 @@ const UserProfile = ({ route }: any) => {
                     >
                         <Ionicons name="close-outline" size={24} color="#fff" />
                     </TouchableOpacity>
-                    <View style={styles.distanceContainer}>
+
+                    {/* <View style={styles.distanceContainer}>
                         <Text style={styles.distanceText}>
                             {getDistanceFromLatLonInKm(
                                 userData.latitude,
@@ -550,7 +695,23 @@ const UserProfile = ({ route }: any) => {
                                 user.longitude
                             ).toFixed(1)} km
                         </Text>
-                    </View>
+                    </View> */}
+
+                    <TouchableOpacity
+                        onPress={() => setShowMenu(v => !v)}
+                        style={{
+                            position: 'absolute',
+                            top: 20,
+                            right: 20,
+                            zIndex: 20,
+                            backgroundColor: '#fff',
+                            borderRadius: 30,
+                            padding: 5,
+                            opacity: 0.8,
+                        }}
+                    >
+                        <Ionicons name="ellipsis-vertical" size={22} color="#000" />
+                    </TouchableOpacity>
 
                     <View style={styles.imageContainer}>
                         <FlatList
@@ -621,9 +782,13 @@ const UserProfile = ({ route }: any) => {
 
                                         {/* MESAJ GÖNDER */}
                                         <TouchableOpacity
-                                            style={styles.messageButton}
                                             activeOpacity={0.8}
                                             onPress={handleOpenChat}
+                                            disabled={actionsDisabled}
+                                            style={[
+                                                styles.messageButton,
+                                                { opacity: actionsDisabled ? 0.4 : 1 },
+                                            ]}
                                         >
                                             <Ionicons
                                                 name="chatbubble-ellipses"
@@ -636,9 +801,13 @@ const UserProfile = ({ route }: any) => {
                                     <>
                                         {!isDisliked && (
                                             <TouchableOpacity
-                                                style={styles.dislikeButton}
                                                 activeOpacity={0.8}
                                                 onPress={() => { handleDislike(user.userId); }}
+                                                disabled={actionsDisabled}
+                                                style={[
+                                                    styles.dislikeButton,
+                                                    { opacity: actionsDisabled ? 0.4 : 1 },
+                                                ]}
                                             >
                                                 <Ionicons name="close" size={24} color="#000" />
                                             </TouchableOpacity>
@@ -646,9 +815,13 @@ const UserProfile = ({ route }: any) => {
 
                                         {!isSuperLiked && (
                                             <TouchableOpacity
-                                                style={styles.starButton}
                                                 activeOpacity={0.8}
                                                 onPress={() => { handleSuperLike(user.userId); }}
+                                                disabled={actionsDisabled}
+                                                style={[
+                                                    styles.starButton,
+                                                    { opacity: actionsDisabled ? 0.4 : 1 },
+                                                ]}
                                             >
                                                 <Ionicons name="star" size={22} color="#fff" />
                                             </TouchableOpacity>
@@ -656,9 +829,13 @@ const UserProfile = ({ route }: any) => {
 
                                         {!isLiked && (
                                             <TouchableOpacity
-                                                style={styles.likeButton}
                                                 activeOpacity={0.8}
                                                 onPress={() => { handleLike(user.userId); }}
+                                                disabled={actionsDisabled}
+                                                style={[
+                                                    styles.likeButton,
+                                                    { opacity: actionsDisabled ? 0.4 : 1 },
+                                                ]}
                                             >
                                                 <Ionicons name="heart" size={24} color="#fff" />
                                             </TouchableOpacity>
@@ -668,6 +845,47 @@ const UserProfile = ({ route }: any) => {
                             </View>
                         </View>
                     </View>
+
+                    {showMenu && (
+                        <View style={{
+                            position: 'absolute',
+                            top: 60,
+                            right: 20,
+                            backgroundColor: '#FFF',
+                            borderRadius: 12,
+                            paddingVertical: 8,
+                            elevation: 8,
+                            zIndex: 100,
+                        }}>
+                            {/* Rapor Et */}
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    setReportModalVisible(true);
+                                }}
+                                style={{ padding: 14 }}
+                            >
+                                <Text style={{ color: '#E11D48', fontWeight: '600' }}>
+                                    {t("anon_chat_report_title")}
+                                </Text>
+                            </TouchableOpacity>
+
+                            {/* Engelle / Engeli Kaldır */}
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    isBlockedByMe ? handleUnblockUser() : handleBlockUser();
+                                }}
+                                style={{ padding: 14 }}
+                            >
+                                <Text style={{ fontWeight: '600' }}>
+                                    {isBlockedByMe
+                                        ? t("anon_chat_unblock_title")
+                                        : t("anon_chat_block_menu")}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
 
                     <BottomSheet
                         ref={bottomSheetRef}
@@ -724,8 +942,145 @@ const UserProfile = ({ route }: any) => {
                                     ? t(RELATIONSHIP_LABEL_KEYS[user?.relationshipType as string])
                                     : t('not_specified')}
                             </Text>
+
                         </BottomSheetScrollView>
                     </BottomSheet>
+
+                    <CModal
+                        visible={reportModalVisible}
+                        onClose={() => {
+                            if (!sendingReport) {
+                                setReportModalVisible(false);
+                            }
+                        }}
+                    >
+                        <View
+                            style={{
+                                width: '100%',
+                                maxWidth: 400,
+                            }}
+                        >
+                            {/* Başlık */}
+                            <Text
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: '700',
+                                    color: '#111',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                {t("anon_chat_report_title")}
+                            </Text>
+
+                            {/* Açıklama */}
+                            <Text
+                                style={{
+                                    marginTop: 12,
+                                    fontSize: 14,
+                                    lineHeight: 20,
+                                    color: '#444',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                {t("anon_chat_report_description")}
+                            </Text>
+
+                            {/* Multiline input */}
+                            <View
+                                style={{
+                                    marginTop: 16,
+                                    borderWidth: 1,
+                                    borderColor: '#ccc',
+                                    borderRadius: 12,
+                                    backgroundColor: '#FFF',
+                                    paddingHorizontal: 12,
+                                    paddingVertical: 8,
+                                }}
+                            >
+                                <TextInput
+                                    value={reportText}
+                                    onChangeText={setReportText}
+                                    placeholder={t("anon_chat_report_placeholder")}
+                                    placeholderTextColor="#999"
+                                    multiline
+                                    editable={!sendingReport}
+                                    style={{
+                                        minHeight: 80,
+                                        maxHeight: 140,
+                                        fontSize: 16,
+                                        fontWeight: '500',
+                                        color: '#000',
+                                        textAlignVertical: 'top',
+                                    }}
+                                />
+                            </View>
+
+                            {/* Butonlar */}
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginTop: 24,
+                                }}
+                            >
+                                {/* İptal */}
+                                <TouchableOpacity
+                                    disabled={sendingReport}
+                                    onPress={() => {
+                                        if (!sendingReport) {
+                                            setReportModalVisible(false);
+                                        }
+                                    }}
+                                    style={{
+                                        flex: 1,
+                                        height: 44,
+                                        borderRadius: 10,
+                                        borderWidth: 1,
+                                        borderColor: '#ccc',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginRight: 8,
+                                        backgroundColor: '#FFF',
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            fontSize: 16,
+                                            fontWeight: '600',
+                                            color: '#111',
+                                        }}
+                                    >
+                                        {t("common_cancel")}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                {/* Gönder */}
+                                <TouchableOpacity
+                                    disabled={sendingReport}
+                                    onPress={handleSendReport}
+                                    style={{
+                                        flex: 1,
+                                        height: 44,
+                                        borderRadius: 10,
+                                        backgroundColor: sendingReport ? '#9CA3AF' : '#E11D48',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginLeft: 8,
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            fontSize: 16,
+                                            fontWeight: '700',
+                                            color: '#FFF',
+                                        }}
+                                    >
+                                        {sendingReport ? t("common_sending") : t("common_send")}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </CModal>
                 </View>
             )}
         </>
@@ -787,7 +1142,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             left: 20,
             backgroundColor: 'rgba(0,0,0,0.4)',
             borderRadius: 30,
-            padding: 5,
+            padding: 4,
             zIndex: 10,
         },
         distanceContainer: {

@@ -9,6 +9,7 @@ import CButton from '../../../components/CButton';
 import { EMAIL_LOGIN } from '../../../navigators/Stack';
 import CText from '../../../components/CText/CText';
 import { useTranslation } from 'react-i18next';
+import CBackButton from '../../../components/CBackButton';
 
 const Register = ({ navigation }: any) => {
     const { colors } = useTheme();
@@ -48,6 +49,7 @@ const Register = ({ navigation }: any) => {
             style={styles.container}
         >
             <ScrollView contentContainerStyle={styles.container}>
+                <CBackButton />
                 <View style={styles.innerContainer}>
                     <CText style={styles.header}>{t('sign_up')}</CText>
 

@@ -67,7 +67,7 @@ const LikeMatched = () => {
         <View style={styles.container}>
             {/* Geri Butonu */}
             <View style={styles.closeButtonContainer}>
-                <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.closeButton} onPress={() => navigation.pop(2)}>
                     <Ionicons name="close" size={22} color={colors.BLACK_COLOR} />
                 </TouchableOpacity>
             </View>
@@ -118,7 +118,7 @@ const LikeMatched = () => {
                     <Text style={styles.keepSwipingText}>{t('likeMatched.keepSwiping')}</Text>
                 </TouchableOpacity> */}
 
-                <TouchableOpacity style={styles.messageButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.messageButton} onPress={() => navigation.pop(2)}>
                     <Text style={styles.messageButtonText}>{t('likeMatched.keepSwiping')}</Text>
                 </TouchableOpacity>
             </View>
