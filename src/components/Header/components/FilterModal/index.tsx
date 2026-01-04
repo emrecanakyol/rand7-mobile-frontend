@@ -7,6 +7,7 @@ import {
     Switch,
     Dimensions,
     Platform,
+    ActivityIndicator,
 } from "react-native";
 import Slider from '@react-native-community/slider';
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
@@ -50,9 +51,12 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
         province: string;
         country: string;
     } | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleApply = async () => {
+        if (isLoading) return;
         try {
+            setIsLoading(true);
             const updateData: any = {
                 maxDistance: distance,
                 lookingFor: showPreference,
@@ -80,6 +84,8 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
             onClose();
         } catch (error) {
             console.error("❌ Firestore güncelleme hatası:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -232,9 +238,23 @@ const Filter: React.FC<FilterProps> = ({ onClose }) => {
                 <TouchableOpacity style={styles.resetBtn} onPress={onClose}>
                     <Text style={styles.resetText}>{t('filter_close')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
-                    <Text style={styles.applyText}>{t('filter_apply')}</Text>
+                <TouchableOpacity
+                    style={[
+                        styles.applyBtn,
+                        isLoading && { opacity: 0.7 },
+                    ]}
+                    onPress={handleApply}
+                    disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            <ActivityIndicator color="#fff" size="small" />
+                        </View>
+                    ) : (
+                        <Text style={styles.applyText}>{t('filter_apply')}</Text>
+                    )}
                 </TouchableOpacity>
+
             </View>
             {/* Modal */}
             <CModal

@@ -270,6 +270,10 @@ const Home = () => {
         fetchData();
     }, [loading, userData?.userId, activeTab]);
 
+    const removeUserFromDeck = (userId: string) => {
+        setNearbyUsers(prev => prev.filter(u => u.userId !== userId));
+    };
+
     const handleLike = async (userId: string) => {
         if (!userData?.userId || !userData) return;
 
@@ -669,6 +673,7 @@ const Home = () => {
                                                         style={styles.dislikeButton}
                                                         onPress={() => {
                                                             handleDislike(u.userId);
+                                                            removeUserFromDeck(u.userId);
                                                             swiperRef.current?.swipeLeft();
                                                         }}
                                                     >
@@ -678,6 +683,7 @@ const Home = () => {
                                                         style={styles.starButton}
                                                         onPress={() => {
                                                             handleSuperLike(u.userId);
+                                                            removeUserFromDeck(u.userId);
                                                             swiperRef.current?.swipeRight();
                                                         }}
                                                     >
@@ -687,6 +693,7 @@ const Home = () => {
                                                         style={styles.likeButton}
                                                         onPress={() => {
                                                             handleLike(u.userId);
+                                                            removeUserFromDeck(u.userId);
                                                             swiperRef.current?.swipeRight();
                                                         }}
                                                     >

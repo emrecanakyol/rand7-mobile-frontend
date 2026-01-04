@@ -60,59 +60,58 @@ const Account = () => {
     };
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.container}>
-                {/* 👤 Profil Bölümü */}
-                <View style={styles.profileSection}>
-                    <TouchableOpacity onPress={() => navigation.navigate(MYPROFILE)}>
-                        <View>
-                            <CImage
-                                imgSource={{ uri: userData?.photos?.[0] }}
-                                disablePress={true}
-                                width={100}
-                                height={100}
-                                borderRadius={100}
-                                borderWidth={4}
-                                borderColor={colors.BLACK_COLOR}
-                                resizeMode="cover"
-                            />
-                        </View>
-                    </TouchableOpacity>
-                    <Text style={styles.userName}>
-                        {userData?.firstName ?? ''}{userData?.birthDate ? `, ${calculateAge(userData.birthDate)}` : ''}
-                    </Text>
-                    <Text style={styles.userLocation}>{userData?.province}, {userData?.country}</Text>
-                </View>
-
-                {/* 📈 Profil Tamamlama Kartı */}
-                <View style={styles.progressCard}>
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.progressSubText}>
-                            {t('completeProfileSubtitle')}
-                        </Text>
-                    </View>
-                    <TouchableOpacity
-                        style={styles.editButton}
-                        onPress={() => navigation.navigate(EDIT_PROFILE)}>
-                        <Text style={styles.editButtonText}>{t('editProfile')}</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* 🧭 Menü Seçenekleri */}
-                <View style={styles.menuContainer}>
-                    <TouchableOpacity
-                        style={styles.menuItem}
-                        onPress={() => navigation.navigate(HELP)}>
-                        <Ionicons name="person-outline" size={22} color={colors.BLUE_COLOR} />
-                        <Text style={styles.menuText}>{t('helpSupport')}</Text>
-                        <Ionicons
-                            name="chevron-forward-outline"
-                            size={20}
-                            color="#999"
-                            style={{ marginLeft: 'auto' }}
+        <View style={styles.container}>
+            {/* 👤 Profil Bölümü */}
+            <View style={styles.profileSection}>
+                <TouchableOpacity onPress={() => navigation.navigate(MYPROFILE)}>
+                    <View>
+                        <CImage
+                            imgSource={{ uri: userData?.photos?.[0] }}
+                            disablePress={true}
+                            width={100}
+                            height={100}
+                            borderRadius={100}
+                            borderWidth={4}
+                            borderColor={colors.BLACK_COLOR}
+                            resizeMode="cover"
                         />
-                    </TouchableOpacity>
-                    {/* 
+                    </View>
+                </TouchableOpacity>
+                <Text style={styles.userName}>
+                    {userData?.firstName ?? ''}{userData?.birthDate ? `, ${calculateAge(userData.birthDate)}` : ''}
+                </Text>
+                <Text style={styles.userLocation}>{userData?.province}, {userData?.country}</Text>
+            </View>
+
+            {/* 📈 Profil Tamamlama Kartı */}
+            <View style={styles.progressCard}>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.progressSubText}>
+                        {t('completeProfileSubtitle')}
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => navigation.navigate(EDIT_PROFILE)}>
+                    <Text style={styles.editButtonText}>{t('editProfile')}</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* 🧭 Menü Seçenekleri */}
+            <View style={styles.menuContainer}>
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigation.navigate(HELP)}>
+                    <Ionicons name="person-outline" size={22} color={colors.BLUE_COLOR} />
+                    <Text style={styles.menuText}>{t('helpSupport')}</Text>
+                    <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color="#999"
+                        style={{ marginLeft: 'auto' }}
+                    />
+                </TouchableOpacity>
+                {/* 
                     <TouchableOpacity style={styles.menuItem}>
                         <Ionicons name="language-outline" size={22} color={colors.BLUE_COLOR} />
                         <Text style={styles.menuText}>Language</Text>
@@ -125,32 +124,32 @@ const Account = () => {
                         />
                     </TouchableOpacity> */}
 
-                    <TouchableOpacity
-                        style={styles.menuItem}
-                        onPress={() => navigation.navigate(SETTINGS)}>
-                        <Ionicons name="settings-outline" size={22} color={colors.BLUE_COLOR} />
-                        <Text style={styles.menuText}>{t('settings')}</Text>
-                        <Ionicons
-                            name="chevron-forward-outline"
-                            size={20}
-                            color="#999"
-                            style={{ marginLeft: 'auto' }}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={out}>
-                        <Ionicons name="close-outline" size={22} color={colors.BLUE_COLOR} />
-                        <Text style={styles.menuText}>{t('logout')}</Text>
-                        <Ionicons
-                            name="chevron-forward-outline"
-                            size={20}
-                            color="#999"
-                            style={{ marginLeft: 'auto' }}
-                        />
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigation.navigate(SETTINGS)}>
+                    <Ionicons name="settings-outline" size={22} color={colors.BLUE_COLOR} />
+                    <Text style={styles.menuText}>{t('settings')}</Text>
+                    <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color="#999"
+                        style={{ marginLeft: 'auto' }}
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.menuItem} onPress={out}>
+                    <Ionicons name="close-outline" size={22} color={colors.BLUE_COLOR} />
+                    <Text style={styles.menuText}>{t('logout')}</Text>
+                    <Ionicons
+                        name="chevron-forward-outline"
+                        size={20}
+                        color="#999"
+                        style={{ marginLeft: 'auto' }}
+                    />
+                </TouchableOpacity>
+            </View>
 
-                {/* ⭐ Premium Kartı */}
-                {/* <View style={styles.premiumCard}>
+            {/* ⭐ Premium Kartı */}
+            {/* <View style={styles.premiumCard}>
                     <View style={styles.starCircle}>
                         <Ionicons name="star" size={24} color="#fff" />
                     </View>
@@ -162,9 +161,7 @@ const Account = () => {
                         <Text style={styles.premiumLink}>Upgrade to Premium</Text>
                     </TouchableOpacity>
                 </View> */}
-            </View>
-        </ScrollView>
-
+        </View>
     );
 };
 
@@ -193,6 +190,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         letterSpacing: 0.5,
     },
     progressCard: {
+        gap: 10,
         flexDirection: 'row',
         alignItems: 'center',
         // backgroundColor: '#F6E1FB',

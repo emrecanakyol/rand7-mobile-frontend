@@ -847,45 +847,47 @@ const UserProfile = ({ route }: any) => {
                     </View>
 
                     {showMenu && (
-                        <View style={{
-                            position: 'absolute',
-                            top: 60,
-                            right: 20,
-                            backgroundColor: '#FFF',
-                            borderRadius: 12,
-                            paddingVertical: 8,
-                            elevation: 8,
-                            zIndex: 100,
-                        }}>
-                            {/* Rapor Et */}
+                        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+                            {/* ARKA PLAN TIKLAMA ALANI */}
                             <TouchableOpacity
-                                onPress={() => {
-                                    setShowMenu(false);
-                                    setReportModalVisible(true);
-                                }}
-                                style={{ padding: 14 }}
-                            >
-                                <Text style={{ color: '#E11D48', fontWeight: '600' }}>
-                                    {t("anon_chat_report_title")}
-                                </Text>
-                            </TouchableOpacity>
+                                activeOpacity={1}
+                                style={styles.menuOverlay}
+                                onPress={() => setShowMenu(false)}
+                            />
 
-                            {/* Engelle / Engeli Kaldır */}
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setShowMenu(false);
-                                    isBlockedByMe ? handleUnblockUser() : handleBlockUser();
-                                }}
-                                style={{ padding: 14 }}
-                            >
-                                <Text style={{ fontWeight: '600' }}>
-                                    {isBlockedByMe
-                                        ? t("anon_chat_unblock_title")
-                                        : t("anon_chat_block_menu")}
-                                </Text>
-                            </TouchableOpacity>
+                            {/* MENÜ */}
+                            <View style={styles.menuContainer}>
+                                {/* Rapor Et */}
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setShowMenu(false);
+                                        setReportModalVisible(true);
+                                    }}
+                                    style={styles.menuItem}
+                                >
+                                    <Text style={styles.reportText}>
+                                        {t("anon_chat_report_title")}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                {/* Engelle / Engeli Kaldır */}
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setShowMenu(false);
+                                        isBlockedByMe ? handleUnblockUser() : handleBlockUser();
+                                    }}
+                                    style={styles.menuItem}
+                                >
+                                    <Text style={styles.menuText}>
+                                        {isBlockedByMe
+                                            ? t("anon_chat_unblock_title")
+                                            : t("anon_chat_block_menu")}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
+
 
                     <BottomSheet
                         ref={bottomSheetRef}
@@ -1114,6 +1116,36 @@ const getStyles = (colors: any, isTablet: boolean, height: any) =>
             justifyContent: 'center',
             alignItems: 'center',
             gap: 8,
+        },
+        menuOverlay: {
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'transparent',
+            zIndex: 90,
+        },
+
+        menuContainer: {
+            position: 'absolute',
+            top: 60,
+            right: 20,
+            backgroundColor: '#FFF',
+            borderRadius: 12,
+            paddingVertical: 8,
+            elevation: 8,
+            zIndex: 100,
+        },
+
+        menuItem: {
+            padding: 14,
+        },
+
+        menuText: {
+            fontWeight: '600',
+            color: '#111',
+        },
+
+        reportText: {
+            color: '#E11D48',
+            fontWeight: '600',
         },
         messageButton: {
             backgroundColor: '#4ade80', // yeşil ton, istersen colors.GREEN_COLOR benzeri

@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Keyboard,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CPhotosAdd from '../../../components/CPhotosAdd';
@@ -26,9 +27,13 @@ import auth from '@react-native-firebase/auth';
 import { ToastError, ToastSuccess } from '../../../utils/toast';
 import storage from '@react-native-firebase/storage';
 import { categorizedHobbies } from '../../../constants/CategorizedHobbies';
+import { fetchUserData } from '../../../store/services/userDataService';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../store/Store';
 
 const EditProfileScreen = () => {
   const { userData } = useAppSelector((state) => state.userData);
+  const dispatch = useDispatch<AppDispatch>();
   const navigation: any = useNavigation();
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -60,6 +65,15 @@ const EditProfileScreen = () => {
   const [hobbies, setHobbies] = useState<string[]>(Array.isArray(userData?.hobbies) ? userData.hobbies : []);
   const [hobbyModalVisible, setHobbyModalVisible] = useState<boolean>(false);
   const [saving, setSaving] = useState(false);
+
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const s = Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
+    const h = Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
+    return () => { s.remove(); h.remove(); };
+  }, []);
+
 
   const MAX_HOBBY_SELECTION = 10;
   const toggleHobby = (item: string) => {
@@ -222,6 +236,7 @@ const EditProfileScreen = () => {
     try {
       setSaving(true);
       await firestore().collection('users').doc(userId).set(payload, { merge: true });
+      await dispatch(fetchUserData());
       ToastSuccess(t("success"), t("successProfileUpdated"));
     } catch (e: any) {
       console.log('[EditProfile] save error:', e);
@@ -246,7 +261,9 @@ const EditProfileScreen = () => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 80 }}
+        contentContainerStyle={{
+          paddingBottom: keyboardOpen ? responsive(400) : responsive(80)
+        }}
       >
 
         <View style={styles.photoGrid}>
@@ -611,6 +628,7 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
     marginTop: 14,
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: 10,
   },
   fieldGroup: {
     marginTop: 14,
@@ -618,7 +636,7 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
   label: {
     color: '#1C1C1C',
     fontWeight: '600',
-    width: 180,
+    width: 170,
   },
   input: {
     backgroundColor: '#F9F9F9',

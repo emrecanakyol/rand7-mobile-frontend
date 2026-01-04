@@ -16,6 +16,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { useTranslation } from "react-i18next";
 import CText from "../CText/CText";
 import Icon from "react-native-vector-icons/Feather";
+import FastImage from "react-native-fast-image";
 
 interface CPhotosAddProps {
   index: number;
@@ -139,7 +140,7 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
               onPress={() => setModalVisible(true)}
               style={{ width: "100%", height: "100%" }}
             >
-              <Image
+              {/* <Image
                 source={{ uri: selectedPhoto }}
                 style={[
                   styles.image,
@@ -148,6 +149,28 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
                     resizeMode: resizeMode
                   },
                 ]}
+              /> */}
+              <FastImage
+                source={{
+                  uri: selectedPhoto,
+                  priority: FastImage.priority.high,
+                  cache: FastImage.cacheControl.immutable,
+                }}
+                style={[
+                  styles.image,
+                  {
+                    borderRadius: imageBorderRadius,
+                  },
+                ]}
+                resizeMode={
+                  resizeMode === "contain"
+                    ? FastImage.resizeMode.contain
+                    : resizeMode === "stretch"
+                      ? FastImage.resizeMode.stretch
+                      : resizeMode === "center"
+                        ? FastImage.resizeMode.center
+                        : FastImage.resizeMode.cover
+                }
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -184,11 +207,25 @@ const CPhotosAdd: React.FC<CPhotosAddProps> = ({
           <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
             <Entypo name="cross" size={20} color={colors.WHITE_COLOR} />
           </TouchableOpacity>
-          <Image
+          {/* <Image
             source={selectedPhoto ? { uri: selectedPhoto } : imgSource}
             style={styles.modalImage}
             resizeMode="contain"
+          /> */}
+          <FastImage
+            source={
+              selectedPhoto
+                ? {
+                  uri: selectedPhoto,
+                  priority: FastImage.priority.high,
+                  cache: FastImage.cacheControl.immutable,
+                }
+                : imgSource
+            }
+            style={styles.modalImage}
+            resizeMode={FastImage.resizeMode.contain}
           />
+
         </View>
       </Modal>
     </View>
@@ -216,7 +253,7 @@ const getStyles = (colors: any) =>
     image: {
       width: "100%",
       height: "100%",
-      resizeMode: "contain",
+      // resizeMode: "contain",
     },
     cameraButton: {
       position: "absolute",
