@@ -293,5 +293,8 @@
     "phone_verification_title": "Telefon Numaranı Doğrula",
     "login_with_google": "Google ile bağlan",
     "profile_visit_title": "Profil ziyareti",
-    "profile_visit_desc": "sizi ziyaret etti."
+    "profile_visit_desc": "sizi ziyaret etti.",
+    "profile_visitors_title": "Profilini Ziyaretleri",
+    "minutes_ago": "dk önce",
+    "hours_ago": "saat önce"
 }

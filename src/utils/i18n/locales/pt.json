@@ -293,5 +293,8 @@
     "phone_verification_title": "Verifique seu número de telefone",
     "login_with_google": "Continuar com o Google",
     "profile_visit_title": "Visita ao perfil",
-    "profile_visit_desc": "visitou o seu perfil."
+    "profile_visit_desc": "visitou o seu perfil.",
+    "profile_visitors_title": "Visitantes do perfil",
+    "minutes_ago": "min atrás",
+    "hours_ago": "h atrás"
 }

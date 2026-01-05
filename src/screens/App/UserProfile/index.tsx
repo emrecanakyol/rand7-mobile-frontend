@@ -673,79 +673,114 @@ const UserProfile = ({ route }: any) => {
         }
     };
 
+    const sendVisitNotification = async () => {
+        try {
+            const visitorRef = firestore().collection('users').doc(userData.userId);
+            const visitedRef = firestore().collection('users').doc(user.userId);
+
+            // 🔹 Snapshotlar
+            const [visitorSnap, visitedSnap] = await Promise.all([
+                visitorRef.get(),
+                visitedRef.get(),
+            ]);
+
+            const visitorData = visitorSnap.data() || {};
+            const visitedData = visitedSnap.data() || {};
+
+            const profileVisited: { userId: string; visitedAt: string }[] =
+                visitorData.profileVisited || [];
+
+            const profileVisiters: { userId: string; visitedAt: string }[] =
+                visitedData.profileVisiters || [];
+
+            const now = new Date();
+            const nowIso = now.toISOString();
+            const tenMinutesAgo = now.getTime() - 1000 * 60 * 60;
+
+            // 🔹 10 dakika içinde ziyaret edilmiş mi?
+            const recentlyVisited = profileVisited.find(
+                v =>
+                    v.userId === user.userId &&
+                    new Date(v.visitedAt).getTime() > tenMinutesAgo
+            );
+
+            if (recentlyVisited) {
+                return;
+            }
+
+            // 🔹 upsert fonksiyonu
+            const upsertVisit = (
+                list: { userId: string; visitedAt: string }[],
+                targetUserId: string
+            ) => {
+                let found = false;
+
+                const updated = list.map(item => {
+                    if (item.userId === targetUserId) {
+                        found = true;
+                        return { ...item, visitedAt: nowIso };
+                    }
+                    return item;
+                });
+
+                if (!found) {
+                    updated.push({
+                        userId: targetUserId,
+                        visitedAt: nowIso,
+                    });
+                }
+
+                return updated;
+            };
+
+            // 🔹 Listeleri güncelle
+            const updatedProfileVisited = upsertVisit(
+                profileVisited,
+                user.userId
+            );
+
+            const updatedProfileVisiters = upsertVisit(
+                profileVisiters,
+                userData.userId
+            );
+
+            // 🔹 Firestore update
+            await Promise.all([
+                visitorRef.set(
+                    { profileVisited: updatedProfileVisited },
+                    { merge: true }
+                ),
+                visitedRef.set(
+                    { profileVisiters: updatedProfileVisiters },
+                    { merge: true }
+                ),
+            ]);
+
+            // 🔹 Bildirim
+            const tokens: string[] = visitedData.fcmTokens || [];
+
+            if (tokens.length > 0) {
+                await sendNotification(
+                    tokens,
+                    t('profile_visit_title'),
+                    `${userData.firstName} ${t('profile_visit_desc')}`,
+                    {
+                        type: 'profile_visit',
+                        senderId: userData.userId,
+                    }
+                );
+            }
+        } catch (e) {
+            console.log('❌ profile visit error:', e);
+        }
+    };
+
     useEffect(() => {
         if (!userData?.userId || !user?.userId) return;
         if (userData.userId === user.userId) return; // kendine bildirim yok
 
-        const sendVisitNotification = async () => {
-            try {
-                const visitorRef = firestore().collection('users').doc(userData.userId);
-                const visitedRef = firestore().collection('users').doc(user.userId);
-
-                // 🔹 Ziyaret edenin profiline mevcut ziyaretleri al
-                const visitorSnap = await visitorRef.get();
-                const visitorData = visitorSnap.data() || {};
-                const profileVisited: { userId: string, visitedAt: any }[] = visitorData.profileVisited || [];
-
-                // 🔹 Ziyaret edilenin profiline mevcut ziyaretçileri al
-                const visitedSnap = await visitedRef.get();
-                const visitedData = visitedSnap.data() || {};
-
-                const now = new Date();
-                const oneHourAgo = now.getTime() - 1000 * 60 * 60;
-
-                // 🔹 Daha önce 1 saat içinde ziyaret edilmiş mi kontrol et
-                const alreadyVisited =
-                    profileVisited.find(v => v.userId === user.userId && new Date(v.visitedAt).getTime() > oneHourAgo);
-
-                if (alreadyVisited) {
-                    // 1 saatten az süre geçti, işlem yok
-                    return;
-                }
-
-                // 🔹 Firestore güncelle
-                await visitorRef.set(
-                    {
-                        profileVisited: firestore.FieldValue.arrayUnion({
-                            userId: user.userId,
-                            visitedAt: now.toISOString(),
-                        }),
-                    },
-                    { merge: true }
-                );
-
-                await visitedRef.set(
-                    {
-                        profileVisiters: firestore.FieldValue.arrayUnion({
-                            userId: userData.userId,
-                            visitedAt: now.toISOString(),
-                        }),
-                    },
-                    { merge: true }
-                );
-
-                // 🔹 Bildirim gönder
-                const tokens: string[] = visitedData.fcmTokens || [];
-                if (tokens.length > 0) {
-                    await sendNotification(
-                        tokens,
-                        t('profile_visit_title'),
-                        `${userData.firstName} ${t('profile_visit_desc')}`,
-                        {
-                            type: 'profile_visit',
-                            senderId: userData.userId,
-                        }
-                    );
-                }
-            } catch (e) {
-                console.log('❌ profile visit error:', e);
-            }
-        };
-
         sendVisitNotification();
     }, [userData?.userId, user?.userId]);
-
-
 
     return (
         <>

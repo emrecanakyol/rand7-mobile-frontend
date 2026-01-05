@@ -293,5 +293,8 @@
     "phone_verification_title": "Telefonnummer bestätigen",
     "login_with_google": "Mit Google fortfahren",
     "profile_visit_title": "Profilbesuch",
-    "profile_visit_desc": "hat dein Profil besucht."
+    "profile_visit_desc": "hat dein Profil besucht.",
+    "profile_visitors_title": "Profilbesucher",
+    "minutes_ago": "Minuten zuvor",
+    "hours_ago": "Stunden zuvor"
 }
