@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { signIn, signInWithGoogle } from '../../../store/services/authServices';
-import { PHONE_LOGIN, REGISTER, RESET_PASSWORD } from '../../../navigators/Stack';
+import { signIn } from '../../../store/services/authServices';
+import { REGISTER, RESET_PASSWORD } from '../../../navigators/Stack';
 import { ToastError } from '../../../utils/toast';
 import CTextInput from '../../../components/CTextInput';
 import { responsive } from '../../../utils/responsive';
 import { useTheme } from '../../../utils/colors';
 import CButton from '../../../components/CButton';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CText from '../../../components/CText/CText';
-import { GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import CBackButton from '../../../components/CBackButton';
 
 const EmailLogin = ({ navigation }: any) => {
     const { colors } = useTheme();
@@ -32,18 +31,18 @@ const EmailLogin = ({ navigation }: any) => {
         navigation.navigate(REGISTER);
     };
 
-    const handlePhoneAuth = () => {
-        navigation.navigate(PHONE_LOGIN);
-    };
-
     const handleLogin = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
             await signIn(email, password, dispatch);
         } catch (error) {
-            ToastError(t('login_failed_title'), t('login_failed_message'));
+            ToastError(
+                t('login_failed_title'),
+                t('login_failed_message')
+            );
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
@@ -52,6 +51,7 @@ const EmailLogin = ({ navigation }: any) => {
             style={styles.container}
         >
             <ScrollView contentContainerStyle={styles.container}>
+                <CBackButton />
                 <View style={styles.innerContainer}>
                     <CText style={styles.header}>{t('login')}</CText>
 
@@ -91,32 +91,7 @@ const EmailLogin = ({ navigation }: any) => {
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.divider} />
-
-                    <View style={styles.phoneFooter}>
-                        <TouchableOpacity onPress={handlePhoneAuth} style={styles.phoneBtn}>
-                            <CText>{t('login_with_phone')}</CText>
-                            <FontAwesome name="phone" size={20} color={colors.BLACK_COLOR} />
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* <View style={styles.googleFooter}>
-                        <GoogleSigninButton
-                            style={{ width: responsive(192), height: responsive(48), marginTop: responsive(10) }}
-                            size={GoogleSigninButton.Size.Wide}
-                            color={GoogleSigninButton.Color.Dark}
-                            disabled={loading}
-                            onPress={async () => {
-                                try {
-                                    setLoading(true);
-                                    await signInWithGoogle(dispatch);
-                                } catch (error) {
-                                    ToastError(t('login_failed_title'), t('login_failed_message'));
-                                }
-                                setLoading(false);
-                            }}
-                        />
-                    </View> */}
+                    {/* <View style={styles.divider} /> */}
 
                 </View>
             </ScrollView>
@@ -158,25 +133,6 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: colors.GRAY_COLOR,
         marginTop: responsive(20),
-    },
-    phoneFooter: {
-        marginTop: responsive(30),
-        alignItems: "center",
-    },
-    phoneBtn: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: colors.BLACK_COLOR,
-        padding: responsive(14),
-        borderRadius: responsive(28),
-        width: responsive(350),
-        gap: responsive(7)
-    },
-    googleFooter: {
-        marginTop: responsive(20),
-        alignItems: 'center',
     },
 });
 

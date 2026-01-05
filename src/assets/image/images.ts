@@ -9,6 +9,7 @@ const images = {
     defaultProfilePhoto: require('./defaultProfilePhoto.png'),
     defaultPhoto: require('./defaultPhoto.jpg'),
     defaultDrawerBackground: require('./defaultDrawerBackground.png'),
+    googleIcon: require('./icons/google.png'),
 };
 
 export default images;

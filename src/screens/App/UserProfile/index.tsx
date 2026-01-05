@@ -673,6 +673,80 @@ const UserProfile = ({ route }: any) => {
         }
     };
 
+    useEffect(() => {
+        if (!userData?.userId || !user?.userId) return;
+        if (userData.userId === user.userId) return; // kendine bildirim yok
+
+        const sendVisitNotification = async () => {
+            try {
+                const visitorRef = firestore().collection('users').doc(userData.userId);
+                const visitedRef = firestore().collection('users').doc(user.userId);
+
+                // 🔹 Ziyaret edenin profiline mevcut ziyaretleri al
+                const visitorSnap = await visitorRef.get();
+                const visitorData = visitorSnap.data() || {};
+                const profileVisited: { userId: string, visitedAt: any }[] = visitorData.profileVisited || [];
+
+                // 🔹 Ziyaret edilenin profiline mevcut ziyaretçileri al
+                const visitedSnap = await visitedRef.get();
+                const visitedData = visitedSnap.data() || {};
+
+                const now = new Date();
+                const oneHourAgo = now.getTime() - 1000 * 60 * 60;
+
+                // 🔹 Daha önce 1 saat içinde ziyaret edilmiş mi kontrol et
+                const alreadyVisited =
+                    profileVisited.find(v => v.userId === user.userId && new Date(v.visitedAt).getTime() > oneHourAgo);
+
+                if (alreadyVisited) {
+                    // 1 saatten az süre geçti, işlem yok
+                    return;
+                }
+
+                // 🔹 Firestore güncelle
+                await visitorRef.set(
+                    {
+                        profileVisited: firestore.FieldValue.arrayUnion({
+                            userId: user.userId,
+                            visitedAt: now.toISOString(),
+                        }),
+                    },
+                    { merge: true }
+                );
+
+                await visitedRef.set(
+                    {
+                        profileVisiters: firestore.FieldValue.arrayUnion({
+                            userId: userData.userId,
+                            visitedAt: now.toISOString(),
+                        }),
+                    },
+                    { merge: true }
+                );
+
+                // 🔹 Bildirim gönder
+                const tokens: string[] = visitedData.fcmTokens || [];
+                if (tokens.length > 0) {
+                    await sendNotification(
+                        tokens,
+                        t('profile_visit_title'),
+                        `${userData.firstName} ${t('profile_visit_desc')}`,
+                        {
+                            type: 'profile_visit',
+                            senderId: userData.userId,
+                        }
+                    );
+                }
+            } catch (e) {
+                console.log('❌ profile visit error:', e);
+            }
+        };
+
+        sendVisitNotification();
+    }, [userData?.userId, user?.userId]);
+
+
+
     return (
         <>
             {matchLoading || loading ? (
@@ -721,6 +795,7 @@ const UserProfile = ({ route }: any) => {
                             snapToInterval={height * 0.75}
                             decelerationRate="fast"
                             showsVerticalScrollIndicator={false}
+                            scrollEnabled={(user?.photos?.length ?? 0) > 1}
                             onMomentumScrollEnd={handleMomentumScrollEnd}
                             renderItem={({ item }) => (
                                 <View
@@ -742,19 +817,21 @@ const UserProfile = ({ route }: any) => {
                             )}
                         />
 
-                        <View style={styles.verticalDotContainer}>
-                            {(user?.photos || []).map((_: any, idx: number) => (
-                                <View
-                                    key={idx}
-                                    style={[
-                                        styles.dot,
-                                        {
-                                            backgroundColor: idx === activeIndex ? '#fff' : 'rgba(255,255,255,0.4)',
-                                        },
-                                    ]}
-                                />
-                            ))}
-                        </View>
+                        {(user?.photos?.length ?? 0) > 1 && (
+                            <View style={styles.verticalDotContainer}>
+                                {(user?.photos || []).map((_: any, idx: number) => (
+                                    <View
+                                        key={idx}
+                                        style={[
+                                            styles.dot,
+                                            {
+                                                backgroundColor: idx === activeIndex ? '#fff' : 'rgba(255,255,255,0.4)',
+                                            },
+                                        ]}
+                                    />
+                                ))}
+                            </View>
+                        )}
 
                         <View style={styles.userInfoContainer}>
                             <Text style={styles.userName}>

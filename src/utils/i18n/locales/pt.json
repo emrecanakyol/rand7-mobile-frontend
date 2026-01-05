@@ -13,6 +13,7 @@
     "password": "Senha",
     "verify_password": "Confirmar Senha",
     "already_have_account": "Já tem uma conta?",
+    "open_login": "Entrar",
     "login": "Entrar",
     "register_failed_title": "Falha no Cadastro",
     "passwords_do_not_match": "As senhas não coincidem.",
@@ -289,5 +290,8 @@
     "newSuperLikeNotificationTitle": "Super Like ⭐",
     "newSuperLikeNotificationDesc": "Alguém enviou um super like para você!",
     "photograph": "Fotografia",
-    "phone_verification_title": "Verifique seu número de telefone"
+    "phone_verification_title": "Verifique seu número de telefone",
+    "login_with_google": "Continuar com o Google",
+    "profile_visit_title": "Visita ao perfil",
+    "profile_visit_desc": "visitou o seu perfil."
 }

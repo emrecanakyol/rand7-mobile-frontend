@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../utils/colors';
 import { responsive } from '../../../utils/responsive';
@@ -8,14 +8,29 @@ import CButton from '../../../components/CButton';
 import CModal from '../../../components/CModal';
 import CImage from '../../../components/CImage';
 import CText from '../../../components/CText/CText';
-import { EMAIL_LOGIN, REGISTER } from '../../../navigators/Stack';
+import { EMAIL_LOGIN, PHONE_LOGIN, REGISTER } from '../../../navigators/Stack';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import FastImage from 'react-native-fast-image';
+import { signInWithGoogle } from '../../../store/services/authServices';
+import { ToastError } from '../../../utils/toast';
+import { useDispatch } from 'react-redux';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import images from '../../../assets/image/images';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const OnBoardingOne = () => {
     const { t } = useTranslation();
-    const navigation: any = useNavigation();
+    const dispatch = useDispatch();
     const { colors } = useTheme();
+    const { width, height } = Dimensions.get('window');
+    const isTablet = Math.min(width, height) >= 600;
+    const styles = getStyles(colors, isTablet);
+    const navigation: any = useNavigation();
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const snapPoints = useMemo(() => ['43%'], []);
     const [tosVisible, setTosVisible] = useState(false);
     const [privacyVisible, setPrivacyVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
     // const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
 
     // const languageOptions = [
@@ -33,6 +48,37 @@ const OnBoardingOne = () => {
     //     await i18n.changeLanguage(item.value);
     //     await AsyncStorage.setItem('appLanguage', item.value);
     // };
+
+    const handlePhoneAuth = () => {
+        navigation.navigate(PHONE_LOGIN);
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            setLoading(true);
+            await signInWithGoogle(dispatch);
+        } catch (error) {
+            ToastError(
+                t('login_failed_title'),
+                t('login_failed_message')
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const renderBackdrop = useCallback(
+        (props: any) => (
+            <BottomSheetBackdrop
+                {...props}
+                appearsOnIndex={0}
+                disappearsOnIndex={-1}
+                opacity={0.5} // karartma seviyesi
+            />
+        ),
+        []
+    );
+
 
     return (
         <View style={{
@@ -112,9 +158,14 @@ const OnBoardingOne = () => {
                             marginBottom: 5,
                         }}
                     /> */}
-                    <CButton
+                    {/* <CButton
                         title={t('continue')}
                         onPress={() => navigation.navigate(EMAIL_LOGIN)}
+                        borderRadius={28}
+                    /> */}
+                    <CButton
+                        title={t('continue')}
+                        onPress={() => bottomSheetRef.current?.expand()}
                         borderRadius={28}
                     />
 
@@ -162,6 +213,81 @@ const OnBoardingOne = () => {
                     </CText>
                 </View>
             </View>
+
+            <BottomSheet
+                ref={bottomSheetRef}
+                index={-1}
+                snapPoints={snapPoints}
+                enablePanDownToClose
+                backdropComponent={renderBackdrop}
+                backgroundStyle={{
+                    backgroundColor: colors.BACKGROUND_COLOR,
+                    borderTopLeftRadius: 30,
+                    borderTopRightRadius: 30,
+                }}
+            >
+                <BottomSheetView
+                    style={{
+                        alignItems: "center",
+                        gap: responsive(15),
+                    }}>
+
+                    <View style={styles.sheetHeader}>
+                        <TouchableOpacity
+                            onPress={() => bottomSheetRef.current?.close()}
+                            style={styles.sheetHeaderBtn}
+                        >
+                            <Ionicons name="close" size={22} color={colors.TEXT_MAIN_COLOR} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <CText
+                        style={{
+                            textAlign: "center",
+                            fontSize: 28,
+                            color: colors.TEXT_MAIN_COLOR,
+                            fontWeight: "800",
+                            lineHeight: 34,
+                            marginBottom: responsive(10),
+                        }}>{t('open_login')}</CText>
+
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate(EMAIL_LOGIN)}
+                        style={styles.phoneBtn}>
+                        <Ionicons name="mail-outline" size={22} color={colors.TEXT_MAIN_COLOR} />
+                        <CText style={{
+                            fontWeight: "500"
+                        }}>{t('login_with_email')}</CText>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={handlePhoneAuth} style={styles.phoneBtn}>
+                        <FontAwesome name="phone" size={20} color={colors.BLACK_COLOR} />
+                        <CText style={{
+                            fontWeight: "500"
+                        }}>{t('login_with_phone')}</CText>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        disabled={loading}
+                        style={[
+                            styles.googleButton,
+                            loading && { opacity: 0.6 },
+                        ]}
+                        onPress={handleGoogleLogin}
+                    >
+                        <FastImage
+                            source={images.googleIcon}
+                            style={styles.googleIcon}
+                            resizeMode={FastImage.resizeMode.contain} />
+                        <CText
+                            style={{
+                                fontWeight: "500"
+                            }}>{t('login_with_google')}</CText>
+                    </TouchableOpacity>
+                </BottomSheetView>
+            </BottomSheet>
+
 
             {/* <CModal
                 visible={tosVisible}
@@ -445,5 +571,69 @@ const OnBoardingOne = () => {
         </View>
     );
 };
+
+const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
+    sheetHeader: {
+        width: '100%',
+        alignItems: 'flex-end',
+        marginRight: responsive(40),
+    },
+    sheetHeaderBtn: {
+        backgroundColor: colors.LIGHT_GRAY,
+        padding: responsive(5),
+        borderRadius: responsive(50),
+    },
+    phoneBtn: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: "center",
+        gap: responsive(7),
+
+        borderWidth: 1,
+        borderColor: colors.GRAY_COLOR,
+        padding: responsive(14),
+        borderRadius: responsive(28),
+        width: responsive(375),
+        height: responsive(55),
+
+        // borderWidth: 1,
+        // borderColor: '#E0E0E0',
+        // backgroundColor: '#FFFFFF',
+        // width: responsive(375),
+        // borderRadius: responsive(28),
+        // shadowColor: '#000',
+        // shadowOpacity: 0.05,
+        // shadowRadius: 6,
+        // elevation: 2,
+    },
+    googleButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: responsive(7),
+
+        borderWidth: 1,
+        borderColor: colors.GRAY_COLOR,
+        padding: responsive(14),
+        borderRadius: responsive(28),
+        width: responsive(375),
+        height: responsive(55),
+
+        // borderWidth: 1,
+        // borderColor: '#E0E0E0',
+        // backgroundColor: '#FFFFFF',
+        // width: responsive(375),
+        // borderRadius: responsive(28),
+        // shadowColor: '#000',
+        // shadowOpacity: 0.05,
+        // shadowRadius: 6,
+        // elevation: 2,
+    },
+    googleIcon: {
+        width: 22,
+        height: 22,
+        marginLeft: -15,
+    },
+})
 
 export default OnBoardingOne;

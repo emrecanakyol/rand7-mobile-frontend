@@ -1,11 +1,12 @@
 import { NavigationContainerRef } from '@react-navigation/native';
-import { CHAT } from '../../navigators/Stack';
+import { CHAT, USER_PROFILE } from '../../navigators/Stack';
 import { MATCH } from '../../navigators/BottomTabs';
 
 export type NotificationPayload = {
     type: string;
     senderId?: string;
     receiverId?: string;
+    userData?: string;
 };
 
 export function handleNotificationNavigation(
@@ -35,6 +36,14 @@ export function handleNotificationNavigation(
             break;
         case 'superlike_matched':
             navigation.navigate(MATCH);
+            break;
+
+        case 'profile_visit':
+            if (payload.senderId) {
+                navigation.navigate(MATCH, {
+                    userId: payload.senderId,
+                });
+            }
             break;
 
         default:

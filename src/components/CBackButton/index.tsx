@@ -20,7 +20,7 @@ const CustomBackButton = () => {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
             <Entypo
                 name="chevron-left"
-                size={isTablet ? 30 : 20}
+                size={isTablet ? 30 : 22}
                 color={colors.WHITE_COLOR}
             />
         </TouchableOpacity>
@@ -33,8 +33,8 @@ const getStyles = (colors: any, isTablet: boolean) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: responsive(50),
-        width: isTablet ? responsive(18) : responsive(26),
-        height: isTablet ? responsive(18) : responsive(26),
+        width: isTablet ? responsive(18) : responsive(32),
+        height: isTablet ? responsive(18) : responsive(32),
     },
 });
 

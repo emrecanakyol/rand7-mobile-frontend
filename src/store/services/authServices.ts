@@ -204,7 +204,14 @@ GoogleSignin.configure({
 export const signInWithGoogle = async (dispatch: any) => {
     try {
         await GoogleSignin.hasPlayServices();
-        const { idToken }: any = await GoogleSignin.signIn();
+        const result = await GoogleSignin.signIn();
+
+        const idToken = result?.data?.idToken;
+
+        if (!idToken) {
+            console.log('❌ idToken GELMEDİ');
+            return { success: false };
+        }
 
         const credential = auth.GoogleAuthProvider.credential(idToken);
         const { user } = await auth().signInWithCredential(credential);
@@ -216,7 +223,7 @@ export const signInWithGoogle = async (dispatch: any) => {
         };
 
         await AsyncStorage.setItem('user', JSON.stringify(userData));
-        dispatch(setUser({ ...userData }));
+        await dispatch(setUser({ ...userData }));
 
         await firestore().collection('users').doc(user.uid).set(
             {
@@ -242,5 +249,13 @@ export const signInWithGoogle = async (dispatch: any) => {
             console.log('Google sign-in failed:', error);
         }
         throw error;
+    }
+};
+
+export const googleSignOut = async () => {
+    try {
+        await GoogleSignin.signOut();
+    } catch (error) {
+        console.log('❌ Google signOut error:', error);
     }
 };

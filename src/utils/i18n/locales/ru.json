@@ -13,6 +13,7 @@
     "password": "Пароль",
     "verify_password": "Подтвердите пароль",
     "already_have_account": "Уже есть аккаунт?",
+    "open_login": "Войти",
     "login": "Войти",
     "register_failed_title": "Ошибка регистрации",
     "passwords_do_not_match": "Пароли не совпадают.",
@@ -289,5 +290,8 @@
     "newSuperLikeNotificationTitle": "Супер лайк ⭐",
     "newSuperLikeNotificationDesc": "Кто-то отправил тебе супер лайк!",
     "photograph": "Фотография",
-    "phone_verification_title": "Подтвердите номер телефона"
+    "phone_verification_title": "Подтвердите номер телефона",
+    "login_with_google": "Войти через Google",
+    "profile_visit_title": "Посещение профиля",
+    "profile_visit_desc": "посетил(а) ваш профиль."
 }

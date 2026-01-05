@@ -30,7 +30,6 @@ const Match: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { userData, loading } = useAppSelector((state) => state.userData);
     const navigation: any = useNavigation();
-    const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { width, height } = Dimensions.get('window');
@@ -40,6 +39,7 @@ const Match: React.FC = () => {
     const [superLikersUsers, setSuperLikersUsers] = useState<any[]>([]);
     const [likeMatchesUsers, setLikeMatchesUsers] = useState<any[]>([]);
     const [superLikeMatchesUsers, setSuperLikeMatchesUsers] = useState<any[]>([]);
+    const [profileVisitors, setProfileVisitors] = useState<any[]>([]);
 
     useFocusEffect(
         useCallback(() => {
@@ -153,6 +153,80 @@ const Match: React.FC = () => {
         }
     };
 
+    //Ziyaret edenleri göster ve eğer 12 saat geçtiyse, likers ve superLikers ile beğenilenler arasında ise de ilgili kullanıcıyı silelim.
+    // Hem beğenide hem eşleşmede hemde süperlike içinde görünmesin diye siliyoruz.
+    const fetchProfileVisitors = async () => {
+        try {
+            const userRef = firestore().collection('users').doc(userData.userId);
+            const userDoc = await userRef.get();
+            const data = userDoc.data();
+
+            const visitors: { userId: string; visitedAt: any }[] =
+                data?.profileVisiters || [];
+
+            if (visitors.length === 0) {
+                setProfileVisitors([]);
+                return;
+            }
+
+            const now = Date.now();
+            const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+
+            // 🚀 Tüm kontrol listeleri
+            const likersSet = new Set(userData.likers || []);
+            const superLikersSet = new Set(userData.superLikers || []);
+            const likeMatchesSet = new Set(userData.likeMatches || []);
+            const superLikeMatchesSet = new Set(userData.superLikeMatches || []);
+
+            const validVisitors = visitors.filter(v => {
+                const visitedTime = v.visitedAt?.toDate
+                    ? v.visitedAt.toDate().getTime()
+                    : new Date(v.visitedAt).getTime();
+
+                const isExpired = now - visitedTime > TWELVE_HOURS;
+
+                const isInLikesOrMatches =
+                    likersSet.has(v.userId) ||
+                    superLikersSet.has(v.userId) ||
+                    likeMatchesSet.has(v.userId) ||
+                    superLikeMatchesSet.has(v.userId);
+
+                // ❌ Süre dolmuşsa veya herhangi bir listede varsa çıkar
+                return !isExpired && !isInLikesOrMatches;
+            });
+
+            // 🔄 Firestore senkronizasyonu
+            if (validVisitors.length !== visitors.length) {
+                await userRef.update({
+                    profileVisiters: validVisitors,
+                });
+            }
+
+            // 👤 Kalan ziyaretçilerin detaylarını çek
+            const userPromises = validVisitors.map(async (v) => {
+                const visitorDoc = await firestore()
+                    .collection('users')
+                    .doc(v.userId)
+                    .get();
+
+                if (visitorDoc.exists()) {
+                    return {
+                        id: visitorDoc.id,
+                        ...visitorDoc.data(),
+                        visitedAt: v.visitedAt,
+                    };
+                }
+                return null;
+            });
+
+            const visitorsData = await Promise.all(userPromises);
+            setProfileVisitors(visitorsData.filter(Boolean) as any[]);
+
+        } catch (error) {
+            console.error("Error fetching profile visitors: ", error);
+        }
+    };
+
     useEffect(() => {
         if (!userData) return;
 
@@ -165,6 +239,8 @@ const Match: React.FC = () => {
         if (superLikersUserIds.length > 0) fetchSuperLikersUserDetails(superLikersUserIds);
         if (likeMatches.length > 0) fetchLikeMatchesDetails(likeMatches);
         if (superLikeMatches.length > 0) fetchSuperLikeMatchesDetails(superLikeMatches);
+
+        fetchProfileVisitors();
     }, [userData]);
 
     return (
@@ -182,6 +258,48 @@ const Match: React.FC = () => {
                             twoIcon={false} />
                         <View style={styles.inContainer}>
 
+                            {profileVisitors.length > 0 && (
+                                <>
+                                    <Text style={styles.sectionTitle1}>{t("profile_visitors_title")}</Text>
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        style={styles.statsContainer}
+                                    >
+                                        {profileVisitors.length > 0 && (
+                                            profileVisitors.map((user, index) => (
+                                                <TouchableOpacity
+                                                    activeOpacity={0.5}
+                                                    key={index}
+                                                    onPress={() => navigation.navigate(USER_PROFILE, { user: user })}
+                                                >
+                                                    <View style={styles.statItem}>
+                                                        <CImage
+                                                            disablePress={true}
+                                                            imgSource={{ uri: user.photos[0] }}
+                                                            borderWidth={2}
+                                                            width={80}
+                                                            height={80}
+                                                            imageBorderRadius={100}
+                                                            borderRadius={100}
+                                                        />
+                                                        <Text style={styles.statText}>
+                                                            {user.firstName}, {user.age}
+                                                            {"\n"}
+                                                            {/* 1 saatten küçükse “şimdi” veya saat farkı */}
+                                                            {(() => {
+                                                                const diff = (new Date().getTime() - new Date(user.visitedAt).getTime()) / (1000 * 60);
+                                                                if (diff < 60) return `${Math.floor(diff)} ${t("minutes_ago")}`;
+                                                                else return `${Math.floor(diff / 60)} ${t("hours_ago")}`;
+                                                            })()}
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            ))
+                                        )}
+                                    </ScrollView>
+                                </>
+                            )}
                             <Text style={styles.sectionTitle1}>{t("match_likes_title")}</Text>
                             <ScrollView
                                 horizontal

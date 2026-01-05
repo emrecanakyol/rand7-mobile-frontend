@@ -18,9 +18,10 @@ import { useAppSelector } from '../../../store/hooks';
 import { fetchUserData } from '../../../store/services/userDataService';
 import CImage from '../../../components/CImage';
 import { calculateAge } from '../../../components/CalculateAge';
-import { signOut } from '../../../store/services/authServices';
+import { googleSignOut, signOut } from '../../../store/services/authServices';
 import { useTranslation } from 'react-i18next';
 import { useAlert } from '../../../context/AlertContext';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const Account = () => {
     const { t } = useTranslation();
@@ -52,6 +53,7 @@ const Account = () => {
                     type: 'destructive',
                     onPress: async () => {
                         await signOut(dispatch);
+                        await googleSignOut();
                         navigation.navigate(ONEBOARDINGONE);
                     },
                 },

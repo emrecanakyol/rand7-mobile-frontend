@@ -13,6 +13,7 @@
     "password": "Şifre",
     "verify_password": "Şifreyi Doğrula",
     "already_have_account": "Zaten hesabın var mı?",
+    "open_login": "Oturum Aç",
     "login": "Giriş Yap",
     "register_failed_title": "Kayıt Başarısız",
     "passwords_do_not_match": "Şifreler eşleşmiyor.",
@@ -289,5 +290,8 @@
     "newSuperLikeNotificationTitle": "Süper Beğeni ⭐",
     "newSuperLikeNotificationDesc": "Birisi sana süper beğeni gönderdi!",
     "photograph": "Fotoğraf",
-    "phone_verification_title": "Telefon Numaranı Doğrula"
+    "phone_verification_title": "Telefon Numaranı Doğrula",
+    "login_with_google": "Google ile bağlan",
+    "profile_visit_title": "Profil ziyareti",
+    "profile_visit_desc": "sizi ziyaret etti."
 }

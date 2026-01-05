@@ -6,6 +6,7 @@ import { useTheme } from '../../../utils/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { sendNotification } from '../../../constants/Notifications';
 import { MATCH } from '../../../navigators/BottomTabs';
+import FastImage from 'react-native-fast-image';
 
 const LikeMatched = () => {
     const navigation: any = useNavigation();
@@ -83,12 +84,15 @@ const LikeMatched = () => {
             <View style={styles.profileContainer}>
                 {/* Sol fotoğraf */}
                 <View style={[styles.imageWrapper, styles.leftBorder]}>
-                    <Image
+                    <FastImage
                         source={{
                             uri: user1Photo,
+                            priority: FastImage.priority.high,
                         }}
                         style={styles.profileImage}
+                        resizeMode={FastImage.resizeMode.cover}
                     />
+
                 </View>
 
                 {/* Orta %80 */}
@@ -99,12 +103,15 @@ const LikeMatched = () => {
 
                 {/* Sağ fotoğraf */}
                 <View style={[styles.imageWrapper, styles.rightBorder]}>
-                    <Image
+                    <FastImage
                         source={{
                             uri: user2Photo,
+                            priority: FastImage.priority.high,
                         }}
                         style={styles.profileImage}
+                        resizeMode={FastImage.resizeMode.cover}
                     />
+
                 </View>
             </View>
 

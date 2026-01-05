@@ -13,6 +13,7 @@
     "password": "Passwort",
     "verify_password": "Passwort bestätigen",
     "already_have_account": "Hast du bereits ein Konto?",
+    "open_login": "Anmelden",
     "login": "Anmelden",
     "register_failed_title": "Registrierung fehlgeschlagen",
     "passwords_do_not_match": "Passwörter stimmen nicht überein.",
@@ -289,5 +290,8 @@
     "newSuperLikeNotificationTitle": "Super Like ⭐",
     "newSuperLikeNotificationDesc": "Jemand hat dir ein Super Like gesendet!",
     "photograph": "Foto",
-    "phone_verification_title": "Telefonnummer bestätigen"
+    "phone_verification_title": "Telefonnummer bestätigen",
+    "login_with_google": "Mit Google fortfahren",
+    "profile_visit_title": "Profilbesuch",
+    "profile_visit_desc": "hat dein Profil besucht."
 }
