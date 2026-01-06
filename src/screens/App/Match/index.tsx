@@ -25,6 +25,7 @@ import CText from "../../../components/CText/CText";
 import CLoading from "../../../components/CLoading";
 import LinearGradient from "react-native-linear-gradient";
 import FastImage from "react-native-fast-image";
+import { responsive } from "../../../utils/responsive";
 
 const Match: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -249,13 +250,14 @@ const Match: React.FC = () => {
                 <CLoading visible />
             ) : (
                 <View style={styles.container}>
+                    <Header
+                        userData={userData}
+                        twoIcon={false} />
                     <ScrollView
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContainer}
+                        scrollEnabled={likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0}
                     >
-                        <Header
-                            userData={userData}
-                            twoIcon={false} />
                         <View style={styles.inContainer}>
 
                             {profileVisitors.length > 0 && (
@@ -283,16 +285,44 @@ const Match: React.FC = () => {
                                                             imageBorderRadius={100}
                                                             borderRadius={100}
                                                         />
-                                                        <Text style={styles.statText}>
+                                                        <CText style={styles.statText}>
                                                             {user.firstName}, {user.age}
                                                             {"\n"}
-                                                            {/* 1 saatten küçükse “şimdi” veya saat farkı */}
-                                                            {(() => {
-                                                                const diff = (new Date().getTime() - new Date(user.visitedAt).getTime()) / (1000 * 60);
-                                                                if (diff < 60) return `${Math.floor(diff)} ${t("minutes_ago")}`;
-                                                                else return `${Math.floor(diff / 60)} ${t("hours_ago")}`;
-                                                            })()}
-                                                        </Text>
+                                                            <CText style={{
+                                                                fontSize: 14,
+                                                                color: colors.DARK_GRAY,
+                                                            }}>
+                                                                {(() => {
+                                                                    if (!user.visitedAt) return "";
+
+                                                                    const diffMs = Date.now() - user.visitedAt.toMillis();
+
+                                                                    const minutes = Math.floor(diffMs / (1000 * 60));
+                                                                    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                                                                    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                                                                    const months = Math.floor(days / 30);
+                                                                    const years = Math.floor(days / 365);
+
+                                                                    if (minutes < 60) {
+                                                                        return `${minutes} ${t("minutes_ago")}`;
+                                                                    }
+
+                                                                    if (hours < 24) {
+                                                                        return `${hours} ${t("hours_ago")}`;
+                                                                    }
+
+                                                                    if (days < 30) {
+                                                                        return `${days} ${t("days_ago")}`;
+                                                                    }
+
+                                                                    if (months < 12) {
+                                                                        return `${months} ${t("months_ago")}`;
+                                                                    }
+
+                                                                    return `${years} ${t("years_ago")}`;
+                                                                })()}
+                                                            </CText>
+                                                        </CText>
                                                     </View>
                                                 </TouchableOpacity>
                                             ))
@@ -347,7 +377,6 @@ const Match: React.FC = () => {
 
                             {/* Your Matches */}
                             <Text style={styles.sectionTitle2}>{t("match_matches_title")}</Text>
-
                             <View style={styles.cardContainer}>
                                 {likeMatchesUsers.length > 0 || superLikeMatchesUsers.length > 0 ? (
                                     [...likeMatchesUsers, ...superLikeMatchesUsers.map(u => ({ ...u, isSuper: true }))].map(
@@ -450,7 +479,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         backgroundColor: colors.BACKGROUND_COLOR,
     },
     inContainer: {
-        paddingHorizontal: 24,
+        // paddingHorizontal: 24,
     },
     title: {
         fontSize: 22,
@@ -460,10 +489,11 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     statsContainer: {
         flexDirection: "row",
         marginTop: 20,
+        paddingLeft: responsive(24),
     },
     statItem: {
         alignItems: "center",
-        marginRight: 10,
+        marginRight: responsive(10),
     },
     blurOverlay: {
         position: "absolute",
@@ -489,21 +519,23 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
     },
     statText: {
         fontSize: 14,
-        color: "#231942",
+        marginTop: responsive(8),
+        marginBottom: responsive(10),
         fontWeight: "600",
-        marginTop: 8,
     },
     sectionTitle1: {
         fontSize: 20,
         fontWeight: "700",
         color: colors.TEXT_MAIN_COLOR,
         marginTop: 15,
+        marginLeft: responsive(24),
     },
     sectionTitle2: {
         fontSize: 20,
         fontWeight: "700",
         color: colors.TEXT_MAIN_COLOR,
         marginTop: 20,
+        marginLeft: responsive(24),
     },
     scrollContainer: {
         paddingBottom: 90,
@@ -513,6 +545,7 @@ const getStyles = (colors: any, isTablet: boolean, height: any) => StyleSheet.cr
         flexWrap: "wrap",
         justifyContent: "space-between",
         marginTop: 20,
+        paddingHorizontal: responsive(24),
     },
     card: {
         width: 165,

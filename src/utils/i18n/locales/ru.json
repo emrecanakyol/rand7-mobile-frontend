@@ -295,6 +295,10 @@
     "profile_visit_title": "Посещение профиля",
     "profile_visit_desc": "посетил(а) ваш профиль.",
     "profile_visitors_title": "Посетители профиля",
-    "minutes_ago": "мин назад",
-    "hours_ago": "ч назад"
+    "minutes_ago": "несколько минут назад",
+    "hours_ago": "несколько часов назад",
+    "days_ago": "несколько дней назад",
+    "months_ago": "несколько месяцев назад",
+    "years_ago": "несколько лет назад",
+    "just_now": "только что"
 }

@@ -16,7 +16,7 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '../../../utils/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { useAppSelector } from '../../../store/hooks';
 import { CHAT, LIKE_MATCHED, SUPER_LIKE_MATCHED } from '../../../navigators/Stack';
 import CLoading from '../../../components/CLoading';
@@ -687,21 +687,20 @@ const UserProfile = ({ route }: any) => {
             const visitorData = visitorSnap.data() || {};
             const visitedData = visitedSnap.data() || {};
 
-            const profileVisited: { userId: string; visitedAt: string }[] =
+            const profileVisited: { userId: string; visitedAt: FirebaseFirestoreTypes.Timestamp }[] =
                 visitorData.profileVisited || [];
 
-            const profileVisiters: { userId: string; visitedAt: string }[] =
+            const profileVisiters: { userId: string; visitedAt: FirebaseFirestoreTypes.Timestamp }[] =
                 visitedData.profileVisiters || [];
 
-            const now = new Date();
-            const nowIso = now.toISOString();
-            const tenMinutesAgo = now.getTime() - 1000 * 60 * 60;
+            const oneHourAgo = Date.now() - 1000 * 60 * 60;
+            const nowTimestamp = firestore.Timestamp.now();
 
-            // 🔹 10 dakika içinde ziyaret edilmiş mi?
+            // 🔹 1 saat içinde ziyaret edilmiş mi?
             const recentlyVisited = profileVisited.find(
                 v =>
                     v.userId === user.userId &&
-                    new Date(v.visitedAt).getTime() > tenMinutesAgo
+                    v.visitedAt.toMillis() > oneHourAgo
             );
 
             if (recentlyVisited) {
@@ -710,7 +709,7 @@ const UserProfile = ({ route }: any) => {
 
             // 🔹 upsert fonksiyonu
             const upsertVisit = (
-                list: { userId: string; visitedAt: string }[],
+                list: { userId: string; visitedAt: FirebaseFirestoreTypes.Timestamp }[],
                 targetUserId: string
             ) => {
                 let found = false;
@@ -718,7 +717,7 @@ const UserProfile = ({ route }: any) => {
                 const updated = list.map(item => {
                     if (item.userId === targetUserId) {
                         found = true;
-                        return { ...item, visitedAt: nowIso };
+                        return { ...item, visitedAt: nowTimestamp };
                     }
                     return item;
                 });
@@ -726,12 +725,13 @@ const UserProfile = ({ route }: any) => {
                 if (!found) {
                     updated.push({
                         userId: targetUserId,
-                        visitedAt: nowIso,
+                        visitedAt: nowTimestamp,
                     });
                 }
 
                 return updated;
             };
+
 
             // 🔹 Listeleri güncelle
             const updatedProfileVisited = upsertVisit(

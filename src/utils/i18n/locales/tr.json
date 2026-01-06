@@ -295,6 +295,9 @@
     "profile_visit_title": "Profil ziyareti",
     "profile_visit_desc": "sizi ziyaret etti.",
     "profile_visitors_title": "Profilini Ziyaretleri",
-    "minutes_ago": "dk önce",
-    "hours_ago": "saat önce"
+    "minutes_ago": "dakika önce",
+    "hours_ago": "saat önce",
+    "days_ago": "gün önce",
+    "months_ago": "ay önce",
+    "years_ago": "yıl önce"
 }

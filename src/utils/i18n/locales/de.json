@@ -296,5 +296,9 @@
     "profile_visit_desc": "hat dein Profil besucht.",
     "profile_visitors_title": "Profilbesucher",
     "minutes_ago": "Minuten zuvor",
-    "hours_ago": "Stunden zuvor"
+    "hours_ago": "Stunden zuvor",
+    "days_ago": "Tage zuvor",
+    "months_ago": "Monate zuvor",
+    "years_ago": "Jahre zuvor",
+    "just_now": "gerade eben"
 }

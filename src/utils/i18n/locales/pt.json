@@ -295,6 +295,10 @@
     "profile_visit_title": "Visita ao perfil",
     "profile_visit_desc": "visitou o seu perfil.",
     "profile_visitors_title": "Visitantes do perfil",
-    "minutes_ago": "min atrás",
-    "hours_ago": "h atrás"
+    "minutes_ago": "minutos atrás",
+    "hours_ago": "horas atrás",
+    "days_ago": "dias atrás",
+    "months_ago": "meses atrás",
+    "years_ago": "anos atrás",
+    "just_now": "agora mesmo"
 }
